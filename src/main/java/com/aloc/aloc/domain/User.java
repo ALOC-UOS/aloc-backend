@@ -1,50 +1,54 @@
 package com.aloc.aloc.domain;
 
+import java.time.LocalDateTime;
+
+import com.aloc.aloc.common.domain.AuditingTimeEntity;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
-import jakarta.persistence.Column;
+
+
 
 @Entity
 @Getter
 @Setter
-@Table(name="study_user")
-public class User {
+@Table(name = "study_user")
+public class User extends AuditingTimeEntity {
+	@Id
+	@Column(length = 36)
+	private String id;
 
-    @Id
-    @Column(length=36)
-    private String id;
+	@Column(nullable = false)
+	private String username;
 
-    @Column(nullable = false)
-    private String username;
+	@Column(nullable = false)
+	private String baekjoonId;
 
-    @Column(nullable = false)
-    private String baekjoonId;
+	@Column(nullable = false)
+	private String githubId;
 
-    @Column(nullable = false)
-    private String githubId;
+	@Column(nullable = false)
+	private String studentId;
 
-    @Column(nullable = false)
-    private String studentId;
+	@Column(nullable = false)
+	private Integer profileNumber;
 
-    @Column(nullable = false)
-    private Integer profileNumber;
+	// todo: 마이그레이션 이후 삭제 예정
+	@Column(nullable = false)
+	private LocalDateTime joinedAt;
 
-    // TODO: 삭제 예정
-    @Column(nullable = false)
-    private LocalDateTime joinedAt;
+	private Integer rank;
 
-    private Integer rank;
+	@Column(nullable = false)
+	private Integer coin = 0;
 
-    @Column(nullable = false)
-    private Integer coin = 0;
+	@Column(nullable = false)
+	private String profileColor = "default";
 
-    @Column(nullable = false)
-    private String profileColor = "default";
-
-    @Column(nullable = false)
-    private String password;
+	@Column(nullable = false)
+	private String password;
 }
