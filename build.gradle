@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.0'
 	id 'io.spring.dependency-management' version '1.1.5'
+    id 'org.ec4j.editorconfig' version '0.0.3'
+    id 'checkstyle'
 }
 
 group = 'com.aloc'
@@ -17,6 +19,13 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+}
+
+checkstyle {
+    maxWarnings = 0
+    configFile = file("${rootDir}/config/naver-checkstyle-rules.xml")
+    configProperties = ["suppressionFile": "${rootDir}/config/naver-checkstyle-suppressions.xml"]
+    toolVersion = "8.42"
 }
 
 repositories {
@@ -42,3 +51,6 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
