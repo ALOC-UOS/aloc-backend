@@ -14,7 +14,6 @@ import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +26,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends
 	private static final String HTTP_METHOD = "POST";    //HTTP 메서드의 방식은 POST 이다.
 	private static final String CONTENT_TYPE = "application/json"; //json 타입의 데이터로만 로그인을 진행한다.
 	private final ObjectMapper objectMapper;
-	private static final String USERNAME_KEY = "email";
+	private static final String USERNAME_KEY = "githubId";
 	private static final String PASSWORD_KEY = "password";
 
 

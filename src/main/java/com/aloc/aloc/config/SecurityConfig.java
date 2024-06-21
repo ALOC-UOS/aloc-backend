@@ -3,7 +3,6 @@ package com.aloc.aloc.config;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,18 +15,19 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.aloc.aloc.security.CustomeUserDetailsService;
+import com.aloc.aloc.jwt.JwtAuthenticationProcessingFilter;
+import com.aloc.aloc.jwt.JwtService;
+import com.aloc.aloc.repository.UserRepository;
 import com.aloc.aloc.security.JsonUsernamePasswordAuthenticationFilter;
 import com.aloc.aloc.security.JwtProviderHandler;
 import com.aloc.aloc.security.LoginFailureHandler;
+import com.aloc.aloc.security.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,8 +36,10 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+	private final UserDetailsServiceImpl userDetailsService;
 	private final ObjectMapper objectMapper;
-	private final CustomeUserDetailsService customeUserDetailsService;
+	private final UserRepository userRepository;
+	private final JwtService	jwtService;
 	// 특정 HTTP 요청에 대한 웹 기반 보안 구성
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -54,9 +56,19 @@ public class SecurityConfig {
 				.invalidateHttpSession(true))
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			);
+			)
+			.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
+			.addFilterAfter(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class);
 //			.addFilterBefore(UsernamePasswordAuthenticationFilter.class);
 		return http.build();
+	}
+
+	@Bean
+	public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
+		JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter =
+			new JwtAuthenticationProcessingFilter(jwtService, userRepository);
+
+		return jsonUsernamePasswordLoginFilter;
 	}
 
 	@Bean
@@ -64,7 +76,7 @@ public class SecurityConfig {
 		JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter =
 			new JsonUsernamePasswordAuthenticationFilter(objectMapper);
 		jsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
-		jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessHandler());
+		jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessJwtProvideHandler());
 		jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
 		return jsonUsernamePasswordLoginFilter;
 	}
@@ -75,19 +87,21 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public AuthenticationSuccessHandler loginSuccessHandler() {
-		return new JwtProviderHandler();
+	public JwtProviderHandler loginSuccessJwtProvideHandler() {
+		return new JwtProviderHandler(jwtService, userRepository);
 	}
+
 
 	@Bean
 	public AuthenticationManager authenticationManager() throws Exception {
 		DaoAuthenticationProvider provider = daoAuthenticationProvider();
+		provider.setPasswordEncoder(bcryptPasswordEncoder());
 		return new ProviderManager(provider);
 	}
 
 	private DaoAuthenticationProvider daoAuthenticationProvider() throws Exception {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		provider.setUserDetailsService(customeUserDetailsService);
+		provider.setUserDetailsService(userDetailsService);
 		provider.setPasswordEncoder(bcryptPasswordEncoder());
 
 		return provider;

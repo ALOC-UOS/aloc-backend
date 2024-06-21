@@ -1,7 +1,8 @@
 package com.aloc.aloc.domain;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.aloc.aloc.common.domain.AuditingTimeEntity;
 import com.aloc.aloc.enums.Authority;
@@ -13,14 +14,17 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-
+import lombok.NoArgsConstructor;
 
 
 @Entity
 @Getter
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "study_user")
 public class User extends AuditingTimeEntity {
 	@Id
@@ -46,24 +50,52 @@ public class User extends AuditingTimeEntity {
 	@Column(nullable = false)
 	private String studentId;
 
-	@Column(nullable = false)
 	private Integer profileNumber;
-
-	// todo: 마이그레이션 이후 삭제 예정
-	@Column(nullable = false)
-	private LocalDateTime joinedAt;
 
 	private Integer rank;
 
-	@Column(nullable = false)
-	private Integer coin = 0;
+	private Integer coin;
 
 	@Column(nullable = false)
-	private String profileColor = "default";
+	private String profileColor;
 
 	@Column(nullable = false)
 	private String password;
 
 	@Enumerated(EnumType.STRING)
 	private Authority authority;
+
+	@Column(length = 1000)
+	private String refreshToken;
+
+	public void updateRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
+
+	public void destroyRefreshToken() {
+		this.refreshToken = null;
+	}
+
+	public void encodePassword(PasswordEncoder passwordEncoder) {
+		this.password = passwordEncoder.encode(password);
+	}
+
+	@Builder
+	public User(
+		String username,
+		String baekjoonId,
+		String githubId,
+		String studentId,
+		String password
+	) {
+		this.username = username;
+		this.baekjoonId = baekjoonId;
+		this.githubId = githubId;
+		this.studentId = studentId;
+		this.profileColor = "Blue";
+		this.password = password;
+		this.authority = Authority.ROLE_GUEST;
+		this.rank = 0;
+		this.coin = 0;
+	}
 }
