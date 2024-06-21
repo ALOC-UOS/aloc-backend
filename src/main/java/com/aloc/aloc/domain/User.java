@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.aloc.aloc.common.domain.AuditingTimeEntity;
+import com.aloc.aloc.enums.Authority;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -60,4 +63,7 @@ public class User extends AuditingTimeEntity {
 
 	@Column(nullable = false)
 	private String password;
+
+	@Enumerated(EnumType.STRING)
+	private Authority authority;
 }
