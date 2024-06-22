@@ -1,4 +1,4 @@
-package com.aloc.aloc.common.domain;
+package com.aloc.aloc.global.domain;
 
 import java.time.LocalDateTime;
 

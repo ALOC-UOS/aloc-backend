@@ -1,6 +1,6 @@
-package com.aloc.aloc.domain;
+package com.aloc.aloc.domain.algorithm;
 
-import com.aloc.aloc.common.domain.AuditingTimeEntity;
+import com.aloc.aloc.global.domain.AuditingTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

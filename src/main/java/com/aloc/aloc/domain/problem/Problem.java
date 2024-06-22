@@ -1,13 +1,12 @@
-package com.aloc.aloc.domain;
+package com.aloc.aloc.domain.problem;
 
-import com.aloc.aloc.common.domain.AuditingTimeEntity;
+import com.aloc.aloc.global.domain.AuditingTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import lombok.Getter;
 
 @Entity

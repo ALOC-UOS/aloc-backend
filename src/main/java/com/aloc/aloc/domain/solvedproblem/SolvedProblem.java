@@ -1,6 +1,9 @@
-package com.aloc.aloc.domain;
+package com.aloc.aloc.domain.solvedproblem;
 
 import java.time.LocalDateTime;
+
+import com.aloc.aloc.domain.problem.Problem;
+import com.aloc.aloc.domain.user.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
