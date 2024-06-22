@@ -49,7 +49,7 @@ public class SecurityConfig {
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.addFilterBefore(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
 			.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers("/login", "/refresh").permitAll()
+				.requestMatchers("/login", "/sign-up", "/refresh").permitAll()
 				.requestMatchers("/purchase", "/").authenticated()
 				.anyRequest().permitAll())
 			.logout((logout) -> logout
