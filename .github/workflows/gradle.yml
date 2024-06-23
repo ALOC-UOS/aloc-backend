@@ -73,7 +73,14 @@ jobs:
             cd ./src/main/resources
             echo "${{ secrets.JWT_APPLICATION }}" base64 -d > application-jwt.yml
 
-    # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
-    # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
+    - name: Create docker-compose.yml
+      run: docker-compose -f compose.yaml up -d
+
+    - name: Wait for PostgreSQL to be ready
+      run: docker-compose -f compose.yaml exec db psql -U postgres -c 'SELECT 1' -d aloc -tAq
+
+    - name: Build with Gradle Wrapper
+      run: ./gradlew build
+
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
