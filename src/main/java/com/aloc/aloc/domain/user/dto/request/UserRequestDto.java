@@ -1,11 +1,13 @@
 package com.aloc.aloc.domain.user.dto.request;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import com.aloc.aloc.domain.user.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 @Getter
 @AllArgsConstructor
