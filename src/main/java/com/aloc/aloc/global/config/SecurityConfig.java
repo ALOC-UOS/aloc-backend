@@ -19,8 +19,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.aloc.aloc.domain.auth.service.LoginService;
 import com.aloc.aloc.domain.user.repository.UserRepository;
-import com.aloc.aloc.domain.user.service.LoginService;
 import com.aloc.aloc.global.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.aloc.aloc.global.jwt.service.JwtService;
 import com.aloc.aloc.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
@@ -49,7 +49,13 @@ public class SecurityConfig {
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.addFilterBefore(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
 			.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers("/login", "/sign-up", "/refresh").permitAll()
+				.requestMatchers(
+					"/api2/login",
+					"/api2/sign-up",
+					"/swagger-ui/**",
+					"/api-docs/**",
+					"/swagger-ui.html"
+				).permitAll()
 				.requestMatchers("/purchase", "/").authenticated()
 				.anyRequest().permitAll())
 			.logout((logout) -> logout

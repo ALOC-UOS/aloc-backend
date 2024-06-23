@@ -60,7 +60,7 @@ public class JwtFilterAuthenticationTest {
 	private static String GITHUBID = "github";
 	private static String PASSWORD = "password";
 
-	private static String LOGIN_URL = "/login";
+	private static String LOGIN_URL = "/api2/login";
 
 	private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
 	private static final String BEARER = "Bearer ";
@@ -100,6 +100,7 @@ public class JwtFilterAuthenticationTest {
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(map)))
 			.andReturn();
+		System.out.println(result.getResponse().getHeader(accessHeader));
 		String accessToken = result.getResponse().getHeader(accessHeader);
 		String refreshToken = result.getResponse().getHeader(refreshHeader);
 		Map<String, String> tokenMap = new HashMap<>();
@@ -145,7 +146,6 @@ public class JwtFilterAuthenticationTest {
 	public void validRefreshToken_reissue_accessToken_with_200() throws Exception {
 		//given
 		Map accessAndRefreshToken = getAccessAndRefreshToken();
-		System.out.println("accessAndRefreshToken = " + accessAndRefreshToken);
 		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
 		//when, then
@@ -168,7 +168,7 @@ public class JwtFilterAuthenticationTest {
 		System.out.println("accessAndRefreshToken = " + accessAndRefreshToken);
 		System.out.println("accessHeader = " + accessHeader);
 		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
-
+		System.out.println(accessAndRefreshToken);
 		//when, then
 		mockMvc.perform(get(LOGIN_URL + "123").header(refreshHeader, refreshToken))
 			.andExpect(status().isNotFound()); //Bearer을 붙이지 않음

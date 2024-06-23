@@ -1,4 +1,4 @@
-package com.aloc.aloc.domain.user.service;
+package com.aloc.aloc.domain.auth.service;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
