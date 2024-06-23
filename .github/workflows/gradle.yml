@@ -60,6 +60,18 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        
+    - name: Create application.yml
+      run: |
+            mkdir -p ./src/main/resources
+            cd ./src/main/resources
+            echo "${{ secrets.APPLICATION }}" base64 -d > application.yml
+            
+    - name: Create jwt application.yml
+      run: |
+            mkdir -p ./src/main/resources
+            cd ./src/main/resources
+            echo "${{ secrets.JWT_APPLICATION }}" base64 -d > application-jwt.yml
 
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
     # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
