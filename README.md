@@ -1,6 +1,6 @@
 # 개발 전 세팅해야 할 것
-1. Intelij > settings > Editor > Code Style > Java -> **Scheme : GoogleStyle로 설정**
-2. Intelij > settings > Plugins > **CheckStyle-IDEA 설치**
+1. Intelij > settings > Editor > Code Style > Java -> **Scheme : Google configuration 설정**
+2. Intelij > settings > Plugins > **CheckStyle-IDEA 설치** -> Naver check rules 설정
 3. Intelij > settings > Plugins > **CodeMetrics 설치**
 
 > 빌드 시에 자동으로 checkstyle을 확인하도록 설정해두었습니다. <br>
