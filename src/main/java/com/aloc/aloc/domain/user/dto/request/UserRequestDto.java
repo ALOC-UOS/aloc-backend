@@ -4,24 +4,26 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.aloc.aloc.domain.user.User;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 public class UserRequestDto {
 
+	@Schema(description = "사용자 이름", example = "홍길동")
 	private String username;
 
+	@Schema(description = "비밀번호", example = "password")
 	private String password;
 
+	@Schema(description = "깃허브 아이디", example = "githubId")
 	private String githubId;
 
+	@Schema(description = "백준 아이디", example = "baekjoonId")
 	private String baekjoonId;
 
+	@Schema(description = "학번", example = "2020")
 	private String studentId;
 
 	public User toEntity(BCryptPasswordEncoder passwordEncoder) {

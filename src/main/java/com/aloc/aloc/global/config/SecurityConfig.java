@@ -20,7 +20,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.aloc.aloc.domain.user.repository.UserRepository;
-import com.aloc.aloc.domain.user.service.LoginService;
 import com.aloc.aloc.global.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.aloc.aloc.global.jwt.service.JwtService;
 import com.aloc.aloc.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
@@ -29,6 +28,7 @@ import com.aloc.aloc.global.login.handler.LoginFailureHandler;
 import com.aloc.aloc.global.login.service.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 
@@ -36,7 +36,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 	private final UserDetailsServiceImpl userDetailsService;
-	private final LoginService loginService;
 	private final ObjectMapper objectMapper;
 	private final UserRepository userRepository;
 	private final JwtService	jwtService;
@@ -48,18 +47,30 @@ public class SecurityConfig {
 //			.formLogin(AbstractHttpConfigurer::disable)
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.addFilterBefore(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
+			.addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers("/login", "/sign-up", "/refresh").permitAll()
-				.requestMatchers("/purchase", "/").authenticated()
+				.requestMatchers(
+					"/api2/login",
+					"/api2/sign-up",
+					"/swagger-ui/**",
+					"/api-docs/**",
+					"/swagger-ui.html"
+				).permitAll()
+				.requestMatchers("/purchase", "/api2/authorize/*").authenticated()
 				.anyRequest().permitAll())
+			.exceptionHandling(exceptionConfig -> exceptionConfig
+				.authenticationEntryPoint((request, response, authException) -> response.sendError(
+						HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Access Denied"))
+				.accessDeniedHandler(
+					(request, response, accessDeniedException
+					) -> response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden: Missing token"))
+			)
 			.logout((logout) -> logout
 				.logoutSuccessUrl("/logout")
 				.invalidateHttpSession(true))
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			)
-			.addFilterAfter(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class);
-//			.addFilterBefore(UsernamePasswordAuthenticationFilter.class);
+			);
 		return http.build();
 	}
 

@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JsonUsernamePasswordAuthenticationFilter extends
 	AbstractAuthenticationProcessingFilter {
 
-	private static final String DEFAULT_LOGIN_REQUEST_URL = "/login";  // /login/oauth2/ + ????? 로 오는 요청을 처리할 것이다
+	private static final String DEFAULT_LOGIN_REQUEST_URL = "/api2/login";  // /login/oauth2/ + ????? 로 오는 요청을 처리할 것이다
 	private static final String HTTP_METHOD = "POST";    //HTTP 메서드의 방식은 POST 이다.
 	private static final String CONTENT_TYPE = "application/json"; //json 타입의 데이터로만 로그인을 진행한다.
 	private final ObjectMapper objectMapper;

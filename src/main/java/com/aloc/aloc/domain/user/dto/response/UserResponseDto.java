@@ -3,10 +3,12 @@ package com.aloc.aloc.domain.user.dto.response;
 import com.aloc.aloc.domain.user.User;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponseDto {
@@ -19,16 +21,4 @@ public class UserResponseDto {
 	private Integer profileNumber;
 	private Integer rank;
 	private Integer coin;
-	public static UserResponseDto of(User user) {
-		return new UserResponseDto(
-			user.getUsername(),
-			user.getGithubId(),
-			user.getBaekjoonId(),
-			user.getProfileColor(),
-			user.getStudentId(),
-			user.getProfileNumber(),
-			user.getRank(),
-			user.getCoin()
-		);
-	}
 }
