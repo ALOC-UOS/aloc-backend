@@ -100,7 +100,6 @@ public class JwtFilterAuthenticationTest {
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(map)))
 			.andReturn();
-		System.out.println(result.getResponse().getHeader(accessHeader));
 		String accessToken = result.getResponse().getHeader(accessHeader);
 		String refreshToken = result.getResponse().getHeader(refreshHeader);
 		Map<String, String> tokenMap = new HashMap<>();
@@ -165,10 +164,7 @@ public class JwtFilterAuthenticationTest {
 	public void invalid_refreshToken_without_accessToken_return_404() throws Exception {
 		//given
 		Map accessAndRefreshToken = getAccessAndRefreshToken();
-		System.out.println("accessAndRefreshToken = " + accessAndRefreshToken);
-		System.out.println("accessHeader = " + accessHeader);
 		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
-		System.out.println(accessAndRefreshToken);
 		//when, then
 		mockMvc.perform(get(LOGIN_URL + "123").header(refreshHeader, refreshToken))
 			.andExpect(status().isNotFound()); //Bearer을 붙이지 않음

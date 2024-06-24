@@ -89,7 +89,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
 		UserDetails userDetails =
 			new org.springframework.security.core.userdetails.User(
-				user.getId(),
+				user.getGithubId(),
 				user.getPassword(),
 				Collections.singleton(grantedAuthority)
 			);
