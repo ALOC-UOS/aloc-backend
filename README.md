@@ -28,3 +28,5 @@ POSTGRES_USER=postgres
 
 2. 우측 `gradle -> build -> build`
 3. 우측 `gradle -> application -> bootrun`
+
+[swagger 접속]http://localhost:8080/swagger-ui/index.html
