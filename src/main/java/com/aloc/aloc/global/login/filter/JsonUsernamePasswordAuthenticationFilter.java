@@ -51,10 +51,10 @@ public class JsonUsernamePasswordAuthenticationFilter extends
 
 		String messageBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
 
-		Map<String, String> usernamePasswordMap = objectMapper.readValue(messageBody, Map.class);
+		Map usernamePasswordMap = objectMapper.readValue(messageBody, Map.class);
 
-		String username = usernamePasswordMap.get(USERNAME_KEY);
-		String password = usernamePasswordMap.get(PASSWORD_KEY);
+		String username = (String) usernamePasswordMap.get(USERNAME_KEY);
+		String password = (String) usernamePasswordMap.get(PASSWORD_KEY);
 
 		UsernamePasswordAuthenticationToken authRequest =
 			new UsernamePasswordAuthenticationToken(username, password); //principal 과 credentials 전달
