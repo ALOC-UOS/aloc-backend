@@ -29,22 +29,9 @@ import lombok.RequiredArgsConstructor;
 public class SwaggerConfig {
 	@Bean
 	public OpenAPI openApi() {
-//		String jwtSchemeName = "JWT TOKEN";
-		// API 요청 헤더에 인증정보 포함
-//		SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
-		// SecuritySchemes 등록
-//		Components components = new Components()
-//			.addSecuritySchemes(jwtSchemeName, new SecurityScheme()
-//				.name(jwtSchemeName)
-//				.type(SecurityScheme.Type.HTTP)
-//				.scheme("bearer")
-//				.bearerFormat("JWT"));
-
 
 		return new OpenAPI()
 			.addServersItem(new Server().url("/"))
-//			.addSecurityItem(securityRequirement)
-//			.components(components)
 			.info(new Info()
 				.title("Aloc API")
 				.description("Aloc API 문서")
