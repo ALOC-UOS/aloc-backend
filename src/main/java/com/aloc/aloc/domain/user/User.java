@@ -3,6 +3,7 @@ package com.aloc.aloc.domain.user;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.aloc.aloc.domain.problemtype.enums.Course;
 import com.aloc.aloc.domain.user.enums.Authority;
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 
@@ -53,7 +54,8 @@ public class User extends AuditingTimeEntity {
 
 	private Integer coin;
 
-	private String course;
+	@Enumerated(EnumType.STRING)
+	private Course course;
 
 	@Column(nullable = false)
 	private String profileColor;
@@ -94,6 +96,7 @@ public class User extends AuditingTimeEntity {
 		this.studentId = studentId;
 		this.profileColor = "Blue";
 		this.password = password;
+		this.course = Course.FULL;
 		this.authority = Authority.ROLE_GUEST;
 		this.rank = 0;
 		this.coin = 0;
