@@ -29,9 +29,6 @@ public class Problem extends AuditingTimeEntity {
 	@Column(nullable = false)
 	private String title;
 
-	@Column(nullable = false, columnDefinition = "TEXT")
-	private String tags;
-
 	@Column(nullable = false)
 	private Integer difficulty;
 
