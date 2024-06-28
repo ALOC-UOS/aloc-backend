@@ -60,12 +60,12 @@ public class JwtFilterAuthenticationTest {
 	private static String GITHUBID = "github";
 	private static String PASSWORD = "password";
 
-	private static String LOGIN_URL = "/api2/login";
+	private static final String LOGIN_URL = "/api2/login";
 
 	private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
 	private static final String BEARER = "Bearer ";
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	private void clear() {
 		em.flush();
@@ -73,7 +73,7 @@ public class JwtFilterAuthenticationTest {
 	}
 
 	@BeforeEach
-	private void init() {
+	public void init() {
 		userRepository.save(
 			User.builder()
 				.username("홍길동")
@@ -85,16 +85,16 @@ public class JwtFilterAuthenticationTest {
 		clear();
 	}
 
-	private Map getGithubIdPasswordMap(String githubId, String password) {
+	private Map getGithubIdPasswordMap() {
 		Map<String, String> map = new HashMap<>();
-		map.put(KEY_GITHUBID, githubId);
-		map.put(KEY_PASSWORD, password);
+		map.put(KEY_GITHUBID, GITHUBID);
+		map.put(KEY_PASSWORD, PASSWORD);
 		return map;
 	}
 
 	private Map getAccessAndRefreshToken() throws Exception {
 
-		Map map = getGithubIdPasswordMap(GITHUBID, PASSWORD);
+		Map map = getGithubIdPasswordMap();
 		MvcResult result = mockMvc.perform(
 				post(LOGIN_URL)
 					.contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ public class JwtFilterAuthenticationTest {
 	@Test
 	public void access_refresh_doesnt_exist() throws Exception {
 		//when, then
-		mockMvc.perform(get(LOGIN_URL + "123")) //login이 아닌 다른 임의의 주소
+		mockMvc.perform(get(LOGIN_URL + "123")) // login 이 아닌 다른 임의의 주소
 			.andExpect(status().isNotFound());
 	}
 
@@ -149,7 +149,7 @@ public class JwtFilterAuthenticationTest {
 
 		//when, then
 		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123").header(refreshHeader,
-				BEARER + refreshToken))//login이 아닌 다른 임의의 주소
+				BEARER + refreshToken)) // login 이 아닌 다른 임의의 주소
 			.andExpect(status().isOk()).andReturn();
 
 		String accessToken = result.getResponse().getHeader(accessHeader);

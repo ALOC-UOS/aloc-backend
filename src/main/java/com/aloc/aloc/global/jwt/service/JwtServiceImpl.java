@@ -40,15 +40,12 @@ public class JwtServiceImpl implements JwtService {
 	@Value("${jwt.refresh.header}")
 	private String refreshHeader;
 
-	//== 1 ==//
 	private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
 	private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
 	private static final String USERNAME_CLAIM = "githubId";
 	private static final String BEARER = "Bearer ";
 
 	private final UserRepository userRepository;
-
-	//== 메서드 ==//
 
 	@Override
 	public String createAccessToken(String githubId) {

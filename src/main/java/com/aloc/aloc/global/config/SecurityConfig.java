@@ -52,9 +52,9 @@ public class SecurityConfig {
 				.requestMatchers(
 					"/api2/login",
 					"/api2/sign-up",
-					"/swagger-ui/**",
+					"/api2/swagger-ui/**",
 					"/api-docs/**",
-					"/swagger-ui.html"
+					"/api2/swagger-ui.html"
 				).permitAll()
 				.requestMatchers("/purchase", "/api2/authorize/*").authenticated()
 				.anyRequest().permitAll())
@@ -66,7 +66,7 @@ public class SecurityConfig {
 					) -> response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden: Missing token"))
 			)
 			.logout((logout) -> logout
-				.logoutSuccessUrl("/logout")
+				.logoutSuccessUrl("/api2/logout")
 				.invalidateHttpSession(true))
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -76,19 +76,18 @@ public class SecurityConfig {
 
 	@Bean
 	public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
-		JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter =
-			new JwtAuthenticationProcessingFilter(jwtService, userRepository);
-
-		return jsonUsernamePasswordLoginFilter;
+		return new JwtAuthenticationProcessingFilter(jwtService, userRepository);
 	}
 
 	@Bean
-	public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter() throws Exception {
+	public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter() {
 		JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter =
 			new JsonUsernamePasswordAuthenticationFilter(objectMapper);
 		jsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
-		jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessJwtProvideHandler());
-		jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
+		jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(
+			new JwtProviderHandler(jwtService, userRepository)
+		);
+		jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(new LoginFailureHandler());
 		return jsonUsernamePasswordLoginFilter;
 	}
 
@@ -104,16 +103,16 @@ public class SecurityConfig {
 
 
 	@Bean
-	public AuthenticationManager authenticationManager() throws Exception {
+	public AuthenticationManager authenticationManager() {
 		DaoAuthenticationProvider provider = daoAuthenticationProvider();
-		provider.setPasswordEncoder(bcryptPasswordEncoder());
+		provider.setPasswordEncoder(new BCryptPasswordEncoder());
 		return new ProviderManager(provider);
 	}
 
-	private DaoAuthenticationProvider daoAuthenticationProvider() throws Exception {
+	private DaoAuthenticationProvider daoAuthenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setUserDetailsService(userDetailsService);
-		provider.setPasswordEncoder(bcryptPasswordEncoder());
+		provider.setPasswordEncoder(new BCryptPasswordEncoder());
 
 		return provider;
 	}
