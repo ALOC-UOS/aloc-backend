@@ -17,6 +17,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Tag extends AuditingTimeEntity {
@@ -29,13 +30,4 @@ public class Tag extends AuditingTimeEntity {
 
 	@Column(nullable = false)
 	private String englishName;
-
-	@Builder
-	public Tag(
-		String koreanName,
-		String englishName
-	) {
-		this.koreanName = koreanName;
-		this.englishName = englishName;
-	}
 }
