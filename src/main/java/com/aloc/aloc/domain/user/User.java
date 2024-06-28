@@ -1,6 +1,5 @@
 package com.aloc.aloc.domain.user;
 
-import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -11,8 +10,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
+
 @Entity
 @Getter
 @Setter
@@ -29,16 +30,10 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "study_user")
 public class User extends AuditingTimeEntity {
-	@Id
-	@Column(length = 36)
-	private String id;
 
-	@PrePersist
-	public void generateUuid() {
-		if (this.id == null) {
-			this.id = UUID.randomUUID().toString();
-		}
-	}
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	@Column(nullable = false)
 	private String username;
@@ -58,6 +53,8 @@ public class User extends AuditingTimeEntity {
 
 	private Integer coin;
 
+	private String course;
+
 	@Column(nullable = false)
 	private String profileColor;
 
@@ -69,6 +66,7 @@ public class User extends AuditingTimeEntity {
 
 	@Column(length = 1000)
 	private String refreshToken;
+
 
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
@@ -101,3 +99,4 @@ public class User extends AuditingTimeEntity {
 		this.coin = 0;
 	}
 }
+
