@@ -30,9 +30,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 	private final JwtService jwtService;
 	private final UserRepository userRepository;
 
-	private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
-
-	private final String noCheckUrl = "/api2/login"; // 1
+	private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
 	/**
 	 * 1. 리프레시 토큰이 오는 경우 -> 유효하면 AccessToken 재발급후, 필터 진행 X, 바로 튕기기
@@ -42,23 +40,24 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException, java.io.IOException {
+		String noCheckUrl = "/api2/login";
 		if (request.getRequestURI().equals(noCheckUrl)) {
 			filterChain.doFilter(request, response);
-			return; //안해주면 아래로 내려가서 계속 필터를 진행하게됨
+			return;
 		}
 
 		String refreshToken = jwtService
 			.extractRefreshToken(request)
 			.filter(jwtService::isTokenValid)
-			.orElse(null); // 2
+			.orElse(null);
 
 
 		if (refreshToken != null) {
-			checkRefreshTokenAndReIssueAccessToken(response, refreshToken); // 3
+			checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
 			return;
 		}
 
-		checkAccessTokenAndAuthentication(request, response, filterChain); // 4
+		checkAccessTokenAndAuthentication(request, response, filterChain);
 	}
 
 	private void checkAccessTokenAndAuthentication(
@@ -67,16 +66,9 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 		FilterChain filterChain
 	)
 		throws ServletException, IOException, java.io.IOException {
-		jwtService.extractAccessToken(request).filter(jwtService::isTokenValid).ifPresent(
-
-			accessToken -> jwtService.extractGithubId(accessToken).ifPresent(
-
-				githubId -> userRepository.findByGithubId(githubId).ifPresent(
-
-					users -> saveAuthentication(users)
-				)
-			)
-		);
+		jwtService.extractAccessToken(request).filter(jwtService::isTokenValid)
+			.flatMap(accessToken -> jwtService.extractGithubId(accessToken)
+				.flatMap(userRepository::findByGithubId)).ifPresent(this::saveAuthentication);
 
 		filterChain.doFilter(request, response);
 	}
@@ -108,9 +100,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
 	private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
 		userRepository.findByRefreshToken(refreshToken).ifPresent(
-			users -> jwtService.sendAccessToken(response, jwtService.createAccessToken(users.getGithubId()))
+			user -> jwtService.sendAccessToken(response, jwtService.createAccessToken(user.getGithubId()))
 		);
-
-
 	}
 }
