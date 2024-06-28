@@ -27,10 +27,10 @@ public class ProblemTag extends AuditingTimeEntity {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "problem_id")
+	@JoinColumn(name = "problem_id", nullable = false)
 	private Problem problem;
 
 	@ManyToOne
-	@JoinColumn(name = "tag_id")
+	@JoinColumn(name = "tag_id", nullable = false)
 	private Tag tag;
 }
