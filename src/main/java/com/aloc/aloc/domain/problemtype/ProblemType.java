@@ -1,9 +1,13 @@
 package com.aloc.aloc.domain.problemtype;
 
+import com.aloc.aloc.domain.problemtype.enums.Course;
+import com.aloc.aloc.domain.problemtype.enums.Routine;
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,8 +28,10 @@ public class ProblemType extends AuditingTimeEntity {
 	private Long id;
 
 	@Column(nullable = false)
-	private String routine;
+	@Enumerated(EnumType.STRING)
+	private Routine routine;
 
 	@Column(nullable = false)
-	private String course;
+	@Enumerated(EnumType.STRING)
+	private Course course;
 }
