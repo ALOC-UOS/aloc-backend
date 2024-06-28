@@ -40,7 +40,11 @@ public class Problem extends AuditingTimeEntity {
 	@JoinColumn(name = "problem_type_id")
 	private ProblemType problemType;
 
-	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProblemTag> problemTagList = new ArrayList<>();
 
+	public void addProblemTag(ProblemTag problemTag) {
+		problemTagList.add(problemTag);
+		problemTag.setProblem(this);
+	}
 }
