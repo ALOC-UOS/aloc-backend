@@ -66,3 +66,22 @@ jobs:
             docker stop aloc-spring || true
             docker rm aloc-spring || true
             docker run -d -p 8080:8080 --name aloc-spring --restart always ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
+
+      - name: Send deployment status to Discord
+        if: success()
+        uses: tsickert/discord-webhook@v5.3.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          content: |
+            배포가 성공적으로 완료되었어요 🚀
+            Docker image: ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
+
+      - name: Send deployment failure to Discord
+        if: failure()
+        uses: tsickert/discord-webhook@v5.3.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          content: |
+            배포 중 문제가 발생했어요 ❌
+            Docker image: ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
+            url: https://github.com/ALOC-UOS/aloc-backend/actions/runs/${{ github.run_id }}
