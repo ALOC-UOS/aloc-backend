@@ -1,4 +1,4 @@
-name: DEV CD
+name: CD
 
 on:
   push:
