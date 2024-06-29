@@ -17,11 +17,11 @@ WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # application.yml 파일을 복사
-COPY src/main/resources/application.yml /app/config/application.yml
-COPY src/main/resources/application-jwt.yml /app/config/application-jwt.yml
-#RUN mkdir -p /config
-#RUN echo "${{ secrets.JWT_APPLICATION }}" | base64 -d > /app/config/application-jwt.yml
-#RUN echo "${{ secrets.APPLICATION }}" | base64 -d > /app/config/application.yml
+#COPY src/main/resources/application.yml /app/config/application.yml
+#COPY src/main/resources/application-jwt.yml /app/config/application-jwt.yml
+RUN mkdir -p /config
+RUN echo "${{ secrets.JWT_APPLICATION }}" | base64 -d > /app/config/application-jwt.yml
+RUN echo "${{ secrets.APPLICATION }}" | base64 -d > /app/config/application.yml
 # 애플리케이션 실행을 위한 포트 오픈 (Spring Boot 기본 포트)
 EXPOSE 8080
 
