@@ -1,4 +1,4 @@
-name: CI/CD using github actions & docker
+name: DEV CI
 
 on:
   push:
@@ -9,41 +9,11 @@ env:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:  
-     # JDK setting - github actions에서 사용할 JDK 설정
+    steps:
       - name: Check out source code
-        uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      # gradle caching - 빌드 시간 향상
-      - name: Gradle Caching
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
-      # 환경변수 파일 생성
-      - name: Create application.yml
-        run: |
-          mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION }}" base64 -d > ./src/main/resources/application.yml
-      - name: Create jwt application.yml
-        run: |
-          mkdir -p ./src/main/resources
-          echo "${{ secrets.JWT_APPLICATION }}" base64 -d > ./src/main/resources/application-jwt.yml
-      - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        uses: actions/checkout@v2
       - name: Set up docker buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
@@ -82,8 +52,8 @@ jobs:
       - name: Docker run
         run: |
           docker ps -q --filter "name=aloc-spring" | grep -q . && docker stop aloc-spring && docker rm -fv aloc-spring
-          docker run -d -p 8080:8080 --name cicd --aloc-spring always ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
-          
+          docker run -d -p 8080:8080 --name aloc-spring --restart always ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
+
   cleanup:
     needs: [ build, deploy ]
     name: Clean up docker images
