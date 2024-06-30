@@ -58,8 +58,8 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	@DisplayName("회원가입 서비스 실패 테스트(유저 존재)")
-	public void testSignUp_UserAlreadyExists() {
+	@DisplayName("회원가입 서비스 실패 테스트(동일한 github 아이디 존재)")
+	public void testSignUp_GihubIdAlreadyExists() {
 		// given
 		UserRequestDto userRequestDto = new UserRequestDto();
 		userRequestDto.setUsername("홍길동");
@@ -71,6 +71,27 @@ public class AuthServiceTest {
 		userRequestDto.setNotionEmail("notion@uos.ac.kr");
 
 		when(userRepository.existsByGithubId(userRequestDto.getGithubId())).thenReturn(true);
+
+		// when & then
+		assertThrows(IllegalArgumentException.class, () -> authService.signUp(userRequestDto));
+
+		verify(userRepository, never()).save(any(User.class));
+	}
+
+	@Test
+	@DisplayName("회원가입 서비스 실패 테스트(동일한 baekjoon 아이디 존재)")
+	public void testSignUp_BaekjoonIdAlreadyExists() {
+		// given
+		UserRequestDto userRequestDto = new UserRequestDto();
+		userRequestDto.setUsername("홍길동");
+		userRequestDto.setPassword("1234");
+		userRequestDto.setGithubId("github");
+		userRequestDto.setBaekjoonId("baekjoon");
+		userRequestDto.setStudentId("2021920000");
+		userRequestDto.setDiscordId("discord");
+		userRequestDto.setNotionEmail("notion@uos.ac.kr");
+
+		when(userRepository.existsByBaekjoonId(userRequestDto.getBaekjoonId())).thenReturn(true);
 
 		// when & then
 		assertThrows(IllegalArgumentException.class, () -> authService.signUp(userRequestDto));
