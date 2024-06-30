@@ -6,8 +6,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
-import com.aloc.aloc.domain.user.repository.UserRepository;
 import com.aloc.aloc.global.jwt.service.JwtService;
+import com.aloc.aloc.user.repository.UserRepository;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +26,7 @@ public class JwtProviderHandler extends SimpleUrlAuthenticationSuccessHandler {
 		HttpServletRequest request,
 		HttpServletResponse response,
 		Authentication authentication
-	) throws IOException, ServletException {
+	) throws IOException {
 		String githubId = extractGithubId(authentication);
 		String accessToken = jwtService.createAccessToken(githubId);
 		String refreshToken = jwtService.createRefreshToken();

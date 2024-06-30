@@ -19,13 +19,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.aloc.aloc.domain.user.repository.UserRepository;
 import com.aloc.aloc.global.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.aloc.aloc.global.jwt.service.JwtService;
 import com.aloc.aloc.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
 import com.aloc.aloc.global.login.handler.JwtProviderHandler;
 import com.aloc.aloc.global.login.handler.LoginFailureHandler;
 import com.aloc.aloc.global.login.service.UserDetailsServiceImpl;
+import com.aloc.aloc.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,7 +38,7 @@ public class SecurityConfig {
 	private final UserDetailsServiceImpl userDetailsService;
 	private final ObjectMapper objectMapper;
 	private final UserRepository userRepository;
-	private final JwtService	jwtService;
+	private final JwtService jwtService;
 	// 특정 HTTP 요청에 대한 웹 기반 보안 구성
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -52,7 +52,7 @@ public class SecurityConfig {
 				.requestMatchers(
 					"/api2/login",
 					"/api2/sign-up",
-					"/api2/swagger-ui/**",
+					"/swagger-ui/**",
 					"/api-docs/**",
 					"/api2/swagger-ui.html"
 				).permitAll()

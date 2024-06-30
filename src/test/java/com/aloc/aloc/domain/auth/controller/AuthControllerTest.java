@@ -14,8 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.aloc.aloc.domain.auth.service.AuthService;
-import com.aloc.aloc.domain.user.dto.request.UserRequestDto;
+import com.aloc.aloc.auth.service.AuthService;
+import com.aloc.aloc.user.dto.request.UserRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 

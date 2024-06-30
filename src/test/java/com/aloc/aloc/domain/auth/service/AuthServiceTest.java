@@ -14,9 +14,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.domain.user.User;
-import com.aloc.aloc.domain.user.dto.request.UserRequestDto;
-import com.aloc.aloc.domain.user.repository.UserRepository;
+import com.aloc.aloc.auth.service.AuthService;
+import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.dto.request.UserRequestDto;
+import com.aloc.aloc.user.repository.UserRepository;
 
 
 @SpringBootTest

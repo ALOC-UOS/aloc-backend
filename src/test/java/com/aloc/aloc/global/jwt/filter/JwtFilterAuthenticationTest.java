@@ -20,9 +20,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.domain.user.User;
-import com.aloc.aloc.domain.user.repository.UserRepository;
 import com.aloc.aloc.global.jwt.service.JwtService;
+import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.repository.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,10 +55,8 @@ public class JwtFilterAuthenticationTest {
 	@Value("${jwt.refresh.header}")
 	private String refreshHeader;
 
-	private static String KEY_GITHUBID = "githubId";
-	private static String KEY_PASSWORD = "password";
-	private static String GITHUBID = "github";
-	private static String PASSWORD = "password";
+	private final String githubId = "github";
+	private final String password = "password";
 
 	private static final String LOGIN_URL = "/api2/login";
 
@@ -77,8 +75,8 @@ public class JwtFilterAuthenticationTest {
 		userRepository.save(
 			User.builder()
 				.username("홍길동")
-				.password(bCryptPasswordEncoder.encode(PASSWORD))
-				.githubId(GITHUBID)
+				.password(bCryptPasswordEncoder.encode(password))
+				.githubId(githubId)
 				.baekjoonId("baekjoon")
 				.studentId("20")
 				.notionEmail("notion@uos.ac.kr")
@@ -89,8 +87,8 @@ public class JwtFilterAuthenticationTest {
 
 	private Map getGithubIdPasswordMap() {
 		Map<String, String> map = new HashMap<>();
-		map.put(KEY_GITHUBID, GITHUBID);
-		map.put(KEY_PASSWORD, PASSWORD);
+		map.put("githubId", githubId);
+		map.put("password", password);
 		return map;
 	}
 
