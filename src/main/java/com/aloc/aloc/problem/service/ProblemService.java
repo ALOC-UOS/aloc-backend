@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.aloc.aloc.facade.ProblemFacade;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
+import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +16,10 @@ public class ProblemService {
 
 	public List<ProblemResponseDto> getProblems() {
 		return problemFacade.getVisibleProblemsWithSolvingCount();
+	}
+
+	public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
+		return problemFacade.getSolvedUserList(problemId);
 	}
 
 }
