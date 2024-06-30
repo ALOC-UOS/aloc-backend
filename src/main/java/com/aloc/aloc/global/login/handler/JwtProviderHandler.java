@@ -26,7 +26,7 @@ public class JwtProviderHandler extends SimpleUrlAuthenticationSuccessHandler {
 		HttpServletRequest request,
 		HttpServletResponse response,
 		Authentication authentication
-	) throws IOException, ServletException {
+	) throws IOException {
 		String githubId = extractGithubId(authentication);
 		String accessToken = jwtService.createAccessToken(githubId);
 		String refreshToken = jwtService.createRefreshToken();
