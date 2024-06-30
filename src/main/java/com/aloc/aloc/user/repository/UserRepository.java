@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserResponseDto;
+import com.aloc.aloc.user.enums.Authority;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
@@ -16,9 +17,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
 	Optional<User> findByRefreshToken(String refreshToken);
 
-	Optional<User> findByUsername(String username);
-
-	List<UserResponseDto> findAllByAuthority(String authority);
+	List<UserResponseDto> findAllByAuthority(Authority authority);
 
 	boolean existsByGithubId(String username);
 

@@ -32,7 +32,7 @@ public class UserService {
 	}
 
 	public UserListResponseDto getUsers() {
-		List<UserResponseDto> studyUsers = userRepository.findAllByAuthority("ROLE_USER");
+		List<UserResponseDto> studyUsers = userRepository.findAllByAuthority(Authority.ROLE_USER);
 		return new UserListResponseDto(studyUsers);
 	}
 
