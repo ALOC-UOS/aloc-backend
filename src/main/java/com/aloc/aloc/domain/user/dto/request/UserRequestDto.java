@@ -29,8 +29,8 @@ public class UserRequestDto {
 	@Schema(description = "디스코드 아이디", example = "discordId")
 	private String discordId;
 
-	@Schema(description = "노션 초대 아이디", example = "notionId")
-	private String notionId;
+	@Schema(description = "노션 초대 이메일", example = "notion@uos.ac.kr")
+	private String notionEmail;
 
 	public User toEntity(BCryptPasswordEncoder passwordEncoder) {
 		return User.builder()
@@ -40,7 +40,7 @@ public class UserRequestDto {
 			.baekjoonId(baekjoonId)
 			.studentId(studentId)
 			.discordId(discordId)
-			.notionId(notionId)
+			.notionEmail(notionEmail)
 			.build();
 	}
 }

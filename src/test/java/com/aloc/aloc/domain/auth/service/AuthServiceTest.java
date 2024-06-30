@@ -44,7 +44,7 @@ public class AuthServiceTest {
 		userRequestDto.setBaekjoonId("baekjoon");
 		userRequestDto.setStudentId("2021920000");
 		userRequestDto.setDiscordId("discord");
-		userRequestDto.setNotionId("notion");
+		userRequestDto.setNotionEmail("notion@uos.ac.kr");
 
 		when(userRepository.existsByGithubId(userRequestDto.getGithubId())).thenReturn(false);
 		when(userRepository.existsByBaekjoonId(userRequestDto.getBaekjoonId())).thenReturn(false);
@@ -68,7 +68,7 @@ public class AuthServiceTest {
 		userRequestDto.setBaekjoonId("baekjoon");
 		userRequestDto.setStudentId("2021920000");
 		userRequestDto.setDiscordId("discord");
-		userRequestDto.setNotionId("notion");
+		userRequestDto.setNotionEmail("notion@uos.ac.kr");
 
 		when(userRepository.existsByGithubId(userRequestDto.getGithubId())).thenReturn(true);
 

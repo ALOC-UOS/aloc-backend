@@ -43,7 +43,7 @@ public class AuthControllerTest {
 		userRequestDto.setBaekjoonId("baejoon");
 		userRequestDto.setStudentId("2021920000");
 		userRequestDto.setDiscordId("discord");
-		userRequestDto.setNotionId("notion");
+		userRequestDto.setNotionEmail("notion");
 
 		doNothing().when(authService).signUp(Mockito.any(UserRequestDto.class));
 
