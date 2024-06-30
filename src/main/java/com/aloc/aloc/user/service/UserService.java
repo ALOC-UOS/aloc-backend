@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.user.User;
-import com.aloc.aloc.user.dto.response.UserListResponseDto;
 import com.aloc.aloc.user.dto.response.UserResponseDto;
 import com.aloc.aloc.user.enums.Authority;
 import com.aloc.aloc.user.repository.UserRepository;
@@ -31,9 +30,9 @@ public class UserService {
 		}
 	}
 
-	public UserListResponseDto getUsers() {
-		List<UserResponseDto> studyUsers = userRepository.findAllByAuthority(Authority.ROLE_USER);
-		return new UserListResponseDto(studyUsers);
+	public List<UserResponseDto> getUsers() {
+		List<User> users = userRepository.findAllByAuthority(Authority.ROLE_USER);
+		return UserResponseDto.listOf(users);
 	}
 
 	public String addUser(String username, String githubId) {
