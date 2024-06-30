@@ -1,4 +1,4 @@
-package com.aloc.aloc.problem;
+package com.aloc.aloc.problem.entity;
 
 import java.util.ArrayList;
 import java.util.List;

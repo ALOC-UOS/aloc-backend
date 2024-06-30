@@ -1,8 +1,8 @@
-package com.aloc.aloc.solvedproblem;
+package com.aloc.aloc.problem.entity;
 
 import java.time.LocalDateTime;
 
-import com.aloc.aloc.problem.Problem;
+import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.user.User;
 
 import jakarta.persistence.Entity;

@@ -1,5 +1,7 @@
 package com.aloc.aloc.user.controller;
 
+import java.util.List;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
-import com.aloc.aloc.user.dto.response.UserListResponseDto;
+import com.aloc.aloc.user.dto.response.UserResponseDto;
 import com.aloc.aloc.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +32,7 @@ public class UserController {
 
 	@GetMapping("/users")
 	@Operation(summary = "유저 목록 조회", description = "전체 유저 목록을 조회합니다.")
-	public CustomApiResponse<UserListResponseDto> getUsers() {
+	public CustomApiResponse<List<UserResponseDto>> getUsers() {
 		return CustomApiResponse.onSuccess(userService.getUsers());
 	}
 

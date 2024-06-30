@@ -1,7 +1,7 @@
 package com.aloc.aloc.problemtag;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
-import com.aloc.aloc.problem.Problem;
+import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.tag.Tag;
 
 import jakarta.persistence.Entity;
