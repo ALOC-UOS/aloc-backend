@@ -20,9 +20,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.domain.user.User;
-import com.aloc.aloc.domain.user.repository.UserRepository;
 import com.aloc.aloc.global.jwt.service.JwtService;
+import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.repository.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;

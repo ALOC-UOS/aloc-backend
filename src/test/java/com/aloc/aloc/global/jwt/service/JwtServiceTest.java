@@ -13,8 +13,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.domain.user.User;
-import com.aloc.aloc.domain.user.repository.UserRepository;
+import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.repository.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 

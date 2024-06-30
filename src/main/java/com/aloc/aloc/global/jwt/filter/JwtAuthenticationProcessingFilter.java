@@ -13,9 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.aloc.aloc.domain.user.User;
-import com.aloc.aloc.domain.user.repository.UserRepository;
 import com.aloc.aloc.global.jwt.service.JwtService;
+import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.repository.UserRepository;
 
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
