@@ -1,80 +1,80 @@
 package com.aloc.aloc.domain.auth.service;
 
-import com.aloc.aloc.domain.user.User;
-import com.aloc.aloc.domain.user.dto.request.UserRequestDto;
-import com.aloc.aloc.domain.user.repository.UserRepository;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import com.aloc.aloc.domain.user.User;
+import com.aloc.aloc.domain.user.dto.request.UserRequestDto;
+import com.aloc.aloc.domain.user.repository.UserRepository;
+
 
 @SpringBootTest
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class AuthServiceTest {
 
-    @Autowired
-    private AuthService authService;
+	@Autowired
+	private AuthService authService;
 
-    @MockBean
-    private UserRepository userRepository;
+	@MockBean
+	private UserRepository userRepository;
 
-    @MockBean
-    private BCryptPasswordEncoder passwordEncoder;
+	@MockBean
+	private BCryptPasswordEncoder passwordEncoder;
 
-    @Test
-		@DisplayName("회원가입 서비스 성공 테스트")
-    public void testSignUp_Success() {
-        // given
-        UserRequestDto userRequestDto = new UserRequestDto();
-        userRequestDto.setUsername("홍길동");
-        userRequestDto.setPassword("1234");
-        userRequestDto.setGithubId("github");
-        userRequestDto.setBaekjoonId("baekjoon");
-        userRequestDto.setStudentId("2021920000");
-        userRequestDto.setDiscordId("discord");
-        userRequestDto.setNotionId("notion");
+	@Test
+	@DisplayName("회원가입 서비스 성공 테스트")
+	public void testSignUp_Success() {
+		// given
+		UserRequestDto userRequestDto = new UserRequestDto();
+		userRequestDto.setUsername("홍길동");
+		userRequestDto.setPassword("1234");
+		userRequestDto.setGithubId("github");
+		userRequestDto.setBaekjoonId("baekjoon");
+		userRequestDto.setStudentId("2021920000");
+		userRequestDto.setDiscordId("discord");
+		userRequestDto.setNotionId("notion");
 
-        when(userRepository.existsByGithubId(userRequestDto.getGithubId())).thenReturn(false);
-        when(userRepository.existsByBaekjoonId(userRequestDto.getBaekjoonId())).thenReturn(false);
-        when(passwordEncoder.encode(userRequestDto.getPassword())).thenReturn("encodedPassword");
+		when(userRepository.existsByGithubId(userRequestDto.getGithubId())).thenReturn(false);
+		when(userRepository.existsByBaekjoonId(userRequestDto.getBaekjoonId())).thenReturn(false);
+		when(passwordEncoder.encode(userRequestDto.getPassword())).thenReturn("encodedPassword");
 
-        // when
-        authService.signUp(userRequestDto);
+		// when
+		authService.signUp(userRequestDto);
 
-        // then
-        verify(userRepository, times(1)).save(any(User.class));
-    }
+		// then
+		verify(userRepository, times(1)).save(any(User.class));
+	}
 
-    @Test
-		@DisplayName("회원가입 서비스 실패 테스트(유저 존재)")
-    public void testSignUp_UserAlreadyExists() {
-        // given
-        UserRequestDto userRequestDto = new UserRequestDto();
-        userRequestDto.setUsername("홍길동");
-        userRequestDto.setPassword("1234");
-        userRequestDto.setGithubId("github");
-        userRequestDto.setBaekjoonId("baekjoon");
-        userRequestDto.setStudentId("2021920000");
-        userRequestDto.setDiscordId("discord");
-        userRequestDto.setNotionId("notion");
+	@Test
+	@DisplayName("회원가입 서비스 실패 테스트(유저 존재)")
+	public void testSignUp_UserAlreadyExists() {
+		// given
+		UserRequestDto userRequestDto = new UserRequestDto();
+		userRequestDto.setUsername("홍길동");
+		userRequestDto.setPassword("1234");
+		userRequestDto.setGithubId("github");
+		userRequestDto.setBaekjoonId("baekjoon");
+		userRequestDto.setStudentId("2021920000");
+		userRequestDto.setDiscordId("discord");
+		userRequestDto.setNotionId("notion");
 
-        when(userRepository.existsByGithubId(userRequestDto.getGithubId())).thenReturn(true);
+		when(userRepository.existsByGithubId(userRequestDto.getGithubId())).thenReturn(true);
 
-        // when & then
-        assertThrows(IllegalArgumentException.class, () -> {
-            authService.signUp(userRequestDto);
-        });
+		// when & then
+		assertThrows(IllegalArgumentException.class, () -> authService.signUp(userRequestDto));
 
-        verify(userRepository, never()).save(any(User.class));
-    }
+		verify(userRepository, never()).save(any(User.class));
+	}
 }
