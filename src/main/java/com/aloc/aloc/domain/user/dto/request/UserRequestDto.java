@@ -23,8 +23,14 @@ public class UserRequestDto {
 	@Schema(description = "백준 아이디", example = "baekjoonId")
 	private String baekjoonId;
 
-	@Schema(description = "학번", example = "2020")
+	@Schema(description = "학번", example = "2020920000")
 	private String studentId;
+
+	@Schema(description = "디스코드 아이디", example = "discordId")
+	private String discordId;
+
+	@Schema(description = "노션 초대 아이디", example = "notionId")
+	private String notionId;
 
 	public User toEntity(BCryptPasswordEncoder passwordEncoder) {
 		return User.builder()
@@ -33,6 +39,8 @@ public class UserRequestDto {
 			.githubId(githubId)
 			.baekjoonId(baekjoonId)
 			.studentId(studentId)
+			.discordId(discordId)
+			.notionId(notionId)
 			.build();
 	}
 }

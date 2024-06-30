@@ -54,6 +54,8 @@ public class JwtServiceTest {
 			.githubId(githubId)
 			.baekjoonId("baekjoon")
 			.studentId("20")
+			.discordId("discord")
+			.notionId("notion")
 			.build();
 		userRepository.save(user);
 		clear();

@@ -81,6 +81,8 @@ public class JwtFilterAuthenticationTest {
 				.githubId(GITHUBID)
 				.baekjoonId("baekjoon")
 				.studentId("20")
+				.notionId("notion")
+				.discordId("discord")
 				.build());
 		clear();
 	}
