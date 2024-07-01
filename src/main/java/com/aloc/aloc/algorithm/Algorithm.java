@@ -14,8 +14,14 @@ import lombok.Getter;
 public class Algorithm extends AuditingTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
+
+	@Column(nullable = false)
+	private Integer algorithmId;
 
 	@Column(nullable = false)
 	private String name;
+
+	private int season;
+	private boolean hidden;
 }
