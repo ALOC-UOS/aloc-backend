@@ -17,10 +17,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Setter
 @Getter
+@NoArgsConstructor
 public class Problem extends AuditingTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +39,9 @@ public class Problem extends AuditingTimeEntity {
 
 	private Integer algorithmId;
 
-	private Boolean hidden;
+	private Boolean hidden = true;
+
+	private Integer problemId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "problem_type_id")
@@ -43,8 +50,22 @@ public class Problem extends AuditingTimeEntity {
 	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProblemTag> problemTagList = new ArrayList<>();
 
+	@Builder
+	public Problem(
+		String title,
+		Integer difficulty,
+		Integer algorithmId,
+		Integer problemId,
+		ProblemType problemType
+	) {
+		this.title = title;
+		this.difficulty = difficulty;
+		this.algorithmId = algorithmId;
+		this.problemId = problemId;
+		this.problemType = problemType;
+	}
+
 	public void addProblemTag(ProblemTag problemTag) {
 		problemTagList.add(problemTag);
-		problemTag.setProblem(this);
 	}
 }
