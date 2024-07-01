@@ -98,6 +98,7 @@ public class AlgorithmService {
 			String jsonString = fetchJsonFromUrl(problemUrl);
 			if (isNewProblem(problemNumber, problemType)) {
 				parseAndSaveProblem(jsonString, tier, algorithmId, problemType);
+				return;
 			}
 		}
 	}
