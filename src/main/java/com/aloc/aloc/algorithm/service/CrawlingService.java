@@ -1,7 +1,6 @@
 package com.aloc.aloc.algorithm.service;
 
 
-import com.aloc.aloc.problemtype.enums.Routine;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +24,7 @@ import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.problemtag.repository.ProblemTagRepository;
 import com.aloc.aloc.problemtype.ProblemType;
+import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
 import com.aloc.aloc.tag.Tag;
 import com.aloc.aloc.tag.repository.TagRepository;
