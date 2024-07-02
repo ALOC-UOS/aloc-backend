@@ -64,13 +64,13 @@ public class AlgorithmService {
 	}
 
 	private Algorithm findWeeklyAlgorithm() {
-		return algorithmRepository.findFirstBySeasonAndHiddenTrue(SEASON)
+		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByIdAsc(SEASON)
 			.orElseThrow(() -> new NoSuchElementException("해당 시즌의 공개되지 않은 알고리즘이 존재하지 않습니다."));
 	}
 
 	private Algorithm findDailyAlgorithm() {
-		return algorithmRepository.findLastBySeasonAndHiddenFalse(SEASON)
-			.orElseGet(() -> algorithmRepository.findLastBySeasonAndHiddenFalse(SEASON - 1)
+		return algorithmRepository.findLastBySeasonAndHiddenFalseOOrderByIdDesc(SEASON)
+			.orElseGet(() -> algorithmRepository.findLastBySeasonAndHiddenFalseOOrderByIdDesc(SEASON - 1)
 				.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다.")));
 	}
 
