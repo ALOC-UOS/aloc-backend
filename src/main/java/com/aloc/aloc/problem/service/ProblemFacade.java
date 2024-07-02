@@ -2,7 +2,6 @@ package com.aloc.aloc.problem.service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -12,8 +11,9 @@ import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.SolvedProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.problem.repository.ProblemSolvingCountProjection;
 import com.aloc.aloc.problem.repository.SolvedProblemRepository;
+import com.aloc.aloc.problemtag.ProblemTag;
+import com.aloc.aloc.tag.Tag;
 import com.aloc.aloc.tag.dto.TagSimpleDto;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
@@ -27,34 +27,33 @@ public class ProblemFacade {
 	private final SolvedProblemRepository solvedProblemRepository;
 	public List<ProblemResponseDto> getVisibleProblemsWithSolvingCount() {
 		List<Problem> problems = problemRepository.findAllByHiddenIsNullOrderByCreatedAtDesc();
-		Map<Long, Integer> solvingCountMap = getSolvingCountMap();
-
 		return problems.stream()
-			.map(problem -> mapToProblemResponseDto(problem, solvingCountMap))
+			.map(this::mapToProblemResponseDto)
 			.collect(Collectors.toList());
 	}
 
-	private Map<Long, Integer> getSolvingCountMap() {
-		return solvedProblemRepository.countSolvingUsersByProblem().stream()
-			.collect(Collectors.toMap(
-				ProblemSolvingCountProjection::getProblemId,
-				ProblemSolvingCountProjection::getSolvingCount
-			));
-	}
-
-	private ProblemResponseDto mapToProblemResponseDto(Problem problem, Map<Long, Integer> solvingCountMap) {
+	ProblemResponseDto mapToProblemResponseDto(Problem problem) {
 		return ProblemResponseDto.builder()
 			.id(problem.getId())
 			.title(problem.getTitle())
-			.tags(problem.getProblemTagList().stream()
-			.map(problemTag -> TagSimpleDto.builder()
-				.id(problemTag.getTag().getId())
-				.koreanName(problemTag.getTag().getKoreanName())
-				.englishName(problemTag.getTag().getEnglishName())
-				.build())
-			.collect(Collectors.toList()))
+			.tags(mapToTagSimpleDtoList(problem.getProblemTagList()))
 			.difficulty(problem.getDifficulty())
-			.solvingCount(solvingCountMap.getOrDefault(problem.getId(), 0))
+			.solvingCount(solvedProblemRepository.countSolvingUsersByProblemId(problem.getId()))
+			.build();
+	}
+
+	private List<TagSimpleDto> mapToTagSimpleDtoList(List<ProblemTag> problemTags) {
+		return problemTags.stream()
+			.map(this::mapToTagSimpleDto)
+			.collect(Collectors.toList());
+	}
+
+	private TagSimpleDto mapToTagSimpleDto(ProblemTag problemTag) {
+		Tag tag = problemTag.getTag();
+		return TagSimpleDto.builder()
+			.id(tag.getId())
+			.koreanName(tag.getKoreanName())
+			.englishName(tag.getEnglishName())
 			.build();
 	}
 
