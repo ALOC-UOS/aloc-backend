@@ -33,12 +33,15 @@ import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
-public class AlgorithmService {
+public class CrawlingService {
+
 	private static final String HEADER_FIELD_NAME = "User-Agent";
-	private static final String HEADER_FIELD_VALUE = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-		+ "(KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
+	private static final String HEADER_FIELD_VALUE =
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+			+ "(KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
 	private static final int[] HALF_WEEKLY = {5, 6, 7, 8, 9};
 	private static final int[] HALF_DAILY = {7, 7, 7, 8, 8};
 	private static final int[] FULL_WEEKLY = {9, 10, 11, 12, 13};
@@ -56,8 +59,10 @@ public class AlgorithmService {
 		Algorithm weeklyAlgorithm = findWeeklyAlgorithm();
 		Algorithm dailyAlgorithm = findDailyAlgorithm();
 
-		addProblemsByType(weeklyAlgorithm.getAlgorithmId(), Course.HALF, Routine.WEEKLY, HALF_WEEKLY);
-		addProblemsByType(weeklyAlgorithm.getAlgorithmId(), Course.FULL, Routine.WEEKLY, FULL_WEEKLY);
+		addProblemsByType(weeklyAlgorithm.getAlgorithmId(), Course.HALF, Routine.WEEKLY,
+			HALF_WEEKLY);
+		addProblemsByType(weeklyAlgorithm.getAlgorithmId(), Course.FULL, Routine.WEEKLY,
+			FULL_WEEKLY);
 
 		addProblemsByType(dailyAlgorithm.getAlgorithmId(), Course.HALF, Routine.DAILY, HALF_DAILY);
 		addProblemsByType(dailyAlgorithm.getAlgorithmId(), Course.FULL, Routine.DAILY, FULL_DAILY);
@@ -69,12 +74,14 @@ public class AlgorithmService {
 	}
 
 	private Algorithm findDailyAlgorithm() {
-		return algorithmRepository.findLastBySeasonAndHiddenFalseOOrderByIdDesc(SEASON)
-			.orElseGet(() -> algorithmRepository.findLastBySeasonAndHiddenFalseOOrderByIdDesc(SEASON - 1)
-				.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다.")));
+		return algorithmRepository.findLastBySeasonAndHiddenFalseOrderByIdDesc(SEASON)
+			.orElseGet(
+				() -> algorithmRepository.findLastBySeasonAndHiddenFalseOrderByIdDesc(SEASON - 1)
+					.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다.")));
 	}
 
-	private void addProblemsByType(int algorithmId, Course course, Routine routine, int[] tierList) throws IOException {
+	private void addProblemsByType(int algorithmId, Course course, Routine routine, int[] tierList)
+		throws IOException {
 		ProblemType problemType = problemTypeRepository.findByCourseAndRoutine(course, routine);
 		for (int tier : tierList) {
 			String url = getProblemUrl(tier, algorithmId);
@@ -83,7 +90,9 @@ public class AlgorithmService {
 	}
 
 	private String getProblemUrl(int tier, int algorithmId) {
-		return String.format("https://www.acmicpc.net/problemset?sort=ac_desc&tier=%d&algo=%d&algo_if=and", tier, algorithmId);
+		return String.format(
+			"https://www.acmicpc.net/problemset?sort=ac_desc&tier=%d&algo=%d&algo_if=and", tier,
+			algorithmId);
 	}
 
 	private void crawlAndAddProblems(String url, ProblemType problemType, int tier, int algorithmId)
@@ -135,7 +144,8 @@ public class AlgorithmService {
 
 	private String readResponse(HttpURLConnection connection) throws IOException {
 		StringBuilder response = new StringBuilder();
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+		try (BufferedReader reader = new BufferedReader(
+			new InputStreamReader(connection.getInputStream()))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				response.append(line);
@@ -146,10 +156,12 @@ public class AlgorithmService {
 
 	private boolean isNewProblem(String problemNumber, ProblemType problemType) {
 		int problemId = Integer.parseInt(problemNumber);
-		return !problemRepository.existsByAlgorithmIdAndProblemType_Course(problemId, problemType.getCourse());
+		return !problemRepository.existsByAlgorithmIdAndProblemType_Course(problemId,
+			problemType.getCourse());
 	}
 
-	private void parseAndSaveProblem(String jsonString, int tier, int algorithmId, ProblemType problemType) {
+	private void parseAndSaveProblem(String jsonString, int tier, int algorithmId,
+		ProblemType problemType) {
 		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
 		if (jsonObject.has("titles")) {
 			JsonArray titles = jsonObject.getAsJsonArray("titles");
@@ -179,13 +191,13 @@ public class AlgorithmService {
 
 	private Tag findOrCreateTag(String koreanName, String englishName) {
 		return tagRepository.findByKoreanNameAndEnglishName(koreanName, englishName)
-		.orElseGet(() -> {
-			Tag newTag = Tag.builder()
-				.koreanName(koreanName)
-				.englishName(englishName)
-				.build();
-			return tagRepository.save(newTag);
-		});
+			.orElseGet(() -> {
+				Tag newTag = Tag.builder()
+					.koreanName(koreanName)
+					.englishName(englishName)
+					.build();
+				return tagRepository.save(newTag);
+			});
 	}
 
 	private void saveProblem(String titleKo, int tier, int problemId, int algorithmId,
