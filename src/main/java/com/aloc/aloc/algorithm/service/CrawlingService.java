@@ -54,11 +54,11 @@ public class CrawlingService {
 		Algorithm weeklyAlgorithm = findWeeklyAlgorithm();
 		Algorithm dailyAlgorithm = findDailyAlgorithm();
 
-		addProblemsByType(weeklyAlgorithm.getAlgorithmId(), CourseRoutineTier.HALF_WEEKLY);
-		addProblemsByType(weeklyAlgorithm.getAlgorithmId(), CourseRoutineTier.FULL_WEEKLY);
+		addProblemsByType(weeklyAlgorithm, CourseRoutineTier.HALF_WEEKLY);
+		addProblemsByType(weeklyAlgorithm, CourseRoutineTier.FULL_WEEKLY);
 
-		addProblemsByType(dailyAlgorithm.getAlgorithmId(), CourseRoutineTier.HALF_DAILY);
-		addProblemsByType(dailyAlgorithm.getAlgorithmId(), CourseRoutineTier.FULL_DAILY);
+		addProblemsByType(dailyAlgorithm, CourseRoutineTier.HALF_DAILY);
+		addProblemsByType(dailyAlgorithm, CourseRoutineTier.FULL_DAILY);
 	}
 
 	private Algorithm findWeeklyAlgorithm() {
@@ -73,13 +73,13 @@ public class CrawlingService {
 					.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다.")));
 	}
 
-	private void addProblemsByType(int algorithmId, CourseRoutineTier courseRoutineTier)
+	private void addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
 		throws IOException {
 		ProblemType problemType = problemTypeRepository
 			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine());
 		for (int tier : courseRoutineTier.getTierList()) {
-			String url = getProblemUrl(tier, algorithmId);
-			crawlAndAddProblems(url, problemType, tier, algorithmId);
+			String url = getProblemUrl(tier, algorithm.getAlgorithmId());
+			crawlAndAddProblems(url, problemType, tier, algorithm);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class CrawlingService {
 			algorithmId);
 	}
 
-	private void crawlAndAddProblems(String url, ProblemType problemType, int tier, int algorithmId)
+	private void crawlAndAddProblems(String url, ProblemType problemType, int tier, Algorithm algorithm)
 		throws IOException {
 		Document document = Jsoup.connect(url).get();
 		Elements rows = document.select("tbody tr");
@@ -100,7 +100,7 @@ public class CrawlingService {
 			String problemUrl = getProblemUrl(problemNumber);
 			String jsonString = fetchJsonFromUrl(problemUrl);
 			if (isNewProblem(problemNumber, problemType)) {
-				parseAndSaveProblem(jsonString, tier, algorithmId, problemType);
+				parseAndSaveProblem(jsonString, tier, algorithm, problemType);
 				return;
 			}
 		}
@@ -154,7 +154,7 @@ public class CrawlingService {
 			problemType.getCourse());
 	}
 
-	private void parseAndSaveProblem(String jsonString, int tier, int algorithmId,
+	private void parseAndSaveProblem(String jsonString, int tier, Algorithm algorithm,
 		ProblemType problemType) {
 		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
 		if (jsonObject.has("titles")) {
@@ -164,7 +164,7 @@ public class CrawlingService {
 				String titleKo = jsonObject.get("titleKo").getAsString();
 				int problemId = jsonObject.get("problemId").getAsInt();
 				List<Tag> tagList = extractTags(jsonObject);
-				saveProblem(titleKo, tier, problemId, algorithmId, problemType, tagList);
+				saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList);
 			}
 		}
 	}
@@ -194,13 +194,13 @@ public class CrawlingService {
 			});
 	}
 
-	private void saveProblem(String titleKo, int tier, int problemId, int algorithmId,
+	private void saveProblem(String titleKo, int tier, int problemId, Algorithm algorithm,
 		ProblemType problemType, List<Tag> tagList) {
 		Problem problem = Problem.builder()
 			.title(titleKo)
 			.difficulty(tier)
 			.problemId(problemId)
-			.algorithmId(algorithmId)
+			.algorithm(algorithm)
 			.problemType(problemType)
 			.build();
 		problemRepository.save(problem);

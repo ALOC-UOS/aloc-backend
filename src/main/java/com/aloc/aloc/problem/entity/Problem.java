@@ -3,6 +3,7 @@ package com.aloc.aloc.problem.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aloc.aloc.algorithm.Algorithm;
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.problemtype.ProblemType;
@@ -37,7 +38,9 @@ public class Problem extends AuditingTimeEntity {
 	@Column(nullable = false)
 	private Integer difficulty;
 
-	private Integer algorithmId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "algorithm_id")
+	private Algorithm algorithm;
 
 	private Boolean hidden = true;
 
@@ -54,13 +57,13 @@ public class Problem extends AuditingTimeEntity {
 	public Problem(
 		String title,
 		Integer difficulty,
-		Integer algorithmId,
+		Algorithm algorithm,
 		Integer problemId,
 		ProblemType problemType
 	) {
 		this.title = title;
 		this.difficulty = difficulty;
-		this.algorithmId = algorithmId;
+		this.algorithm = algorithm;
 		this.problemId = problemId;
 		this.problemType = problemType;
 	}
