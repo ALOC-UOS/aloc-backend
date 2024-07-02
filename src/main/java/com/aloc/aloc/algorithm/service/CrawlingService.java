@@ -1,5 +1,6 @@
 package com.aloc.aloc.algorithm.service;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,14 +17,13 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.algorithm.Algorithm;
+import com.aloc.aloc.algorithm.enums.CourseRoutineTier;
 import com.aloc.aloc.algorithm.repository.AlgorithmRepository;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.problemtag.repository.ProblemTagRepository;
 import com.aloc.aloc.problemtype.ProblemType;
-import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
 import com.aloc.aloc.tag.Tag;
 import com.aloc.aloc.tag.repository.TagRepository;
@@ -42,11 +42,6 @@ public class CrawlingService {
 	private static final String HEADER_FIELD_VALUE =
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 			+ "(KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
-	private static final int[] HALF_WEEKLY = {5, 6, 7, 8, 9};
-	private static final int[] HALF_DAILY = {7, 7, 7, 8, 8};
-	private static final int[] FULL_WEEKLY = {9, 10, 11, 12, 13};
-	private static final int[] FULL_DAILY = {11, 11, 11, 12, 12};
-
 	private static final int SEASON = 2;
 
 	private final TagRepository tagRepository;
@@ -59,13 +54,11 @@ public class CrawlingService {
 		Algorithm weeklyAlgorithm = findWeeklyAlgorithm();
 		Algorithm dailyAlgorithm = findDailyAlgorithm();
 
-		addProblemsByType(weeklyAlgorithm.getAlgorithmId(), Course.HALF, Routine.WEEKLY,
-			HALF_WEEKLY);
-		addProblemsByType(weeklyAlgorithm.getAlgorithmId(), Course.FULL, Routine.WEEKLY,
-			FULL_WEEKLY);
+		addProblemsByType(weeklyAlgorithm.getAlgorithmId(), CourseRoutineTier.HALF_WEEKLY);
+		addProblemsByType(weeklyAlgorithm.getAlgorithmId(), CourseRoutineTier.FULL_WEEKLY);
 
-		addProblemsByType(dailyAlgorithm.getAlgorithmId(), Course.HALF, Routine.DAILY, HALF_DAILY);
-		addProblemsByType(dailyAlgorithm.getAlgorithmId(), Course.FULL, Routine.DAILY, FULL_DAILY);
+		addProblemsByType(dailyAlgorithm.getAlgorithmId(), CourseRoutineTier.HALF_DAILY);
+		addProblemsByType(dailyAlgorithm.getAlgorithmId(), CourseRoutineTier.FULL_DAILY);
 	}
 
 	private Algorithm findWeeklyAlgorithm() {
@@ -80,10 +73,11 @@ public class CrawlingService {
 					.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다.")));
 	}
 
-	private void addProblemsByType(int algorithmId, Course course, Routine routine, int[] tierList)
+	private void addProblemsByType(int algorithmId, CourseRoutineTier courseRoutineTier)
 		throws IOException {
-		ProblemType problemType = problemTypeRepository.findByCourseAndRoutine(course, routine);
-		for (int tier : tierList) {
+		ProblemType problemType = problemTypeRepository
+			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine());
+		for (int tier : courseRoutineTier.getTierList()) {
 			String url = getProblemUrl(tier, algorithmId);
 			crawlAndAddProblems(url, problemType, tier, algorithmId);
 		}
