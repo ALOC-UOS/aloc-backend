@@ -4,30 +4,25 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import java.util.List;
 
+
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.EnabledIf;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.problem.entity.SolvedProblem;
 
-@DataJpaTest
-@ActiveProfiles("dev")
-@Transactional
-@EnabledIf(expression = "#{environment.acceptsProfiles('dev')}", loadContext = true)
+import jakarta.persistence.EntityManager;
 
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@SpringBootTest
+@Transactional
 public class SolvedProblemRepositoryTest {
 	@Autowired
-	private TestEntityManager em;
+	private EntityManager em;
 
 	@Autowired
 	private SolvedProblemRepository solvedProblemRepository;

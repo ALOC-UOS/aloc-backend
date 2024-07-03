@@ -2,13 +2,14 @@ package com.aloc.aloc.problem.repository;
 
 import java.time.LocalDateTime;
 
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-
 import com.aloc.aloc.algorithm.Algorithm;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
+
+import jakarta.persistence.EntityManager;
+
 
 public class ProblemDummyEntity {
 	public Problem problem1;
@@ -20,7 +21,7 @@ public class ProblemDummyEntity {
 	public Algorithm algorithm1;
 	public Algorithm algorithm2;
 
-	public void setupEntities(TestEntityManager em) {
+	public void setupEntities(EntityManager em) {
 		problemType1 = ProblemType.builder().routine(Routine.DAILY).course(Course.FULL).build();
 		problemType2 = ProblemType.builder().routine(Routine.WEEKLY).course(Course.HALF).build();
 		em.persist(problemType1);
