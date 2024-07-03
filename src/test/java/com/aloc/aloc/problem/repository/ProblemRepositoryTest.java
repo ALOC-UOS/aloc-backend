@@ -21,7 +21,6 @@ import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 
-//@SpringBootTest
 @DataJpaTest
 @ActiveProfiles("dev")
 @Transactional

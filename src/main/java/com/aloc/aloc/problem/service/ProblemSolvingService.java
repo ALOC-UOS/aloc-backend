@@ -66,7 +66,6 @@ public class ProblemSolvingService {
 		SolvedProblem solvedProblem = SolvedProblem.builder()
 			.user(user)
 			.problem(problemRepository.getReferenceById(problemId))
-			.solvedAt(LocalDateTime.now())
 			.build();
 		solvedProblemRepository.save(solvedProblem);
 	}

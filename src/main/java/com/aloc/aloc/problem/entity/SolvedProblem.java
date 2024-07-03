@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SolvedProblem {
@@ -35,4 +34,11 @@ public class SolvedProblem {
 	private Problem problem;
 
 	private LocalDateTime solvedAt;
+
+	@Builder
+	public SolvedProblem(User user, Problem problem) {
+		this.user = user;
+		this.problem = problem;
+		this.solvedAt = LocalDateTime.now();
+	}
 }

@@ -89,10 +89,8 @@ public class ProblemServiceTest {
 
 		// Set up SolvedProblem
 		solvedProblems = Arrays.asList(
-			SolvedProblem.builder().user(user1).problem(problem1).solvedAt(
-				LocalDateTime.parse("2023-07-03T14:30:00")).build(),
-			SolvedProblem.builder().user(user2).problem(problem1).solvedAt(
-				LocalDateTime.parse("2023-07-03T15:45:00")).build()
+			SolvedProblem.builder().user(user1).problem(problem1).build(),
+			SolvedProblem.builder().user(user2).problem(problem1).build()
 		);
 	}
 
