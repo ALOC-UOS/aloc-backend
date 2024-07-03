@@ -1,6 +1,5 @@
 package com.aloc.aloc.problem.service;
 
-import com.aloc.aloc.problemtype.enums.Routine;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import com.aloc.aloc.problem.entity.SolvedProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.ProblemSolvingCountProjection;
 import com.aloc.aloc.problem.repository.SolvedProblemRepository;
+import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.tag.dto.TagSimpleDto;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;

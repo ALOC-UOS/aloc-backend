@@ -1,10 +1,12 @@
 package com.aloc.aloc.problem.scheduler;
 
-import com.aloc.aloc.problem.service.ProblemFacade;
-import com.aloc.aloc.problemtype.enums.Routine;
-import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.aloc.aloc.problem.service.ProblemFacade;
+import com.aloc.aloc.problemtype.enums.Routine;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
