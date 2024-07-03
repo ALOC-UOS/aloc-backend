@@ -20,4 +20,6 @@ public interface SolvedProblemRepository extends JpaRepository<SolvedProblem, Lo
 
 	@Query("SELECT COUNT(DISTINCT sp.user) FROM SolvedProblem sp WHERE sp.problem.id = :problemId")
 	int countSolvingUsersByProblemId(@Param("problemId") Long problemId);
+
+	boolean existsByUserIdAndProblemId(Long userId, Long problemId);
 }

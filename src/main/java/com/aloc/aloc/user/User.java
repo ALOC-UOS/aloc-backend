@@ -109,5 +109,9 @@ public class User extends AuditingTimeEntity {
 		this.rank = 0;
 		this.coin = 0;
 	}
+
+	public void addCoin(int coinToAdd) {
+		this.coin += coinToAdd;
+	}
 }
 
