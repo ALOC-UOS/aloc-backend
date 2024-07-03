@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.algorithm.Algorithm;
@@ -23,6 +24,7 @@ import jakarta.persistence.EntityManager;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("dev")
+@EnabledIf(expression = "#{environment.acceptsProfiles('dev')}", loadContext = true)
 class AlgorithmRepositoryTest {
 
 	@Autowired
