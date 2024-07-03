@@ -12,10 +12,6 @@ import com.aloc.aloc.problem.entity.SolvedProblem;
 
 @Repository
 public interface SolvedProblemRepository extends JpaRepository<SolvedProblem, Long> {
-	@Query("SELECT sp.problem.id as problemId, COUNT(DISTINCT sp.user.id) as solvingCount "
-		+ "FROM SolvedProblem sp GROUP BY sp.problem.id")
-	List<ProblemSolvingCountProjection> countSolvingUsersByProblem();
-
 	List<SolvedProblem> findAllByProblemId(Long problemId);
 
 	@Query("SELECT COUNT(DISTINCT sp.user) FROM SolvedProblem sp WHERE sp.problem.id = :problemId")
