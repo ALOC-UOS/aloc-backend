@@ -1,4 +1,4 @@
-package com.aloc.aloc.domain.auth.controller;
+package com.aloc.aloc.auth.controller;
 
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
