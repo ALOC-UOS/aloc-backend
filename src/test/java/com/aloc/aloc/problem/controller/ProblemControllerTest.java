@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.controller;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -7,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.service.ProblemService;
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
 
@@ -35,13 +38,14 @@ public class ProblemControllerTest {
 
 	@Test
 	@WithMockUser
+	@Tag("최근 생성일 기준으로 정렬하여 전체 문제 목록을 조회합니다.")
 	void getProblems_shouldReturnListOfProblems() throws Exception {
 		// Given
 		List<ProblemResponseDto> problems = Arrays.asList(
 			new ProblemResponseDto(1L, "Problem 1", null, 3, 100),
 			new ProblemResponseDto(2L, "Problem 2", null, 4, 50)
 		);
-		when(problemService.getProblems()).thenReturn(problems);
+		when(problemService.getVisibleProblemsWithSolvingCount()).thenReturn(problems);
 
 		// When & Then
 		mockMvc.perform(get("/api2/problem")
@@ -65,6 +69,7 @@ public class ProblemControllerTest {
 
 	@Test
 	@WithMockUser
+	@Tag("해당 문제를 푼 사용자 목록을 조회합니다.")
 	void getSolvedUserList_shouldReturnListOfSolvedUsers() throws Exception {
 		// Given
 		Long problemId = 1L;
@@ -84,5 +89,114 @@ public class ProblemControllerTest {
 			.andExpect(jsonPath("$.result").isArray())
 			.andExpect(jsonPath("$.result[0].username").value("user1"))
 			.andExpect(jsonPath("$.result[1].username").value("user2"));
+	}
+
+	@Test
+	@WithMockUser
+	@Tag("FULL 코스의 오늘의 문제를 조회합니다.")
+	void getTodayProblem_withFullCourse_shouldReturnTodayProblem() throws Exception {
+		// Given
+		ProblemResponseDto todayProblem = new ProblemResponseDto(1L, "Today's Problem", null, 3, 100);
+		when(problemService.findTodayProblemByCourse(Course.FULL)).thenReturn(todayProblem);
+
+		// When & Then
+		mockMvc.perform(get("/api2/problem/today/{course}", Course.FULL)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.isSuccess").value(true))
+			.andExpect(jsonPath("$.code").value("COMMON200"))
+			.andExpect(jsonPath("$.message").value("성공입니다."))
+			.andExpect(jsonPath("$.result.id").value(1))
+			.andExpect(jsonPath("$.result.title").value("Today's Problem"))
+			.andExpect(jsonPath("$.result.tags").isEmpty())
+			.andExpect(jsonPath("$.result.difficulty").value(3))
+			.andExpect(jsonPath("$.result.solvingCount").value(100));
+
+		// 메소드 호출 확인
+		verify(problemService).findTodayProblemByCourse(Course.FULL);
+	}
+
+	@Test
+	@WithMockUser
+	@Tag("HALF 코스의 오늘의 문제를 조회합니다.")
+	void getTodayProblem_withHalfCourse_shouldReturnTodayProblem() throws Exception {
+		// Given
+		ProblemResponseDto todayProblem = new ProblemResponseDto(1L, "Today's Problem", null, 3, 100);
+		when(problemService.findTodayProblemByCourse(Course.HALF)).thenReturn(todayProblem);
+
+		// When & Then
+		mockMvc.perform(get("/api2/problem/today/{course}", Course.HALF)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.isSuccess").value(true))
+			.andExpect(jsonPath("$.code").value("COMMON200"))
+			.andExpect(jsonPath("$.message").value("성공입니다."))
+			.andExpect(jsonPath("$.result.id").value(1))
+			.andExpect(jsonPath("$.result.title").value("Today's Problem"))
+			.andExpect(jsonPath("$.result.tags").isEmpty())
+			.andExpect(jsonPath("$.result.difficulty").value(3))
+			.andExpect(jsonPath("$.result.solvingCount").value(100));
+
+		// 메소드 호출 확인
+		verify(problemService).findTodayProblemByCourse(Course.HALF);
+	}
+
+	@Test
+	@WithMockUser
+	@Tag("FULL 코스의 오늘의 문제가 없을 때 오류를 반환합니다.")
+	void getTodayProblem_withFullCourse_NotFound_shouldReturnException() throws Exception {
+		// Given
+		Course course = Course.FULL;
+		when(problemService.findTodayProblemByCourse(course))
+			.thenThrow(new IllegalArgumentException("오늘의 문제가 없습니다."));
+
+		// When & Then
+		mockMvc.perform(get("/api2/problem/today/{course}", course)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.isSuccess").value(false))
+			.andExpect(jsonPath("$.code").value("COMMON400"))
+			.andExpect(jsonPath("$.message").value("오늘의 문제가 없습니다."))
+			.andExpect(jsonPath("$.result").value("잘못된 요청입니다."));
+
+
+		verify(problemService).findTodayProblemByCourse(course);
+	}
+
+	@Test
+	@WithMockUser
+	@Tag("HALF 코스의 오늘의 문제가 없을 때 오류를 반환합니다.")
+	void getTodayProblem_withHalfCourse_NotFound_shouldReturnException() throws Exception {
+		// Given
+		Course course = Course.HALF;
+		when(problemService.findTodayProblemByCourse(course))
+			.thenThrow(new IllegalArgumentException("오늘의 문제가 없습니다."));
+
+		// When & Then
+		mockMvc.perform(get("/api2/problem/today/{course}", course)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.isSuccess").value(false))
+			.andExpect(jsonPath("$.code").value("COMMON400"))
+			.andExpect(jsonPath("$.message").value("오늘의 문제가 없습니다."))
+			.andExpect(jsonPath("$.result").value("잘못된 요청입니다."));
+
+
+		verify(problemService).findTodayProblemByCourse(course);
+	}
+
+	@Test
+	@WithMockUser
+	@Tag("잘못된 코스로 오늘의 문제를 조회할 때 오류를 반환합니다.")
+	void getTodayProblem_withInvalidCourse_shouldReturnBadRequest() throws Exception {
+		// Given
+		String course = "Invalid";
+
+		// When & Then
+		mockMvc.perform(get("/api2/problem/today/{course}", course)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.isSuccess").value(false))
+			.andExpect(jsonPath("$.code").value("COMMON400"));
 	}
 }

@@ -17,10 +17,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Problem extends AuditingTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,5 +53,14 @@ public class Problem extends AuditingTimeEntity {
 	public void addProblemTag(ProblemTag problemTag) {
 		problemTagList.add(problemTag);
 		problemTag.setProblem(this);
+	}
+
+	@Builder
+	public Problem(String title, Integer difficulty, Integer algorithmId, Boolean hidden, ProblemType problemType) {
+		this.title = title;
+		this.difficulty = difficulty;
+		this.algorithmId = algorithmId;
+		this.hidden = hidden;
+		this.problemType = problemType;
 	}
 }
