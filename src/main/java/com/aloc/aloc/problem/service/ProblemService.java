@@ -58,7 +58,7 @@ public class ProblemService {
 			.collect(Collectors.toList());
 	}
 
-	private void checkProblemExist(Long problemId) {
+	public void checkProblemExist(Long problemId) {
 		Optional<Problem> problem = problemRepository.findById(problemId);
 		if (problem.isEmpty()) {
 			throw new IllegalArgumentException("해당 문제가 존재하지 않습니다.");
