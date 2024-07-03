@@ -7,10 +7,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Getter
+@ToString
+@NoArgsConstructor
 public class Algorithm extends AuditingTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +27,15 @@ public class Algorithm extends AuditingTimeEntity {
 	@Column(nullable = false)
 	private String name;
 
-	private int season;
+	private Integer season;
 	private boolean hidden;
+
+	@Builder
+	public Algorithm(Integer algorithmId, String name, Integer season, boolean hidden) {
+		this.algorithmId = algorithmId;
+		this.name = name;
+		this.season = season;
+		this.hidden = hidden;
+	}
 }
+

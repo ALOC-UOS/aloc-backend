@@ -62,15 +62,15 @@ public class CrawlingService {
 		addProblemsByType(dailyAlgorithm, CourseRoutineTier.FULL_DAILY);
 	}
 
-	private Algorithm findWeeklyAlgorithm() {
+	public Algorithm findWeeklyAlgorithm() {
 		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByIdAsc(SEASON)
 			.orElseThrow(() -> new NoSuchElementException("해당 시즌의 공개되지 않은 알고리즘이 존재하지 않습니다."));
 	}
 
-	private Algorithm findDailyAlgorithm() {
-		return algorithmRepository.findLastBySeasonAndHiddenFalseOrderByIdDesc(SEASON)
+	public Algorithm findDailyAlgorithm() {
+		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByIdDesc(SEASON)
 			.orElseGet(
-				() -> algorithmRepository.findLastBySeasonAndHiddenFalseOrderByIdDesc(SEASON - 1)
+				() -> algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByIdDesc(SEASON - 1)
 					.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다.")));
 	}
 
