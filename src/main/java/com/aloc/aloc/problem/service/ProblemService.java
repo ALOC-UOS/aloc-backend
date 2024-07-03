@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.service;
 
+import com.aloc.aloc.problemtype.enums.Routine;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -21,5 +22,4 @@ public class ProblemService {
 	public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
 		return problemFacade.getSolvedUserList(problemId);
 	}
-
 }

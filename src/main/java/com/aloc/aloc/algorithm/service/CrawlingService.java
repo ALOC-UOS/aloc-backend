@@ -1,6 +1,5 @@
 package com.aloc.aloc.algorithm.service;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,7 +23,6 @@ import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.problemtag.repository.ProblemTagRepository;
 import com.aloc.aloc.problemtype.ProblemType;
-import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
 import com.aloc.aloc.tag.Tag;
 import com.aloc.aloc.tag.repository.TagRepository;
@@ -80,7 +78,7 @@ public class CrawlingService {
 			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine());
 		for (int tier : courseRoutineTier.getTierList()) {
 			String url = getProblemUrl(tier, algorithm.getAlgorithmId());
-			crawlAndAddProblems(url, problemType, tier, algorithm, courseRoutineTier.getRoutine());
+			crawlAndAddProblems(url, problemType, tier, algorithm);
 		}
 	}
 
@@ -90,8 +88,7 @@ public class CrawlingService {
 			algorithmId);
 	}
 
-	private void crawlAndAddProblems(String url, ProblemType problemType, int tier,
-		Algorithm algorithm, Routine routine)
+	private void crawlAndAddProblems(String url, ProblemType problemType, int tier, Algorithm algorithm)
 		throws IOException {
 		Document document = Jsoup.connect(url).get();
 		Elements rows = document.select("tbody tr");
@@ -102,7 +99,7 @@ public class CrawlingService {
 			String problemUrl = getProblemUrl(problemNumber);
 			String jsonString = fetchJsonFromUrl(problemUrl);
 			if (isNewProblem(problemNumber, problemType)) {
-				parseAndSaveProblem(jsonString, tier, algorithm, problemType, routine);
+				parseAndSaveProblem(jsonString, tier, algorithm, problemType);
 				return;
 			}
 		}
@@ -156,8 +153,7 @@ public class CrawlingService {
 			problemType.getCourse());
 	}
 
-	private void parseAndSaveProblem(String jsonString, int tier, Algorithm algorithm,
-		ProblemType problemType, Routine routine) {
+	private void parseAndSaveProblem(String jsonString, int tier, Algorithm algorithm, ProblemType problemType) {
 		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
 		if (jsonObject.has("titles")) {
 			JsonArray titles = jsonObject.getAsJsonArray("titles");
@@ -166,7 +162,7 @@ public class CrawlingService {
 				String titleKo = jsonObject.get("titleKo").getAsString();
 				int problemId = jsonObject.get("problemId").getAsInt();
 				List<Tag> tagList = extractTags(jsonObject);
-				saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList, routine);
+				saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList);
 			}
 		}
 	}
@@ -197,7 +193,7 @@ public class CrawlingService {
 	}
 
 	private void saveProblem(String titleKo, int tier, int problemId, Algorithm algorithm,
-		ProblemType problemType, List<Tag> tagList, Routine routine) {
+		ProblemType problemType, List<Tag> tagList) {
 		Problem problem = Problem.builder()
 			.title(titleKo)
 			.difficulty(tier)
@@ -214,9 +210,6 @@ public class CrawlingService {
 				.build();
 			problemTagRepository.save(problemTag);
 			problem.addProblemTag(problemTag);
-		}
-		if (routine.equals(Routine.WEEKLY)) {
-			problem.setHidden(false);
 		}
 		problemRepository.save(problem);
 	}

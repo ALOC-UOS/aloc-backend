@@ -1,6 +1,7 @@
 package com.aloc.aloc.problem.repository;
 
 
+import com.aloc.aloc.problemtype.enums.Routine;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 	List<Problem> findAllByHiddenIsNullOrderByCreatedAtDesc();
 
 	Boolean existsByAlgorithmIdAndProblemType_Course(Integer algorithmId, Course course);
+
+	List<Problem> findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(Routine routine);
 }

@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.service;
 
+import com.aloc.aloc.problemtype.enums.Routine;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -80,9 +81,24 @@ public class ProblemFacade {
 					.profileNumber(user.getProfileNumber())
 					.rank(user.getRank())
 					.coin(user.getCoin())
-					.solvedAt(solvedProblem.getSolvedAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+					.solvedAt(
+						solvedProblem.getSolvedAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
 					.build();
 			})
 			.collect(Collectors.toList());
+	}
+
+	public void updateProblemHiddenFalse(Routine routine) {
+		List<Problem> problems = problemRepository.findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(routine);
+		if (routine.equals(Routine.DAILY)) {
+			Problem problem = problems.get(0);
+			problem.setHidden(false);
+			problemRepository.save(problem);
+		} else {
+			for (Problem problem : problems) {
+				problem.setHidden(false);
+			}
+			problemRepository.saveAll(problems);
+		}
 	}
 }

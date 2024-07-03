@@ -39,5 +39,9 @@ public class Algorithm extends AuditingTimeEntity {
 		this.season = season;
 		this.hidden = hidden;
 	}
+
+	public void setHiddenFalse() {
+		this.hidden = false;
+	}
 }
 
