@@ -1,5 +1,7 @@
 package com.aloc.aloc.problem.repository;
 
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
 import com.aloc.aloc.algorithm.Algorithm;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.SolvedProblem;
@@ -7,7 +9,6 @@ import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 public class SolvedProblemDummyEntity {
 	User user1;

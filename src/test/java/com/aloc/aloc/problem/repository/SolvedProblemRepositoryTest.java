@@ -2,14 +2,8 @@ package com.aloc.aloc.problem.repository;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-import com.aloc.aloc.algorithm.Algorithm;
-import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.SolvedProblem;
-import com.aloc.aloc.problemtype.ProblemType;
-import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.problemtype.enums.Routine;
-import com.aloc.aloc.user.User;
 import java.util.List;
+
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +15,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.aloc.aloc.problem.entity.SolvedProblem;
 
 @DataJpaTest
 @ActiveProfiles("dev")
