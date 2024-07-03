@@ -56,7 +56,11 @@ public class SecurityConfig {
 					"/api-docs/**",
 					"/api2/swagger-ui.html"
 				).permitAll()
-				.requestMatchers("/purchase", "/api2/authorize/*").authenticated()
+				.requestMatchers(
+					"/purchase",
+					"/api2/authorize/*",
+					"/api2/problem/solved"
+				).authenticated()
 				.anyRequest().permitAll())
 			.exceptionHandling(exceptionConfig -> exceptionConfig
 				.authenticationEntryPoint((request, response, authException) -> response.sendError(
