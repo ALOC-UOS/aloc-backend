@@ -14,6 +14,7 @@ import com.aloc.aloc.problem.entity.SolvedProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.ProblemSolvingCountProjection;
 import com.aloc.aloc.problem.repository.SolvedProblemRepository;
+import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.tag.dto.TagSimpleDto;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
@@ -80,9 +81,24 @@ public class ProblemFacade {
 					.profileNumber(user.getProfileNumber())
 					.rank(user.getRank())
 					.coin(user.getCoin())
-					.solvedAt(solvedProblem.getSolvedAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+					.solvedAt(
+						solvedProblem.getSolvedAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
 					.build();
 			})
 			.collect(Collectors.toList());
+	}
+
+	public void updateProblemHiddenFalse(Routine routine) {
+		List<Problem> problems = problemRepository.findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(routine);
+		if (routine.equals(Routine.DAILY)) {
+			Problem problem = problems.get(0);
+			problem.setHidden(false);
+			problemRepository.save(problem);
+		} else {
+			for (Problem problem : problems) {
+				problem.setHidden(false);
+			}
+			problemRepository.saveAll(problems);
+		}
 	}
 }

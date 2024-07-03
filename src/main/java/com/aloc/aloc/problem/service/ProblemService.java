@@ -21,5 +21,4 @@ public class ProblemService {
 	public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
 		return problemFacade.getSolvedUserList(problemId);
 	}
-
 }
