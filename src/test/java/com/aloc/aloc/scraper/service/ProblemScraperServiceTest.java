@@ -1,8 +1,9 @@
-package com.aloc.aloc.algorithm.service;
+package com.aloc.aloc.scraper.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
@@ -131,7 +132,7 @@ class ProblemScraperServiceTest {
 		}
 
 		// 테스트를 위해 중복이 없다는 가정으로 항상 문제와 태그 추가하도록 구성
-		when(problemRepository.existsByAlgorithmIdAndProblemType_Course(anyInt(), any(Course.class)))
+		when(problemRepository.existsByAlgorithmIdAndProblemType_Course(anyLong(), any(Course.class)))
 			.thenReturn(false);
 		when(tagRepository.findByKoreanNameAndEnglishName(anyString(), anyString()))
 			.thenReturn(Optional.empty());
