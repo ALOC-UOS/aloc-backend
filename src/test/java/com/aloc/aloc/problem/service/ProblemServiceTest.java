@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.aloc.aloc.algorithm.Algorithm;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.SolvedProblem;
@@ -57,9 +58,13 @@ public class ProblemServiceTest {
 		User user1 = new User("user1", "baekjoon1", "github1", "20210001", "password", "discord",  "notion");
 		User user2 = new User("user2", "baekjoon2", "github2", "20210002", "password", "discord",  "notion");
 
+		// Set up Algorithms
+		Algorithm algorithm1 = new Algorithm(1, "Algorithm 1", 2, null);
+		Algorithm algorithm2 = new Algorithm(2, "Algorithm 2", 2, null);
+
 		// Set up Problems
-		Problem problem1 = new Problem("Problem 1", 3, 100, null, null);
-		Problem problem2 = new Problem("Problem 2", 4, 200, null, null);
+		Problem problem1 = new Problem("Problem 1", 3, algorithm1, null, null);
+		Problem problem2 = new Problem("Problem 2", 4, algorithm2, null, null);
 		problem1.setId(1L);
 		problem2.setId(2L);
 		problems = Arrays.asList(problem1, problem2);

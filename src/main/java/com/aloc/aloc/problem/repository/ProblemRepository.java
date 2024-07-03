@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.aloc.aloc.problem.entity.Problem;
+import com.aloc.aloc.problemtype.enums.Course;
+import com.aloc.aloc.problemtype.enums.Routine;
 
 
 @Repository
@@ -22,4 +24,8 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		+ "ORDER BY p.updatedAt DESC "
 		+ "LIMIT 1")
 	Problem findLatestPublicProblemByProblemTypeId(@Param("problemTypeId") Long problemTypeId);
+
+	Boolean existsByAlgorithmIdAndProblemType_Course(Integer algorithmId, Course course);
+
+	List<Problem> findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(Routine routine);
 }

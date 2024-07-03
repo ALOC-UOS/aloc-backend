@@ -3,6 +3,7 @@ package com.aloc.aloc.problem.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aloc.aloc.algorithm.Algorithm;
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.problemtype.ProblemType;
@@ -39,9 +40,13 @@ public class Problem extends AuditingTimeEntity {
 	@Column(nullable = false)
 	private Integer difficulty;
 
-	private Integer algorithmId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "algorithm_id")
+	private Algorithm algorithm;
 
-	private Boolean hidden;
+	private Boolean hidden = true;
+
+	private Integer problemId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "problem_type_id")
@@ -50,17 +55,22 @@ public class Problem extends AuditingTimeEntity {
 	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProblemTag> problemTagList = new ArrayList<>();
 
-	public void addProblemTag(ProblemTag problemTag) {
-		problemTagList.add(problemTag);
-		problemTag.setProblem(this);
-	}
-
 	@Builder
-	public Problem(String title, Integer difficulty, Integer algorithmId, Boolean hidden, ProblemType problemType) {
+	public Problem(
+		String title,
+		Integer difficulty,
+		Algorithm algorithm,
+		Integer problemId,
+		ProblemType problemType
+	) {
 		this.title = title;
 		this.difficulty = difficulty;
-		this.algorithmId = algorithmId;
-		this.hidden = hidden;
+		this.algorithm = algorithm;
+		this.problemId = problemId;
 		this.problemType = problemType;
+	}
+
+	public void addProblemTag(ProblemTag problemTag) {
+		problemTagList.add(problemTag);
 	}
 }

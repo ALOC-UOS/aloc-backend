@@ -1,4 +1,4 @@
-package com.aloc.aloc.problem.service;
+package com.aloc.aloc.scraper;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class BaekjoonScrapingService {
+public class SolvedScrapingService {
 
 	public boolean isProblemSolvedToday(String baekjoonId, Long problemId) throws IOException {
 		// 스크래핑을 통해 백준에서 특정 문제를 풀었는지 확인합니다.

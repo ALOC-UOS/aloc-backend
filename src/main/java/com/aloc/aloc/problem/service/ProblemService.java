@@ -94,4 +94,18 @@ public class ProblemService {
 		// 문제를 풀었는지 확인합니다.
 		return problemSolvingService.checkAndUpdateProblemSolved(problem, user);
 	}
+
+	public void updateProblemHiddenFalse(Routine routine) {
+		List<Problem> problems = problemRepository.findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(routine);
+		if (routine.equals(Routine.DAILY)) {
+			Problem problem = problems.get(0);
+			problem.setHidden(false);
+			problemRepository.save(problem);
+		} else {
+			for (Problem problem : problems) {
+				problem.setHidden(false);
+			}
+			problemRepository.saveAll(problems);
+		}
+	}
 }

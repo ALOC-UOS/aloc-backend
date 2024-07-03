@@ -9,6 +9,7 @@ import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.entity.SolvedProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.SolvedProblemRepository;
+import com.aloc.aloc.scraper.SolvedScrapingService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.repository.UserRepository;
 
@@ -19,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class ProblemSolvingService {
 	private final ProblemRepository problemRepository;
 	private final SolvedProblemRepository solvedProblemRepository;
-	private final BaekjoonScrapingService baekjoonScrapingService;
+	private final SolvedScrapingService solvedScrapingService;
 	private final UserRepository userRepository;
 
 
@@ -36,7 +37,7 @@ public class ProblemSolvingService {
 			}
 
 			// 푼 문제가 아니라면 백준에서 푼 문제인지 확인합니다.
-			if (baekjoonScrapingService.isProblemSolvedToday(user.getBaekjoonId(), problem.getId())) {
+			if (solvedScrapingService.isProblemSolvedToday(user.getBaekjoonId(), problem.getId())) {
 				System.out.println("풀었습니다!");
 				updateUserAndSaveSolvedProblem(user, problem.getId());
 				return "success";
