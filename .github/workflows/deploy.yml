@@ -65,7 +65,7 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
             docker stop aloc-spring || true
             docker rm aloc-spring || true
-            docker run -d -p 8080:8080 --name aloc-spring --restart always ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
+            docker run -d -p 8080:8080 --name aloc-spring --restart always --network shared-network ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
 
       - name: Send deployment status to Discord
         if: success()
