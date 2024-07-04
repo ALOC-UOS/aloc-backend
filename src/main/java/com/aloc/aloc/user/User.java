@@ -65,7 +65,7 @@ public class User extends AuditingTimeEntity {
 	private String profileColor;
 
 	@Column(nullable = false)
-	private String password;
+	private String password = "password";
 
 	@Enumerated(EnumType.STRING)
 	private Authority authority;
