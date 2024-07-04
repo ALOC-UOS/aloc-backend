@@ -1,11 +1,11 @@
 package com.aloc.aloc.user.dto.request;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.aloc.aloc.user.User;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 
