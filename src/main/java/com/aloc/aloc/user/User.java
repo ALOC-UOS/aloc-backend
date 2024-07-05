@@ -52,7 +52,7 @@ public class User extends AuditingTimeEntity {
 
 	private String notionEmail;
 
-	private Integer profileNumber;
+	private String profileNumber;
 
 	private Integer rank;
 
@@ -94,7 +94,9 @@ public class User extends AuditingTimeEntity {
 		String studentId,
 		String password,
 		String discordId,
-		String notionEmail
+		Integer rank,
+		String notionEmail,
+		String profileNumber
 	) {
 		this.username = username;
 		this.baekjoonId = baekjoonId;
@@ -106,7 +108,8 @@ public class User extends AuditingTimeEntity {
 		this.notionEmail = notionEmail;
 		this.course = Course.FULL;
 		this.authority = Authority.ROLE_GUEST;
-		this.rank = 0;
+		this.profileNumber = profileNumber;
+		this.rank = rank;
 		this.coin = 0;
 	}
 
