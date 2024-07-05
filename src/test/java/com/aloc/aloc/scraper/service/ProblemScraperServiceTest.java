@@ -2,7 +2,6 @@ package com.aloc.aloc.scraper.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
@@ -35,7 +34,7 @@ import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
-import com.aloc.aloc.scraper.ProblemScraperService;
+import com.aloc.aloc.scraper.ProblemScrapingService;
 import com.aloc.aloc.tag.repository.TagRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +52,7 @@ class ProblemScraperServiceTest {
 	private ProblemTagRepository problemTagRepository;
 
 	@InjectMocks
-	private ProblemScraperService problemScraperService;
+	private ProblemScrapingService problemScraperService;
 	private List<Algorithm> algorithms;
 	private List<ProblemType> problemTypes;
 
