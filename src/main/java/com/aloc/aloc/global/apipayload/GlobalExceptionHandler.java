@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.aloc.aloc.global.apipayload.exception.ScrapException;
 import com.aloc.aloc.global.apipayload.status.ErrorStatus;
 
 
@@ -27,6 +28,16 @@ public class GlobalExceptionHandler {
 			ErrorStatus._UNAUTHORIZED.getCode(),
 			ex.getMessage(),
 			ErrorStatus._UNAUTHORIZED.getMessage()
+		);
+	}
+
+	@ExceptionHandler(ScrapException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public CustomApiResponse<String> handleScrapException(ScrapException ex) {
+		return CustomApiResponse.onFailure(
+			ErrorStatus._INTERNAL_SERVER_ERROR.getCode(),
+			ex.getMessage(),
+			ErrorStatus._INTERNAL_SERVER_ERROR.getMessage()
 		);
 	}
 }
