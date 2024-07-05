@@ -1,4 +1,4 @@
-package com.aloc.aloc.algorithm.service;
+package com.aloc.aloc.scraper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CrawlingService {
+public class ProblemScraperService {
 
 	private static final String HEADER_FIELD_NAME = "User-Agent";
 	private static final String HEADER_FIELD_VALUE =
@@ -148,7 +148,7 @@ public class CrawlingService {
 	}
 
 	private boolean isNewProblem(String problemNumber, ProblemType problemType) {
-		int problemId = Integer.parseInt(problemNumber);
+		Long problemId = Long.parseLong(problemNumber);
 		return !problemRepository.existsByAlgorithmIdAndProblemType_Course(problemId,
 			problemType.getCourse());
 	}

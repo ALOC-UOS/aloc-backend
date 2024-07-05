@@ -30,10 +30,10 @@ public class Algorithm extends AuditingTimeEntity {
 	private String name;
 
 	private Integer season;
-	private boolean hidden;
+	private Boolean hidden;
 
 	@Builder
-	public Algorithm(Integer algorithmId, String name, Integer season, boolean hidden) {
+	public Algorithm(Integer algorithmId, String name, Integer season, Boolean hidden) {
 		this.algorithmId = algorithmId;
 		this.name = name;
 		this.season = season;

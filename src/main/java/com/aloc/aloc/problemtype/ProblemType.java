@@ -24,7 +24,6 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class ProblemType extends AuditingTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,4 +36,10 @@ public class ProblemType extends AuditingTimeEntity {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Course course;
+
+	@Builder
+	public ProblemType(Routine routine, Course course) {
+		this.routine = routine;
+		this.course = course;
+	}
 }

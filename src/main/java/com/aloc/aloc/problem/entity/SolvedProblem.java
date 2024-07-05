@@ -2,7 +2,6 @@ package com.aloc.aloc.problem.entity;
 
 import java.time.LocalDateTime;
 
-import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.user.User;
 
 import jakarta.persistence.Entity;
@@ -12,10 +11,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SolvedProblem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +34,11 @@ public class SolvedProblem {
 	private Problem problem;
 
 	private LocalDateTime solvedAt;
+
+	@Builder
+	public SolvedProblem(User user, Problem problem) {
+		this.user = user;
+		this.problem = problem;
+		this.solvedAt = LocalDateTime.now();
+	}
 }

@@ -9,5 +9,7 @@ import com.aloc.aloc.problemtype.enums.Routine;
 
 @Repository
 public interface ProblemTypeRepository extends JpaRepository<ProblemType, Long> {
+	ProblemType findProblemTypeByCourseAndRoutine(Course course, Routine routine);
+
 	ProblemType findByCourseAndRoutine(Course course, Routine routine);
 }

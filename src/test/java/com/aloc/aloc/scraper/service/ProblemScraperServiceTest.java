@@ -1,8 +1,9 @@
-package com.aloc.aloc.algorithm.service;
+package com.aloc.aloc.scraper.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
@@ -34,11 +35,12 @@ import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
+import com.aloc.aloc.scraper.ProblemScraperService;
 import com.aloc.aloc.tag.repository.TagRepository;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
-class CrawlingServiceTest {
+class ProblemScraperServiceTest {
 	@Mock
 	private AlgorithmRepository algorithmRepository;
 	@Mock
@@ -51,7 +53,7 @@ class CrawlingServiceTest {
 	private ProblemTagRepository problemTagRepository;
 
 	@InjectMocks
-	private CrawlingService crawlingService;
+	private ProblemScraperService problemScraperService;
 	private List<Algorithm> algorithms;
 	private List<ProblemType> problemTypes;
 
@@ -130,13 +132,13 @@ class CrawlingServiceTest {
 		}
 
 		// 테스트를 위해 중복이 없다는 가정으로 항상 문제와 태그 추가하도록 구성
-		when(problemRepository.existsByAlgorithmIdAndProblemType_Course(anyInt(), any(Course.class)))
+		when(problemRepository.existsByAlgorithmIdAndProblemType_Course(anyLong(), any(Course.class)))
 			.thenReturn(false);
 		when(tagRepository.findByKoreanNameAndEnglishName(anyString(), anyString()))
 			.thenReturn(Optional.empty());
 
 		// when
-		crawlingService.addProblemsForThisWeek();
+		problemScraperService.addProblemsForThisWeek();
 
 		// then
 		verify(algorithmRepository).findFirstBySeasonAndHiddenTrueOrderByIdAsc(2);

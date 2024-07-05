@@ -38,6 +38,7 @@ class AlgorithmRepositoryTest {
 		season1Algorithm.put(123, "수학"); // 출력
 		season1Algorithm.put(102, "구현");
 		season1Algorithm.put(24, "다이나믹 프로그래밍(DP)");
+
 		// 33 -> 7 -> 175
 		season2Algorithm.put(175, "자료 구조");
 		season2Algorithm.put(7, "그래프 이론"); // 출력
