@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ProblemScraperService {
+public class ProblemScrapingService {
 
 	private static final String HEADER_FIELD_NAME = "User-Agent";
 	private static final String HEADER_FIELD_VALUE =
