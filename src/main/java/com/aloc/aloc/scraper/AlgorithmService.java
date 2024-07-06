@@ -38,7 +38,7 @@ public class AlgorithmService {
 				.algorithmId(algorithm.getAlgorithmId())
 				.name(algorithm.getName())
 				.season(algorithm.getSeason())
-				.hidden(algorithm.isHidden())
+				.hidden(algorithm.getHidden())
 				.build();
 			response.add(dto);
 		}
