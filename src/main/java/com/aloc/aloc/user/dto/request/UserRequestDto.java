@@ -40,14 +40,16 @@ public class UserRequestDto {
 	@Schema(description = "노션 초대 이메일", example = "notion@uos.ac.kr")
 	private String notionEmail;
 
-	public User toEntity(BCryptPasswordEncoder passwordEncoder) {
+	public User toEntity(String profileNumber, Integer rank, BCryptPasswordEncoder passwordEncoder) {
 		return User.builder()
 			.username(username)
 			.password(passwordEncoder.encode(password))
 			.githubId(githubId)
 			.baekjoonId(baekjoonId)
+			.profileNumber(profileNumber)
 			.studentId(studentId)
 			.discordId(discordId)
+			.rank(rank)
 			.notionEmail(notionEmail)
 			.build();
 	}

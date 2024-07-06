@@ -14,7 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.auth.service.AuthService;
+import com.aloc.aloc.scraper.BaekjoonRankScrapingService;
+import com.aloc.aloc.scraper.GithubProfileScrapingService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.request.UserRequestDto;
 import com.aloc.aloc.user.repository.UserRepository;
@@ -34,6 +35,12 @@ public class AuthServiceTest {
 	@MockBean
 	private BCryptPasswordEncoder passwordEncoder;
 
+	@MockBean
+	private BaekjoonRankScrapingService baekjoonRankScrapingService;
+
+	@MockBean
+	private GithubProfileScrapingService githubProfileScrapingService;
+
 	@Test
 	@DisplayName("회원가입 서비스 성공 테스트")
 	public void testSignUp_Success() {
@@ -50,6 +57,8 @@ public class AuthServiceTest {
 		when(userRepository.existsByGithubId(userRequestDto.getGithubId())).thenReturn(false);
 		when(userRepository.existsByBaekjoonId(userRequestDto.getBaekjoonId())).thenReturn(false);
 		when(passwordEncoder.encode(userRequestDto.getPassword())).thenReturn("encodedPassword");
+		when(baekjoonRankScrapingService.extractBaekjoonRank(userRequestDto.getBaekjoonId())).thenReturn(15);
+		when(githubProfileScrapingService.extractProfileNumber(userRequestDto.getGithubId())).thenReturn("20210001");
 
 		// when
 		authService.signUp(userRequestDto);

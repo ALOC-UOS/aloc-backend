@@ -21,7 +21,7 @@ public class UserResponseDto {
 	private String baekjoonId;
 	private String profileColor;
 	private String studentId;
-	private Integer profileNumber;
+	private String profileNumber;
 	private Integer rank;
 	private Integer coin;
 

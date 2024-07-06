@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.aloc.aloc.scraper.ProblemScraperService;
+import com.aloc.aloc.scraper.ProblemScrapingService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProblemCrawlingScheduler {
 
-	private final ProblemScraperService problemScraperService;
+	private final ProblemScrapingService problemScraperService;
 
 	@Scheduled(cron = "0 0 0 * * MON")
 	public void scheduleAddProblemsForThisWeek() {

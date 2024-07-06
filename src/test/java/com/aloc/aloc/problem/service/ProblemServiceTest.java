@@ -7,7 +7,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -55,8 +54,28 @@ public class ProblemServiceTest {
 	@BeforeEach
 	void setUp() {
 		// Set up Users
-		User user1 = new User("user1", "baekjoon1", "github1", "20210001", "password", "discord",  "notion");
-		User user2 = new User("user2", "baekjoon2", "github2", "20210002", "password", "discord",  "notion");
+		User user1 = new User(
+			"user1",
+			"baekjoon1",
+			"github1",
+			"20210001",
+			"password",
+			"discord",
+			15,
+			"notion",
+			"11550"
+		);
+		User user2 = new User(
+			"user2",
+			"baekjoon2",
+			"github2",
+			"20210002",
+			"password",
+			"discord",
+			15,
+			"11551",
+			"notion"
+		);
 
 		// Set up Algorithms
 		Algorithm algorithm1 = new Algorithm(1, "Algorithm 1", 2, null);
@@ -79,11 +98,11 @@ public class ProblemServiceTest {
 		solvedUsers = Arrays.asList(
 			SolvedUserResponseDto.builder()
 				.username("user1").githubId("github1").baekjoonId("baekjoon1")
-				.profileColor("blue").studentId("20210001").profileNumber(1)
+				.profileColor("blue").studentId("20210001").profileNumber("1")
 				.rank(10).coin(100).solvedAt("11:30:00").build(),
 			SolvedUserResponseDto.builder()
 				.username("user2").githubId("github2").baekjoonId("baekjoon2")
-				.profileColor("red").studentId("20210002").profileNumber(2)
+				.profileColor("red").studentId("20210002").profileNumber("2")
 				.rank(20).coin(200).solvedAt("12:45:00").build()
 		);
 
