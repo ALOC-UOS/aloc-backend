@@ -24,7 +24,7 @@ public class ProblemSolvingService {
 	private final UserRepository userRepository;
 
 
-	private boolean isProblemAlreadySolved(Long userId, Long problemId) {
+	boolean isProblemAlreadySolved(Long userId, Long problemId) {
 		return solvedProblemRepository.existsByUserIdAndProblemId(userId, problemId);
 	}
 
@@ -38,7 +38,6 @@ public class ProblemSolvingService {
 
 			// 푼 문제가 아니라면 백준에서 푼 문제인지 확인합니다.
 			if (solvedScrapingService.isProblemSolvedToday(user.getBaekjoonId(), problem.getId())) {
-				System.out.println("풀었습니다!");
 				updateUserAndSaveSolvedProblem(user, problem.getId());
 				return "success";
 			}

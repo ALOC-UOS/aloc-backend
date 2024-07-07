@@ -18,4 +18,6 @@ public interface SolvedProblemRepository extends JpaRepository<SolvedProblem, Lo
 	int countSolvingUsersByProblemId(@Param("problemId") Long problemId);
 
 	boolean existsByUserIdAndProblemId(Long userId, Long problemId);
+
+	List<SolvedProblem> findAllByUserIdAndProblemIdIn(Long userId, List<Long> problemId);
 }
