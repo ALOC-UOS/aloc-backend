@@ -29,7 +29,7 @@ public class Algorithm extends AuditingTimeEntity {
 	@Column(nullable = false)
 	private String name;
 
-	private Integer season;
+	private Integer season = 2;
 	private Boolean hidden;
 
 	@Builder
