@@ -1,13 +1,17 @@
 package com.aloc.aloc.problem.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
+import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.SolvedProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
@@ -30,6 +34,7 @@ public class ProblemService {
 	private final ProblemTypeRepository problemTypeRepository;
 	private final SolvedProblemRepository solvedProblemRepository;
 	private final ProblemMapper problemMapper;
+	private final PasswordEncoder passwordEncoder;
 
 	private User findUser(String username) {
 		return userRepository.findByGithubId(username)
@@ -115,5 +120,22 @@ public class ProblemService {
 			}
 			problemRepository.saveAll(problems);
 		}
+	}
+
+	public List<ProblemSolvedResponseDto> get7daysCompletionStatus(String username) {
+		// 사용자 정보를 가져옵니다.
+		User user = findUser(username);
+
+		// 지난 7일간 문제를 가져옵니다.
+		LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+		List<Problem> problems = problemRepository.find7daysProblems(sevenDaysAgo);
+
+		// 문제 풀이 현황을 리턴합니다.
+		List<SolvedProblem> solvedProblems =
+			solvedProblemRepository.findAllByUserIdAndProblemIdIn(
+				user.getId(),
+				problems.stream().map(Problem::getId).collect(Collectors.toList())
+			);
+		return problemMapper.mapToProblemSolvedResponseDtoList(problems, solvedProblems);
 	}
 }

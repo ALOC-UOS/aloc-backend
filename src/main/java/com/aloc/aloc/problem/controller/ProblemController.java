@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
+import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
@@ -69,5 +70,14 @@ public class ProblemController {
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) throws IOException {
 		return CustomApiResponse.onSuccess(problemService.checkSolved(user.getUsername()));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@GetMapping("/7-days/completion-status")
+	@Operation(summary = "지난 7일간 문제 풀이 현황 조회", description = "지난 7일간 문제 풀이 현황을 조회합니다.")
+	public CustomApiResponse<List<ProblemSolvedResponseDto>> get7daysCompletionStatus(
+		@Parameter(hidden = true) @AuthenticationPrincipal User user
+	) {
+		return CustomApiResponse.onSuccess(problemService.get7daysCompletionStatus(user.getUsername()));
 	}
 }
