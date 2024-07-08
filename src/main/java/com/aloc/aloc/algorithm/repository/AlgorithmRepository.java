@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.aloc.aloc.algorithm.dto.response.AlgorithmDto;
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.entity.AlgorithmPrimaryKey;
 
@@ -20,4 +21,8 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, AlgorithmP
 	List<Algorithm> findAllBySeasonOrderByCreatedAtDesc(int season);
 
 	List<Algorithm> findAllByOrderByCreatedAtDesc();
+
+	AlgorithmDto findFirstBySeasonOrderByCreatedAtDesc(int season);
+
+	List<Algorithm> findAllBySeasonOrderByCreatedAtDesc(int season);
 }

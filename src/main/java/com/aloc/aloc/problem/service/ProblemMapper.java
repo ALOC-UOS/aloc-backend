@@ -83,4 +83,13 @@ public class ProblemMapper {
 				.build())
 			.collect(Collectors.toList());
 	}
+
+	public ProblemSolvedResponseDto mapToProblemSolvedResponseDto(Problem problem, boolean isSolved) {
+		return ProblemSolvedResponseDto.builder()
+			.problemId(problem.getId())
+			.problemTitle(problem.getTitle())
+			.problemDifficulty(problem.getDifficulty())
+			.isSolved(isSolved)
+			.build();
+	}
 }

@@ -51,4 +51,8 @@ public class AlgorithmService {
 						.algorithms(AlgorithmDto.listOf(algorithms))
 						.build();
 	}
+
+	public AlgorithmDto getAlgorithmBySeason(int season) {
+		return algorithmRepository.findFirstBySeasonOrderByCreatedAtDesc(season);
+	}
 }
