@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlgorithmPrimaryKey implements Serializable {
-	private Integer id;
+	private Integer algorithmId;
 	private Integer season;
 }
