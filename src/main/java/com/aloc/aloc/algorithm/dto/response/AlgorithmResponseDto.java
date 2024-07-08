@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.aloc.aloc.algorithm.Algorithm;
+import com.aloc.aloc.algorithm.entity.Algorithm;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 @Builder
 public class AlgorithmResponseDto {
 	private int id;

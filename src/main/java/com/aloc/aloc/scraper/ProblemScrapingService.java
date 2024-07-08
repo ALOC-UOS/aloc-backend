@@ -15,7 +15,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
-import com.aloc.aloc.algorithm.Algorithm;
+import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.enums.CourseRoutineTier;
 import com.aloc.aloc.algorithm.repository.AlgorithmRepository;
 import com.aloc.aloc.problem.entity.Problem;
@@ -148,8 +148,8 @@ public class ProblemScrapingService {
 	}
 
 	private boolean isNewProblem(String problemNumber, ProblemType problemType) {
-		Long problemId = Long.parseLong(problemNumber);
-		return !problemRepository.existsByAlgorithmIdAndProblemType_Course(problemId,
+		Integer problemId = Integer.parseInt(problemNumber);
+		return !problemRepository.existsByProblemIdAndProblemType_Course(problemId,
 			problemType.getCourse());
 	}
 

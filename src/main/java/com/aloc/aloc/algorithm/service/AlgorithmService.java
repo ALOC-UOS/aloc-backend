@@ -1,14 +1,13 @@
 package com.aloc.aloc.algorithm.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-import com.aloc.aloc.algorithm.Algorithm;
 import com.aloc.aloc.algorithm.dto.response.AlgorithmResponseDto;
+import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.repository.AlgorithmRepository;
 
 import lombok.RequiredArgsConstructor;

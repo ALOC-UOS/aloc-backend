@@ -1,6 +1,6 @@
 package com.aloc.aloc.problem.repository;
 
-import com.aloc.aloc.algorithm.Algorithm;
+import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.SolvedProblem;
 import com.aloc.aloc.problemtype.ProblemType;
@@ -38,7 +38,7 @@ public class SolvedProblemDummyEntity {
 		em.persist(user2);
 
 		algorithm1 =
-			new Algorithm(1, "Algorithm 1", 2, null);
+			new Algorithm(1, 1, "Algorithm 1", 2, null);
 		em.persist(algorithm1);
 
 		problemType1 =
