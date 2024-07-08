@@ -18,4 +18,6 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, AlgorithmP
 	Optional<Algorithm> findFirstBySeasonAndHiddenFalseOrderByIdDesc(int season);
 
 	List<Algorithm> findAllBySeasonOrderByIdDesc(int season);
+
+	List<Algorithm> findAllByOrderByCreatedAtDesc();
 }
