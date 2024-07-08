@@ -59,7 +59,8 @@ public class SecurityConfig {
 				.requestMatchers(
 					"/purchase",
 					"/api2/authorize/*",
-					"/api2/problem/solved"
+					"/api2/problem/solved",
+					"/api2/withdraw"
 				).authenticated()
 				.anyRequest().permitAll())
 			.exceptionHandling(exceptionConfig -> exceptionConfig

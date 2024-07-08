@@ -2,6 +2,7 @@ package com.aloc.aloc.auth.service;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.auth.dto.UserLoginRequestDto;
 import com.aloc.aloc.scraper.BaekjoonRankScrapingService;
@@ -23,6 +24,7 @@ public class AuthService {
 		System.out.println("Login request received for username: " + userLoginRequestDto.getGithubId());
 	}
 
+	@Transactional
 	public void signUp(UserRequestDto userRequestDto) {
 		// 이미 존재하는 유저인지 확인
 		if (userRepository.existsByGithubId(userRequestDto.getGithubId())
@@ -42,4 +44,9 @@ public class AuthService {
 		userRepository.save(userRequestDto.toEntity(githubProfileNumber, rank, passwordEncoder));
 	}
 
+	@Transactional
+	public void withdraw(String githubId) {
+		System.out.println(githubId);
+		userRepository.deleteByGithubId(githubId);
+	}
 }
