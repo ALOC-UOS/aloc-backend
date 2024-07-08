@@ -19,13 +19,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Algorithm extends AuditingTimeEntity {
-	@Id
-	private Integer id;
+	@Column(nullable = false)
+	private Integer id; // 주차
 
 	@Id
 	private Integer season;
 
-	@Column(nullable = false)
+	@Id
 	private Integer algorithmId;
 
 	@Column(nullable = false)
