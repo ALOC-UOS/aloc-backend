@@ -60,7 +60,8 @@ public class SecurityConfig {
 					"/purchase",
 					"/api2/authorize/*",
 					"/api2/problem/solved",
-					"/api2/withdraw"
+					"/api2/withdraw",
+					"/api2/problem/weekly/status"
 				).authenticated()
 				.anyRequest().permitAll())
 			.exceptionHandling(exceptionConfig -> exceptionConfig

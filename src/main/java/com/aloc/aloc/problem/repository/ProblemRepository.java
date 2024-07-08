@@ -1,5 +1,7 @@
 package com.aloc.aloc.problem.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +30,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 	Boolean existsByProblemIdAndProblemType_Course(Integer problemId, Course course);
 
 	List<Problem> findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(Routine routine);
+
+	List<Problem> findAllByAlgorithmWeekAndProblemTypeId(Integer id, Long problemTypeId);
 }

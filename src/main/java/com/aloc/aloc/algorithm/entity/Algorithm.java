@@ -19,13 +19,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Algorithm extends AuditingTimeEntity {
-	@Id
-	private Integer id;
+	@Column(nullable = false)
+	private Integer week; // 주차
 
 	@Id
 	private Integer season;
 
-	@Column(nullable = false)
+	@Id
 	private Integer algorithmId;
 
 	@Column(nullable = false)
@@ -34,8 +34,8 @@ public class Algorithm extends AuditingTimeEntity {
 	private Boolean hidden;
 
 	@Builder
-	public Algorithm(Integer id, Integer algorithmId, String name, Integer season, Boolean hidden) {
-		this.id = id;
+	public Algorithm(Integer week, Integer algorithmId, String name, Integer season, Boolean hidden) {
+		this.week = week;
 		this.season = season;
 		this.algorithmId = algorithmId;
 		this.name = name;

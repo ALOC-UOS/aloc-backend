@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
+import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
+import com.aloc.aloc.problem.service.ProblemFacade;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
@@ -29,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Problem API", description = "Problem API 입니다.")
 public class ProblemController {
 	private final ProblemService problemService;
+	private final ProblemFacade problemFacade;
 
 	@GetMapping()
 	@Operation(summary = "문제 목록 조회", description = "최근 생성일 기준으로 정렬하여 전체 문제 목록을 조회합니다.")
@@ -41,7 +44,7 @@ public class ProblemController {
 	public CustomApiResponse<List<SolvedUserResponseDto>> getSolvedUserList(
 		@Parameter(description = "문제 ID", required = true) @PathVariable() Long problemId
 	) {
-		return CustomApiResponse.onSuccess(problemService.getSolvedUserListByProblemId(problemId));
+		return CustomApiResponse.onSuccess(problemFacade.getSolvedUserListByProblemId(problemId));
 	}
 
 	@GetMapping("/today/{course}")
@@ -58,6 +61,15 @@ public class ProblemController {
 	public CustomApiResponse<String> checkSolved(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) throws IOException {
-		return CustomApiResponse.onSuccess(problemService.checkSolved(user.getUsername()));
+		return CustomApiResponse.onSuccess(problemFacade.checkSolved(user.getUsername()));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@GetMapping("/weekly/status")
+	@Operation(summary = "이번주 Weekly 풀이 현황 조회", description = "이번주 Weekly 문제 풀이 현황을 조회합니다.")
+	public CustomApiResponse<List<ProblemSolvedResponseDto>> getWeeklyCompletionStatus(
+		@Parameter(hidden = true) @AuthenticationPrincipal User user
+	) {
+		return CustomApiResponse.onSuccess(problemFacade.getWeeklyCompletionStatus(user.getUsername()));
 	}
 }

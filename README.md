@@ -30,3 +30,6 @@ POSTGRES_USER=postgres
 3. 우측 `gradle -> application -> bootrun`
 
 [swagger 접속]http://localhost:8080/swagger-ui/index.html
+
+docker buildx build --platform linux/amd64,linux/arm64 -t bae4614/aloc-spring:v2.1 --push .
+docker run -d --name aloc-spring -p 8080:8080 --network shared-network bae4614/aloc-spring:v2.2

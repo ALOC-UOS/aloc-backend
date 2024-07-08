@@ -75,7 +75,7 @@ class AlgorithmControllerTest {
 			.andExpect(jsonPath("$.message").value("성공입니다."))
 			.andExpect(jsonPath("$.result").isArray())
 			.andExpect(jsonPath("$.result[0].season").value(3))
-			.andExpect(jsonPath("$.result[0].algorithms[0].id").value(3))
+			.andExpect(jsonPath("$.result[0].algorithms[0].week").value(3))
 			.andExpect(jsonPath("$.result[0].algorithms[0].algorithmId").value(9))
 			.andExpect(jsonPath("$.result[0].algorithms[0].name").value("알고리즘 9"))
 			.andExpect(jsonPath("$.result[0].algorithms[0].hidden").value(false));
@@ -93,7 +93,7 @@ class AlgorithmControllerTest {
 			.andExpect(jsonPath("$.code").value("COMMON200"))
 			.andExpect(jsonPath("$.message").value("성공입니다."))
 			.andExpect(jsonPath("$.result.season").value(1))
-			.andExpect(jsonPath("$.result.algorithms[0].id").value(3))
+			.andExpect(jsonPath("$.result.algorithms[0].week").value(3))
 			.andExpect(jsonPath("$.result.algorithms[0].algorithmId").value(3))
 			.andExpect(jsonPath("$.result.algorithms[0].name").value("알고리즘 3"))
 			.andExpect(jsonPath("$.result.algorithms[0].hidden").value(false));

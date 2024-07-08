@@ -61,13 +61,13 @@ class AlgorithmServiceTest {
 		assertThat(season1).isNotNull();
 		assert season1 != null;
 		assertThat(season1.getAlgorithms()).hasSize(2);
-		AssertionsForClassTypes.assertThat(season1.getAlgorithms().get(0).getId()).isEqualTo(2);
+		AssertionsForClassTypes.assertThat(season1.getAlgorithms().get(0).getWeek()).isEqualTo(2);
 
 		AlgorithmResponseDto season2 = result.stream().filter(r -> r.getSeason() == 2).findFirst().orElse(null);
 		assertThat(season2).isNotNull();
 		assert season2 != null;
 		assertThat(season2.getAlgorithms()).hasSize(3);
-		assertThat(season2.getAlgorithms().get(0).getId()).isEqualTo(3);
+		assertThat(season2.getAlgorithms().get(0).getWeek()).isEqualTo(3);
 	}
 
 	@Test
@@ -75,7 +75,7 @@ class AlgorithmServiceTest {
 	void getAlgorithmsBySeason() {
 		// given
 		int season = 2;
-		when(algorithmRepository.findAllBySeasonOrderByIdDesc(season))
+		when(algorithmRepository.findAllBySeasonOrderByCreatedAtDesc(season))
 			.thenReturn(algorithms.subList(0, 3));
 
 		// when
@@ -84,6 +84,6 @@ class AlgorithmServiceTest {
 		// then
 		AssertionsForClassTypes.assertThat(result).isNotNull();
 		assertThat(result.getAlgorithms()).hasSize(3);
-		AssertionsForClassTypes.assertThat(result.getAlgorithms().get(0).getId()).isEqualTo(3);
+		AssertionsForClassTypes.assertThat(result.getAlgorithms().get(0).getWeek()).isEqualTo(3);
 	}
 }

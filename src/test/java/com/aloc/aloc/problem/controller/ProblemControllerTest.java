@@ -19,6 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
+import com.aloc.aloc.problem.service.ProblemFacade;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
@@ -35,6 +36,9 @@ public class ProblemControllerTest {
 
 	@MockBean
 	private ProblemService problemService;
+
+	@MockBean
+	private ProblemFacade problemFacade;
 
 	@Test
 	@WithMockUser
@@ -77,7 +81,7 @@ public class ProblemControllerTest {
 			SolvedUserResponseDto.builder().username("user1").githubId("github1").build(),
 			SolvedUserResponseDto.builder().username("user2").githubId("github2").build()
 		);
-		when(problemService.getSolvedUserListByProblemId(problemId)).thenReturn(solvedUsers);
+		when(problemFacade.getSolvedUserListByProblemId(problemId)).thenReturn(solvedUsers);
 
 		// When & Then
 		mockMvc.perform(get("/api2/problem/solved-user/{problemId}", problemId)
