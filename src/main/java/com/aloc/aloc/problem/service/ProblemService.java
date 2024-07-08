@@ -114,7 +114,7 @@ public class ProblemService {
 		return problemTypeRepository.findProblemTypeByCourseAndRoutine(course, routine).getId();
 	}
 
-	List<Problem> getProblemsByAlgorithmIdAndProblemTypeId(Integer algorithmId, Long problemTypeId) {
-		return problemRepository.findAllByAlgorithmIdAndProblemTypeId(algorithmId, problemTypeId);
+	List<Problem> getProblemsByAlgorithmWeekAndProblemTypeId(Integer algorithmId, Long problemTypeId) {
+		return problemRepository.findAllByAlgorithmWeekAndProblemTypeId(algorithmId, problemTypeId);
 	}
 }

@@ -22,11 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.SolvedProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.problem.repository.SolvedProblemRepository;
 import com.aloc.aloc.user.User;
-import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
 @ExtendWith(MockitoExtension.class)
 public class ProblemServiceTest {
@@ -45,29 +42,6 @@ public class ProblemServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		// Set up Users
-		User user1 = new User(
-			"user1",
-			"baekjoon1",
-			"github1",
-			"20210001",
-			"password",
-			"discord",
-			15,
-			"notion",
-			"11550"
-		);
-		User user2 = new User(
-			"user2",
-			"baekjoon2",
-			"github2",
-			"20210002",
-			"password",
-			"discord",
-			15,
-			"11551",
-			"notion"
-		);
 
 		// Set up Algorithms
 		Algorithm algorithm1 = new Algorithm(1, 1, "Algorithm 1", 2, null);

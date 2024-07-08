@@ -22,7 +22,5 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, AlgorithmP
 
 	List<Algorithm> findAllByOrderByCreatedAtDesc();
 
-	AlgorithmDto findFirstBySeasonOrderByCreatedAtDesc(int season);
-
 	List<Algorithm> findAllBySeasonOrderByCreatedAtDesc(int season);
 }

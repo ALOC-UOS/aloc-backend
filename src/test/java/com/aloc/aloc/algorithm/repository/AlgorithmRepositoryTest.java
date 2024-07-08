@@ -46,7 +46,7 @@ class AlgorithmRepositoryTest {
 		int idx = 1;
 		for (Map.Entry<Integer, String> entry : season1Algorithm.entrySet()) {
 			Algorithm algorithm = Algorithm.builder()
-				.id(idx++)
+				.week(idx++)
 				.algorithmId(entry.getKey())
 				.season(1)
 				.name(entry.getValue())
@@ -57,7 +57,7 @@ class AlgorithmRepositoryTest {
 		idx = 1;
 		for (Map.Entry<Integer, String> entry : season2Algorithm.entrySet()) {
 			Algorithm algorithm = Algorithm.builder()
-				.id(idx++)
+				.week(idx++)
 				.algorithmId(entry.getKey())
 				.season(2)
 				.name(entry.getValue())

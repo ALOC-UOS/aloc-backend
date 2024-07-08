@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.aloc.aloc.algorithm.dto.response.AlgorithmDto;
+import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
@@ -64,17 +64,16 @@ public class ProblemFacade {
 		User user = problemService.findUser(username);
 
 		// 이번주 Weekly 문제를 가져옵니다.
-		AlgorithmDto thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(season);
-		if (thisWeekAlgorithm == null) {
-			throw new IllegalArgumentException("이번주 알고리즘이 없습니다.");
-		}
+		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(season)
+			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
+
 
 		// 사용자에 맞는 문제 타입ID를 가져옵니다.
 		Long problemTypeId = problemService.getProblemTypeIdByCourseAndRoutine(user.getCourse(), Routine.WEEKLY);
 
 		// 문제 풀이 현황을 리턴합니다.
-		List<Problem> thisWeekProblems = problemService.getProblemsByAlgorithmIdAndProblemTypeId(
-			thisWeekAlgorithm.getId(), problemTypeId
+		List<Problem> thisWeekProblems = problemService.getProblemsByAlgorithmWeekAndProblemTypeId(
+			thisWeekAlgorithm.getWeek(), problemTypeId
 		);
 
 		return thisWeekProblems.stream()
