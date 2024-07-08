@@ -13,7 +13,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class AlgorithmDto {
-	private int id;
+	private int week;
 	private int algorithmId;
 	private String name;
 	private Boolean hidden;
@@ -21,7 +21,7 @@ public class AlgorithmDto {
 	public static List<AlgorithmDto> listOf(List<Algorithm> algorithms) {
 		return algorithms.stream()
 			.map(algorithm -> AlgorithmDto.builder()
-				.id(algorithm.getId())
+				.week(algorithm.getWeek())
 				.algorithmId(algorithm.getAlgorithmId())
 				.name(algorithm.getName())
 				.hidden(algorithm.getHidden())

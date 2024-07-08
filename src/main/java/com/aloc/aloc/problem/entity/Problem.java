@@ -43,7 +43,7 @@ public class Problem extends AuditingTimeEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumns({
-		@JoinColumn(name = "algorithm_id", referencedColumnName = "id"),
+		@JoinColumn(name = "algorithm_id", referencedColumnName = "algorithmId"),
 		@JoinColumn(name = "algorithm_season", referencedColumnName = "season")
 	})
 	private Algorithm algorithm;
