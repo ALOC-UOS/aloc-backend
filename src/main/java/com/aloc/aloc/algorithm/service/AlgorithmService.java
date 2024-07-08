@@ -45,10 +45,14 @@ public class AlgorithmService {
 	}
 
 	public AlgorithmResponseDto getAlgorithmsBySeason(int season) {
-		List<Algorithm> algorithms = algorithmRepository.findAllBySeasonOrderByIdDesc(season);
+		List<Algorithm> algorithms = algorithmRepository.findAllBySeasonOrderByCreatedAtDesc(season);
 		return AlgorithmResponseDto.builder()
 						.season(season)
 						.algorithms(AlgorithmDto.listOf(algorithms))
 						.build();
+	}
+
+	public AlgorithmDto getAlgorithmBySeason(int season) {
+		return algorithmRepository.findFirstBySeasonOrderByCreatedAtDesc(season);
 	}
 }

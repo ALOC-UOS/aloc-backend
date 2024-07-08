@@ -3,10 +3,10 @@ package com.aloc.aloc.algorithm.repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.aloc.aloc.algorithm.dto.response.AlgorithmDto;
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.entity.AlgorithmPrimaryKey;
 
@@ -18,7 +18,9 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, AlgorithmP
 	// 특정 season 중에서 hidden이 false인 것 중 가장 마지막 항목 가져오기
 	Optional<Algorithm> findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(int season);
 
-	List<Algorithm> findAllBySeasonOrderByIdDesc(int season);
-
 	List<Algorithm> findAllByOrderByCreatedAtDesc();
+
+	AlgorithmDto findFirstBySeasonOrderByCreatedAtDesc(int season);
+
+	List<Algorithm> findAllBySeasonOrderByCreatedAtDesc(int season);
 }

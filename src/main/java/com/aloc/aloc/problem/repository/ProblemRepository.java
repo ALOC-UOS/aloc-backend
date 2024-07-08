@@ -31,8 +31,5 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
 	List<Problem> findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(Routine routine);
 
-	@Query("SELECT p FROM Problem p "
-		+ "WHERE p.hidden IS NULL AND p.updatedAt >= :sevenDaysAgo "
-		+ "ORDER BY p.updatedAt DESC ")
-	List<Problem> find7daysProblems(@Param("sevenDaysAgo") LocalDateTime sevenDaysAgo);
+	List<Problem> findAllByAlgorithmIdAndProblemTypeId(Integer id, Long problemTypeId);
 }
