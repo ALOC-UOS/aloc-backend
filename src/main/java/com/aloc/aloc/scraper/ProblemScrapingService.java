@@ -61,14 +61,14 @@ public class ProblemScrapingService {
 	}
 
 	public Algorithm findWeeklyAlgorithm() {
-		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByIdAsc(SEASON)
+		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(SEASON)
 			.orElseThrow(() -> new NoSuchElementException("해당 시즌의 공개되지 않은 알고리즘이 존재하지 않습니다."));
 	}
 
 	public Algorithm findDailyAlgorithm() {
-		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByIdDesc(SEASON)
+		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(SEASON)
 			.orElseGet(
-				() -> algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByIdDesc(SEASON - 1)
+				() -> algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(SEASON - 1)
 					.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다.")));
 	}
 

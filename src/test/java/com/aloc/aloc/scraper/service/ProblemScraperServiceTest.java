@@ -118,11 +118,11 @@ class ProblemScraperServiceTest {
 	void addProblemForThisWeekSuccess() throws IOException {
 		// given
 		// 시즌2 시작 주차를 기준 알고리즘 반환하도록 구성
-		when(algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByIdAsc(2))
+		when(algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(2))
 			.thenReturn(Optional.of(algorithms.get(5)));
-		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByIdDesc(2))
+		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2))
 			.thenReturn(Optional.empty());
-		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByIdDesc(1))
+		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(1))
 			.thenReturn(Optional.of(algorithms.get(3)));
 
 		// 모든 ProblemType 구성
@@ -141,9 +141,9 @@ class ProblemScraperServiceTest {
 		problemScraperService.addProblemsForThisWeek();
 
 		// then
-		verify(algorithmRepository).findFirstBySeasonAndHiddenTrueOrderByIdAsc(2);
-		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByIdDesc(2);
-		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByIdDesc(1);
+		verify(algorithmRepository).findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(2);
+		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2);
+		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(1);
 
 		ArgumentCaptor<Problem> problemCaptor = ArgumentCaptor.forClass(Problem.class);
 		verify(problemRepository, atLeastOnce()).save(problemCaptor.capture());
