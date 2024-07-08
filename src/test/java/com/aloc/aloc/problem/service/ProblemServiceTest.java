@@ -19,7 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.aloc.aloc.algorithm.Algorithm;
+import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.SolvedProblem;
@@ -78,8 +78,8 @@ public class ProblemServiceTest {
 		);
 
 		// Set up Algorithms
-		Algorithm algorithm1 = new Algorithm(1, "Algorithm 1", 2, null);
-		Algorithm algorithm2 = new Algorithm(2, "Algorithm 2", 2, null);
+		Algorithm algorithm1 = new Algorithm(1, 1, "Algorithm 1", 2, null);
+		Algorithm algorithm2 = new Algorithm(2, 2, "Algorithm 2", 2, null);
 
 		// Set up Problems
 		Problem problem1 = new Problem("Problem 1", 3, algorithm1, null, null);

@@ -2,7 +2,7 @@ package com.aloc.aloc.problem.repository;
 
 import java.time.LocalDateTime;
 
-import com.aloc.aloc.algorithm.Algorithm;
+import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
@@ -27,8 +27,8 @@ public class ProblemDummyEntity {
 		em.persist(problemType1);
 		em.persist(problemType2);
 
-		algorithm1 = new Algorithm(1, "Algorithm 1", 2, null);
-		algorithm2 = new Algorithm(2, "Algorithm 2", 2, true);
+		algorithm1 = new Algorithm(1, 1, "Algorithm 1", 2, null);
+		algorithm2 = new Algorithm(2, 2, "Algorithm 2", 2, true);
 		em.persist(algorithm1);
 		em.persist(algorithm2);
 

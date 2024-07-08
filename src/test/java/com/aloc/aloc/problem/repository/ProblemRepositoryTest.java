@@ -70,9 +70,9 @@ public class ProblemRepositoryTest {
 	void existsByAlgorithmIdAndProblemType_Course_ShouldReturnTrue() {
 		// when
 		boolean existsFull =
-			problemRepository.existsByAlgorithmIdAndProblemType_Course(dummyEntity.algorithm1.getId(), Course.FULL);
+			problemRepository.existsByProblemIdAndProblemType_Course(1, Course.FULL);
 		boolean existsHalf =
-			problemRepository.existsByAlgorithmIdAndProblemType_Course(dummyEntity.algorithm1.getId(), Course.HALF);
+			problemRepository.existsByProblemIdAndProblemType_Course(3, Course.HALF);
 
 		assertTrue(existsFull);
 		assertTrue(existsHalf);
@@ -80,10 +80,10 @@ public class ProblemRepositoryTest {
 
 	@Test
 	@Tag("Repository")
-	@DisplayName("알고리즘 ID와 코스를 통해 문제가 존재하지 않는지 확인")
-	void existsByAlgorithmIdAndProblemType_Course_ShouldReturnFalse() {
-		// when : 존재하지 않는 알고리즘 ID로 확인
-		boolean exists = problemRepository.existsByAlgorithmIdAndProblemType_Course(100L, Course.FULL);
+	@DisplayName("문제 ID와 코스를 통해 문제가 존재하지 않는지 확인")
+	void existsByProblemIdAndProblemType_Course_ShouldReturnFalse() {
+		// when : 존재하지 않는 문제 ID로 확인
+		boolean exists = problemRepository.existsByProblemIdAndProblemType_Course(5, Course.FULL);
 
 		// then
 		assertFalse(exists);

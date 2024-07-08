@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.algorithm.Algorithm;
+import com.aloc.aloc.algorithm.entity.Algorithm;
 
 import jakarta.persistence.EntityManager;
 
@@ -43,8 +43,10 @@ class AlgorithmRepositoryTest {
 		season2Algorithm.put(175, "자료 구조");
 		season2Algorithm.put(7, "그래프 이론"); // 출력
 		season2Algorithm.put(33, "그리디 알고리즘");
+		int idx = 1;
 		for (Map.Entry<Integer, String> entry : season1Algorithm.entrySet()) {
 			Algorithm algorithm = Algorithm.builder()
+				.id(idx++)
 				.algorithmId(entry.getKey())
 				.season(1)
 				.name(entry.getValue())
@@ -52,8 +54,10 @@ class AlgorithmRepositoryTest {
 				.build();
 			algorithms.add(algorithm);
 		}
+		idx = 1;
 		for (Map.Entry<Integer, String> entry : season2Algorithm.entrySet()) {
 			Algorithm algorithm = Algorithm.builder()
+				.id(idx++)
 				.algorithmId(entry.getKey())
 				.season(2)
 				.name(entry.getValue())

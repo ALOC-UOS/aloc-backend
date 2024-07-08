@@ -27,7 +27,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		+ "LIMIT 1")
 	Problem findLatestPublicProblemByProblemTypeId(@Param("problemTypeId") Long problemTypeId);
 
-	Boolean existsByAlgorithmIdAndProblemType_Course(Long algorithmId, Course course);
+	Boolean existsByProblemIdAndProblemType_Course(Integer problemId, Course course);
 
 	List<Problem> findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(Routine routine);
 
