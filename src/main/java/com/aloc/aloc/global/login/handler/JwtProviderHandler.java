@@ -1,6 +1,8 @@
 package com.aloc.aloc.global.login.handler;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,8 +10,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 
 import com.aloc.aloc.global.jwt.service.JwtService;
 import com.aloc.aloc.user.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +43,15 @@ public class JwtProviderHandler extends SimpleUrlAuthenticationSuccessHandler {
 		log.info( "AccessToken 을 발급합니다. AccessToken: {}", accessToken);
 		log.info( "RefreshToken 을 발급합니다. RefreshToken: {}", refreshToken);
 
-		response.getWriter().write("success");
+		Map<String, String> tokenMap = new HashMap<>();
+		tokenMap.put("accessToken", accessToken);
+		tokenMap.put("refreshToken", refreshToken);
+
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(new ObjectMapper().writeValueAsString(tokenMap));
+
+//		response.getWriter().write("success");
 	}
 
 	private String extractGithubId(Authentication authentication) {
