@@ -31,5 +31,5 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
 	List<Problem> findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(Routine routine);
 
-	List<Problem> findAllByAlgorithmIdAndProblemTypeId(Integer id, Long problemTypeId);
+	List<Problem> findAllByAlgorithmWeekAndProblemTypeId(Integer id, Long problemTypeId);
 }
