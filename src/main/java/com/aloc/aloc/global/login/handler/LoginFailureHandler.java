@@ -21,6 +21,7 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 	) throws IOException, ServletException {
 		response.setStatus(HttpServletResponse.SC_BAD_REQUEST); //401 인증 실패
 		response.getWriter().write("fail");
+		log.error(Exception.class.getName() + " : " + exception.getMessage());
 		log.info("로그인 실패");
 	}
 }
