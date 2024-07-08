@@ -2,6 +2,7 @@ package com.aloc.aloc.algorithm.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
@@ -28,7 +29,7 @@ public class AlgorithmService {
 				.collect(Collectors.groupingBy(
 						Algorithm::getSeason,
 						Collectors.mapping(algorithm -> AlgorithmDto.builder()
-										.id(algorithm.getId())
+										.week(algorithm.getWeek())
 										.algorithmId(algorithm.getAlgorithmId())
 										.name(algorithm.getName())
 										.hidden(algorithm.getHidden())
@@ -52,7 +53,7 @@ public class AlgorithmService {
 						.build();
 	}
 
-	public AlgorithmDto getAlgorithmBySeason(int season) {
-		return algorithmRepository.findFirstBySeasonOrderByCreatedAtDesc(season);
+	public Optional<Algorithm> getAlgorithmBySeason(int season) {
+		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(season);
 	}
 }
