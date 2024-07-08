@@ -26,12 +26,8 @@ public class BaekjoonRankScrapingService {
 			String jsonResponse = fetchBaekjoonData(baekjoonId);
 			int rank = parseRankFromJson(jsonResponse);
 			return calculateTierValue(rank);
-		} catch (ScrapException e) {
-			System.err.println("백준 데이터 가져오기 실패");
-			return DEFAULT_RANK;
 		} catch (Exception e) {
-			System.err.println("예상치 못한 오류 발생");
-			return DEFAULT_RANK;
+			throw new IllegalArgumentException("잘못된 백준 아이디입니다.");
 		}
 	}
 

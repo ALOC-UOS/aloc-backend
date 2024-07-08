@@ -39,7 +39,6 @@ public class AuthService {
 
 		// 백준 랭킹 가져오기
 		Integer rank = baekjoonRankScrapingService.extractBaekjoonRank(userRequestDto.getBaekjoonId());
-		System.out.println(rank);
 		userRepository.save(userRequestDto.toEntity(githubProfileNumber, rank, passwordEncoder));
 	}
 
