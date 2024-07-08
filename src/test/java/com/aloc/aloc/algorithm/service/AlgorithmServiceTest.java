@@ -75,7 +75,7 @@ class AlgorithmServiceTest {
 	void getAlgorithmsBySeason() {
 		// given
 		int season = 2;
-		when(algorithmRepository.findAllBySeasonOrderByIdDesc(season))
+		when(algorithmRepository.findAllBySeasonOrderByCreatedAtDesc(season))
 			.thenReturn(algorithms.subList(0, 3));
 
 		// when

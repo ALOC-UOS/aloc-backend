@@ -44,6 +44,9 @@ public class ProblemServiceTest {
 	private SolvedProblemRepository solvedProblemRepository;
 
 	@Mock
+	private ProblemFacade problemFacade;
+
+	@Mock
 	private ProblemMapper problemMapper;
 
 	private List<Problem> problems;
@@ -155,7 +158,7 @@ public class ProblemServiceTest {
 		}
 
 		// When
-		List<SolvedUserResponseDto> actualUsers = problemService.getSolvedUserListByProblemId(problemId);
+		List<SolvedUserResponseDto> actualUsers = problemFacade.getSolvedUserListByProblemId(problemId);
 
 		// Then
 		assertEquals(expectedUsers, actualUsers);
@@ -170,6 +173,6 @@ public class ProblemServiceTest {
 		when(problemRepository.findById(problemId)).thenReturn(Optional.empty());
 		// Then
 		assertThrows(IllegalArgumentException.class, () -> problemService.checkProblemExist(problemId));
-		assertThrows(IllegalArgumentException.class, () -> problemService.getSolvedUserListByProblemId(problemId));
+		assertThrows(IllegalArgumentException.class, () -> problemFacade.getSolvedUserListByProblemId(problemId));
 	}
 }
