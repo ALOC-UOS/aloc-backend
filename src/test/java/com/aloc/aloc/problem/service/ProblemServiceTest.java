@@ -31,9 +31,6 @@ import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 @ExtendWith(MockitoExtension.class)
 public class ProblemServiceTest {
 
-	@Mock
-	private ProblemSolvingService problemSolvingService;
-
 	@InjectMocks
 	private ProblemService problemService;
 
@@ -41,15 +38,10 @@ public class ProblemServiceTest {
 	private ProblemRepository problemRepository;
 
 	@Mock
-	private SolvedProblemRepository solvedProblemRepository;
-
-	@Mock
 	private ProblemMapper problemMapper;
 
 	private List<Problem> problems;
 	private List<ProblemResponseDto> problemResponseDtos;
-	private List<SolvedUserResponseDto> solvedUsers;
-	private List<SolvedProblem> solvedProblems;
 
 	@BeforeEach
 	void setUp() {
@@ -92,24 +84,6 @@ public class ProblemServiceTest {
 		problemResponseDtos = Arrays.asList(
 			ProblemResponseDto.builder().id(1L).title("Problem 1").build(),
 			ProblemResponseDto.builder().id(2L).title("Problem 2").build()
-		);
-
-		// Set up SolvedUserResponseDtos
-		solvedUsers = Arrays.asList(
-			SolvedUserResponseDto.builder()
-				.username("user1").githubId("github1").baekjoonId("baekjoon1")
-				.profileColor("blue").studentId("20210001").profileNumber("1")
-				.rank(10).coin(100).solvedAt("11:30:00").build(),
-			SolvedUserResponseDto.builder()
-				.username("user2").githubId("github2").baekjoonId("baekjoon2")
-				.profileColor("red").studentId("20210002").profileNumber("2")
-				.rank(20).coin(200).solvedAt("12:45:00").build()
-		);
-
-		// Set up SolvedProblem
-		solvedProblems = Arrays.asList(
-			SolvedProblem.builder().user(user1).problem(problem1).build(),
-			SolvedProblem.builder().user(user2).problem(problem1).build()
 		);
 	}
 
