@@ -1,7 +1,7 @@
 package com.aloc.aloc.problem.service;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -57,7 +57,6 @@ public class ProblemSolvingService {
 	private void updateUserAndSaveSolvedProblem(User user, Long problemId) {
 		// 코인을 지급하고 사용자 정보를 저장합니다.
 		int coinToAdd = calculateCoinToAdd(problemId);
-		System.out.println("coinToAdd = " + coinToAdd);
 		user.addCoin(coinToAdd);
 		userRepository.save(user);
 
@@ -67,5 +66,9 @@ public class ProblemSolvingService {
 			.problem(problemRepository.getReferenceById(problemId))
 			.build();
 		solvedProblemRepository.save(solvedProblem);
+	}
+
+	public List<SolvedProblem> getSolvedUserListByProblemId(Long problemId) {
+		return solvedProblemRepository.findAllByProblemId(problemId);
 	}
 }
