@@ -36,7 +36,7 @@ public class ProblemService {
 	private final ProblemMapper problemMapper;
 	private final PasswordEncoder passwordEncoder;
 
-	private User findUser(String username) {
+	User findUser(String username) {
 		return userRepository.findByGithubId(username)
 			.orElseThrow(() -> new IllegalArgumentException("사용자 정보가 없습니다."));
 	}
@@ -94,19 +94,7 @@ public class ProblemService {
 		return problemMapper.mapToProblemResponseDto(todayProblem);
 	}
 
-	public String checkSolved(String username) throws IOException {
-		User user = findUser(username);
-		// 오늘의 문제를 가져옵니다.
-		ProblemResponseDto problem = findTodayProblemByCourse(user.getCourse());
 
-		// 오늘의 문제가 없으면 오류를 발생시킵니다.
-		if (problem == null) {
-			throw new IllegalArgumentException("오늘의 문제가 없습니다.");
-		}
-
-		// 문제를 풀었는지 확인합니다.
-		return problemSolvingService.checkAndUpdateProblemSolved(problem, user);
-	}
 
 	public void updateProblemHiddenFalse(Routine routine) {
 		List<Problem> problems = problemRepository.findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(routine);
@@ -122,20 +110,11 @@ public class ProblemService {
 		}
 	}
 
-	public List<ProblemSolvedResponseDto> get7daysCompletionStatus(String username) {
-		// 사용자 정보를 가져옵니다.
-		User user = findUser(username);
+	public Long getProblemTypeIdByCourseAndRoutine(Course course, Routine routine) {
+		return problemTypeRepository.findProblemTypeByCourseAndRoutine(course, routine).getId();
+	}
 
-		// 지난 7일간 문제를 가져옵니다.
-		LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
-		List<Problem> problems = problemRepository.find7daysProblems(sevenDaysAgo);
-
-		// 문제 풀이 현황을 리턴합니다.
-		List<SolvedProblem> solvedProblems =
-			solvedProblemRepository.findAllByUserIdAndProblemIdIn(
-				user.getId(),
-				problems.stream().map(Problem::getId).collect(Collectors.toList())
-			);
-		return problemMapper.mapToProblemSolvedResponseDtoList(problems, solvedProblems);
+	List<Problem> getProblemsByAlgorithmIdAndProblemTypeId(Integer algorithmId, Long problemTypeId) {
+		return problemRepository.findAllByAlgorithmIdAndProblemTypeId(algorithmId, problemTypeId);
 	}
 }
