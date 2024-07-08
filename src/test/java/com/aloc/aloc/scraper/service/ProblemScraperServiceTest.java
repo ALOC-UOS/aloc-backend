@@ -2,6 +2,7 @@ package com.aloc.aloc.scraper.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
@@ -25,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.algorithm.Algorithm;
+import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.repository.AlgorithmRepository;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
@@ -117,11 +118,11 @@ class ProblemScraperServiceTest {
 	void addProblemForThisWeekSuccess() throws IOException {
 		// given
 		// 시즌2 시작 주차를 기준 알고리즘 반환하도록 구성
-		when(algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByIdAsc(2))
+		when(algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(2))
 			.thenReturn(Optional.of(algorithms.get(5)));
-		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByIdDesc(2))
+		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2))
 			.thenReturn(Optional.empty());
-		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByIdDesc(1))
+		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(1))
 			.thenReturn(Optional.of(algorithms.get(3)));
 
 		// 모든 ProblemType 구성
@@ -131,7 +132,7 @@ class ProblemScraperServiceTest {
 		}
 
 		// 테스트를 위해 중복이 없다는 가정으로 항상 문제와 태그 추가하도록 구성
-		when(problemRepository.existsByAlgorithmIdAndProblemType_Course(anyLong(), any(Course.class)))
+		when(problemRepository.existsByProblemIdAndProblemType_Course(anyInt(), any(Course.class)))
 			.thenReturn(false);
 		when(tagRepository.findByKoreanNameAndEnglishName(anyString(), anyString()))
 			.thenReturn(Optional.empty());
@@ -140,9 +141,9 @@ class ProblemScraperServiceTest {
 		problemScraperService.addProblemsForThisWeek();
 
 		// then
-		verify(algorithmRepository).findFirstBySeasonAndHiddenTrueOrderByIdAsc(2);
-		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByIdDesc(2);
-		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByIdDesc(1);
+		verify(algorithmRepository).findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(2);
+		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2);
+		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(1);
 
 		ArgumentCaptor<Problem> problemCaptor = ArgumentCaptor.forClass(Problem.class);
 		verify(problemRepository, atLeastOnce()).save(problemCaptor.capture());

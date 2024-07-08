@@ -3,7 +3,7 @@ package com.aloc.aloc.problem.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aloc.aloc.algorithm.Algorithm;
+import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.problemtype.ProblemType;
@@ -16,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -41,7 +42,10 @@ public class Problem extends AuditingTimeEntity {
 	private Integer difficulty;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "algorithm_id")
+	@JoinColumns({
+		@JoinColumn(name = "algorithm_id", referencedColumnName = "id"),
+		@JoinColumn(name = "algorithm_season", referencedColumnName = "season")
+	})
 	private Algorithm algorithm;
 
 	private Boolean hidden = true;

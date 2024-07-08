@@ -1,12 +1,11 @@
-package com.aloc.aloc.algorithm;
+package com.aloc.aloc.algorithm.entity;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,14 +13,17 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
+@IdClass(AlgorithmPrimaryKey.class)
 @Getter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Algorithm extends AuditingTimeEntity {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
+
+	@Id
+	private Integer season;
 
 	@Column(nullable = false)
 	private Integer algorithmId;
@@ -29,14 +31,14 @@ public class Algorithm extends AuditingTimeEntity {
 	@Column(nullable = false)
 	private String name;
 
-	private Integer season;
 	private Boolean hidden;
 
 	@Builder
-	public Algorithm(Integer algorithmId, String name, Integer season, Boolean hidden) {
+	public Algorithm(Integer id, Integer algorithmId, String name, Integer season, Boolean hidden) {
+		this.id = id;
+		this.season = season;
 		this.algorithmId = algorithmId;
 		this.name = name;
-		this.season = season;
 		this.hidden = hidden;
 	}
 
