@@ -114,20 +114,21 @@ public class ProblemService {
 		}
 	}
 
-	public List<ProblemSolvedResponseDto> get7daysCompletionStatus(String username) {
+	public List<ProblemSolvedResponseDto> getWeeklyCompletionStatus(String username) {
 		// 사용자 정보를 가져옵니다.
 		User user = findUser(username);
 
-		// 지난 7일간 문제를 가져옵니다.
-		LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
-		List<Problem> problems = problemRepository.find7daysProblems(sevenDaysAgo);
+		// 이번주 Weekly 문제를 가져옵니다.
+//		Algorithm current_week_algorithm =
 
-		// 문제 풀이 현황을 리턴합니다.
-		List<SolvedProblem> solvedProblems =
-			solvedProblemRepository.findAllByUserIdAndProblemIdIn(
-				user.getId(),
-				problems.stream().map(Problem::getId).collect(Collectors.toList())
-			);
-		return problemMapper.mapToProblemSolvedResponseDtoList(problems, solvedProblems);
+
+//		// 문제 풀이 현황을 리턴합니다.
+//		List<SolvedProblem> solvedProblems =
+//			solvedProblemRepository.findAllByUserIdAndProblemIdIn(
+//				user.getId(),
+//				problems.stream().map(Problem::getId).collect(Collectors.toList())
+//			);
+//		return problemMapper.mapToProblemSolvedResponseDtoList(problems, solvedProblems);
+		return null;
 	}
 }

@@ -63,11 +63,11 @@ public class ProblemController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@GetMapping("/7-days/completion-status")
-	@Operation(summary = "지난 7일간 문제 풀이 현황 조회", description = "지난 7일간 문제 풀이 현황을 조회합니다.")
-	public CustomApiResponse<List<ProblemSolvedResponseDto>> get7daysCompletionStatus(
+	@GetMapping("/weekly/completion-status")
+	@Operation(summary = "이번주 Weekly 풀이 현황 조회", description = "이번주 Weekly 문제 풀이 현황을 조회합니다.")
+	public CustomApiResponse<List<ProblemSolvedResponseDto>> getWeeklyCompletionStatus(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) {
-		return CustomApiResponse.onSuccess(problemService.get7daysCompletionStatus(user.getUsername()));
+		return CustomApiResponse.onSuccess(problemService.getWeeklyCompletionStatus(user.getUsername()));
 	}
 }
