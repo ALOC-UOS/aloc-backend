@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserLoginRequestDto {
 	@NotBlank
-	@Schema(description = "Github ID", example = "githubId")
+	@Schema(description = "Github ID", example = "github")
 	private String githubId;
 	@NotBlank
 	@Schema(description = "Password", example = "password")

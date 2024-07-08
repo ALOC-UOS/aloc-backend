@@ -1,5 +1,8 @@
 package com.aloc.aloc.auth.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +13,9 @@ import com.aloc.aloc.auth.service.AuthService;
 import com.aloc.aloc.user.dto.request.UserRequestDto;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,4 +46,17 @@ public class AuthController {
 		authService.signUp(userRequestDto);
 	}
 
+	@SecurityRequirement(name = "JWT Auth")
+	@DeleteMapping("/withdraw")
+	@ApiResponse(
+		responseCode = "204",
+		description = "success"
+	)
+	@Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 진행합니다.")
+	public void withdraw(
+		@Parameter(hidden = true) @AuthenticationPrincipal User user
+	) {
+		System.out.println(user.getUsername());
+		authService.withdraw(user.getUsername());
+	}
 }

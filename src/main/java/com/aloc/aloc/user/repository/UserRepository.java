@@ -22,4 +22,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 	boolean existsByGithubId(String username);
 
 	boolean existsByBaekjoonId(String username);
+
+	void deleteByGithubId(String githubId);
 }
