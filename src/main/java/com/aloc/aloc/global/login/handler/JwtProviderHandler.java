@@ -40,13 +40,17 @@ public class JwtProviderHandler extends SimpleUrlAuthenticationSuccessHandler {
 				() -> log.error("로그인 성공. JWT 발급. DB에 사용자 정보 없음. githubId: {}", githubId)
 			);
 		log.info( "로그인에 성공합니다. githubId: {}", githubId);
-		log.info( "AccessToken 을 발급합니다. AccessToken: {}", accessToken);
-		log.info( "RefreshToken 을 발급합니다. RefreshToken: {}", refreshToken);
+		log.info( "AccessToken 을 발급합니다. AccessToken: {}", accessToken.substring(0, 10) + "...");
+		log.info( "RefreshToken 을 발급합니다. RefreshToken: {}", refreshToken.substring(0, 10) + "...");
 
 		Map<String, String> tokenMap = new HashMap<>();
 		tokenMap.put("accessToken", accessToken);
 		tokenMap.put("refreshToken", refreshToken);
 
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+		response.setHeader("Pragma", "no-cache");
+		response.setHeader("Expires", "0");
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(new ObjectMapper().writeValueAsString(tokenMap));
