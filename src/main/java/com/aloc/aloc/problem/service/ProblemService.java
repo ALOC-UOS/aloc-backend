@@ -44,6 +44,14 @@ public class ProblemService {
 			.collect(Collectors.toList());
 	}
 
+	public List<ProblemResponseDto> getVisibleProblemsByAlgorithm(int season, int algorithmId) {
+		List<Problem> problems = problemRepository
+			.findPublicProblemsByAlgorithm(season, algorithmId);
+		return problems.stream()
+			.map(problemMapper::mapToProblemResponseDto)
+			.collect(Collectors.toList());
+	}
+
 	public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
 		// 문제가 존재하는지 확인합니다.
 		checkProblemExist(problemId);

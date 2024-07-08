@@ -28,4 +28,9 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 	Boolean existsByProblemIdAndProblemType_Course(Integer problemId, Course course);
 
 	List<Problem> findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(Routine routine);
+
+	@Query("SELECT p FROM Problem p "
+		+ "WHERE p.algorithm.season = :season AND p.algorithm.algorithmId = :algorithmId AND p.hidden = false "
+		+ "ORDER BY p.createdAt DESC")
+	List<Problem> findPublicProblemsByAlgorithm(@Param("season") int season, @Param("algorithmId") int algorithmId);
 }
