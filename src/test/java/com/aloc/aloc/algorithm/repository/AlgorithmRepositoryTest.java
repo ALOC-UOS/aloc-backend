@@ -95,7 +95,7 @@ public class AlgorithmRepositoryTest {
 		List<Algorithm> result = algorithmRepository.findAllByOrderByCreatedAtDesc();
 
 		assertNotNull(result);
-		assertEquals(3, result.get(0).getId());
+		assertEquals(3, result.get(0).getWeek());
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public class AlgorithmRepositoryTest {
 
 		assertNotNull(result);
 		assertEquals(6, result.size());
-		assertEquals(3, result.get(0).getId());
-		assertEquals(3, result.get(3).getId());
+		assertEquals(3, result.get(0).getWeek());
+		assertEquals(3, result.get(3).getWeek());
 	}
 }
