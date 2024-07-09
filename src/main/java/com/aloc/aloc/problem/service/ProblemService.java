@@ -82,7 +82,9 @@ public class ProblemService {
 	public ProblemResponseDto findTodayProblemByCourse(Course course) {
 		// 오늘의 문제 타입을 가져옵니다.
 		Long problemTypeId =
-			problemTypeRepository.findProblemTypeByCourseAndRoutine(course, Routine.DAILY).getId();
+			problemTypeRepository.findProblemTypeByCourseAndRoutine(course, Routine.DAILY)
+				.orElseThrow(() -> new IllegalArgumentException("오늘의 문제 타입이 없습니다."))
+				.getId();
 
 		// 오늘의 문제를 가져옵니다.
 		Problem todayProblem = problemRepository.findLatestPublicProblemByProblemTypeId(problemTypeId);
@@ -111,7 +113,9 @@ public class ProblemService {
 	}
 
 	public Long getProblemTypeIdByCourseAndRoutine(Course course, Routine routine) {
-		return problemTypeRepository.findProblemTypeByCourseAndRoutine(course, routine).getId();
+		return problemTypeRepository.findProblemTypeByCourseAndRoutine(course, routine)
+			.orElseThrow(() -> new IllegalArgumentException("문제 타입이 없습니다."))
+			.getId();
 	}
 
 	List<Problem> getProblemsByAlgorithmWeekAndProblemTypeId(Integer algorithmId, Long problemTypeId) {

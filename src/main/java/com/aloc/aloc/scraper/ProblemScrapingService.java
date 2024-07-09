@@ -13,6 +13,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
@@ -41,7 +42,9 @@ public class ProblemScrapingService {
 	private static final String HEADER_FIELD_VALUE =
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 			+ "(KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
-	private static final int SEASON = 2;
+
+	@Value("${app.season}")
+	private int SEASON;
 
 	private final TagRepository tagRepository;
 	private final AlgorithmRepository algorithmRepository;
@@ -68,14 +71,15 @@ public class ProblemScrapingService {
 	public Algorithm findDailyAlgorithm() {
 		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(SEASON)
 			.orElseGet(
-				() -> algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(SEASON - 1)
+				() -> algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(SEASON)
 					.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다.")));
 	}
 
 	private void addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
 		throws IOException {
 		ProblemType problemType = problemTypeRepository
-			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine());
+			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine())
+			.orElseThrow(() -> new NoSuchElementException("해당 문제 타입이 존재하지 않습니다."));
 		for (int tier : courseRoutineTier.getTierList()) {
 			String url = getProblemUrl(tier, algorithm.getAlgorithmId());
 			crawlAndAddProblems(url, problemType, tier, algorithm);

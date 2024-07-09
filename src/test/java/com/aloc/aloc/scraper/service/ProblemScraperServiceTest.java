@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -128,7 +129,7 @@ class ProblemScraperServiceTest {
 		// 모든 ProblemType 구성
 		for (ProblemType problemType : problemTypes) {
 			when(problemTypeRepository.findByCourseAndRoutine(problemType.getCourse(), problemType.getRoutine()))
-				.thenReturn(problemType);
+				.thenReturn(Optional.of(problemType));
 		}
 
 		// 테스트를 위해 중복이 없다는 가정으로 항상 문제와 태그 추가하도록 구성
