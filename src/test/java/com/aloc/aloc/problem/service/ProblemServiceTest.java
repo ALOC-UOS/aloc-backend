@@ -69,7 +69,7 @@ public class ProblemServiceTest {
 		Problem p2 = problems.get(1);
 		ProblemResponseDto dto1 = problemResponseDtos.get(0);
 		ProblemResponseDto dto2 = problemResponseDtos.get(1);
-		when(problemRepository.findAllByHiddenIsNullOrderByCreatedAtDesc()).thenReturn(problems);
+		when(problemRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc()).thenReturn(problems);
 		when(problemMapper.mapToProblemResponseDto(p1)).thenReturn(dto1);
 		when(problemMapper.mapToProblemResponseDto(p2)).thenReturn(dto2);
 
@@ -81,7 +81,7 @@ public class ProblemServiceTest {
 		assertEquals("Problem 1", result.get(0).getTitle());
 		assertEquals("Problem 2", result.get(1).getTitle());
 
-		verify(problemRepository).findAllByHiddenIsNullOrderByCreatedAtDesc();
+		verify(problemRepository).findAllByHiddenIsFalseOrderByCreatedAtDesc();
 		verify(problemMapper, times(2)).mapToProblemResponseDto(any(Problem.class));
 
 	}
