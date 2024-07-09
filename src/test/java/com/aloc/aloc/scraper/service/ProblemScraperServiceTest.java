@@ -76,7 +76,7 @@ class ProblemScraperServiceTest {
 		for (Map.Entry<Integer, String> entry : season1Algorithm.entrySet()) {
 			Algorithm algorithm = Algorithm.builder()
 				.algorithmId(entry.getKey())
-				.season(1)
+				.season(2)
 				.name(entry.getValue())
 				.hidden(false)
 				.build();
@@ -123,7 +123,7 @@ class ProblemScraperServiceTest {
 			.thenReturn(Optional.of(algorithms.get(5)));
 		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2))
 			.thenReturn(Optional.empty());
-		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(1))
+		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2))
 			.thenReturn(Optional.of(algorithms.get(3)));
 
 		// 모든 ProblemType 구성
@@ -144,7 +144,7 @@ class ProblemScraperServiceTest {
 		// then
 		verify(algorithmRepository).findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(2);
 		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2);
-		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(1);
+		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2);
 
 		ArgumentCaptor<Problem> problemCaptor = ArgumentCaptor.forClass(Problem.class);
 		verify(problemRepository, atLeastOnce()).save(problemCaptor.capture());
