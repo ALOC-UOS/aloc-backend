@@ -1,6 +1,7 @@
 package com.aloc.aloc.problem.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
+import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.SolvedProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
@@ -46,13 +48,16 @@ public class ProblemFacadeTest {
 
 	private List<Problem> problems;
 	private List<ProblemResponseDto> problemResponseDtos;
+	private List<SolvedProblem> user1SolvedProblems;
 	private List<SolvedUserResponseDto> solvedUsers;
 	private List<SolvedProblem> solvedProblems;
+	private User user1;
+	private User user2;
 
 	@BeforeEach
 	void setUp() {
 		// Set up Users
-		User user1 = new User(
+		user1 = new User(
 			"user1",
 			"baekjoon1",
 			"github1",
@@ -63,7 +68,8 @@ public class ProblemFacadeTest {
 			"notion",
 			"11550"
 		);
-		User user2 = new User(
+		user1.setId(1L);
+		user2 = new User(
 			"user2",
 			"baekjoon2",
 			"github2",
@@ -74,6 +80,7 @@ public class ProblemFacadeTest {
 			"11551",
 			"notion"
 		);
+		user2.setId(2L);
 
 		// Set up Algorithms
 		Algorithm algorithm1 = new Algorithm(1, 1, "Algorithm 1", 2, null);
@@ -109,6 +116,11 @@ public class ProblemFacadeTest {
 			SolvedProblem.builder().user(user1).problem(problem1).build(),
 			SolvedProblem.builder().user(user2).problem(problem1).build()
 		);
+
+		user1SolvedProblems = Arrays.asList(
+			SolvedProblem.builder().user(user1).problem(problem1).build(),
+			SolvedProblem.builder().user(user1).problem(problem2).build()
+		);
 	}
 
 	@Test
@@ -132,6 +144,35 @@ public class ProblemFacadeTest {
 
 		// Then
 		assertEquals(expectedUsers, actualUsers);
+	}
+
+	@Test
+	@DisplayName("유저가 푼 문제 목록 조회 성공 테스트")
+	void getSolvedProblemListByUser_shouldReturnListOfSolvedProblem() {
+		// Given=
+		when(problemService.findUser(user1.getGithubId())).thenReturn(user1); // 추가된 부분
+		when(problemSolvingService.getSolvedProblemListByUser(user1.getId())).thenReturn(user1SolvedProblems);
+		when(problemMapper.mapSolvedProblemToDtoList(user1SolvedProblems)).thenReturn(
+			Arrays.asList(
+				ProblemSolvedResponseDto.builder()
+					.problemId(1L)
+					.problemTitle("Problem 1")
+					.isSolved(true)
+					.problemDifficulty(3)
+					.build(),
+				ProblemSolvedResponseDto.builder()
+					.problemId(2L)
+					.problemTitle("Problem 2")
+					.isSolved(true)
+					.problemDifficulty(4)
+					.build()
+			));
+
+		// When
+		List<ProblemSolvedResponseDto> result = problemFacade.getSolvedProblemListByUser(user1.getGithubId());
+		// Then
+		assertEquals(2, result.size());
+		verify(problemService).findUser(user1.getGithubId()); // 추가된 부분
 	}
 
 }

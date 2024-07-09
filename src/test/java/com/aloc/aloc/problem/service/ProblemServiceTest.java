@@ -42,7 +42,6 @@ public class ProblemServiceTest {
 
 	@BeforeEach
 	void setUp() {
-
 		// Set up Algorithms
 		Algorithm algorithm1 = new Algorithm(1, 1, "Algorithm 1", 2, null);
 		Algorithm algorithm2 = new Algorithm(2, 2, "Algorithm 2", 2, null);
