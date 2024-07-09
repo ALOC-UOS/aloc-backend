@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.repository;
 
+import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +23,6 @@ public interface SolvedProblemRepository extends JpaRepository<SolvedProblem, Lo
 	List<SolvedProblem> findAllByUserIdAndProblemIdIn(Long userId, List<Long> problemId);
 
 	List<SolvedProblem> findAllByUserIdOrderBySolvedAtDesc(Long userId);
+
+	Optional<SolvedProblem> findByUserIdAndProblemId(Long userId, Long problemId);
 }

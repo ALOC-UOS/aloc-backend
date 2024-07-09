@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final UserSortingService userSortingService;
 
 	private void checkAdmin(String githubId) {
 		Optional<User> userOptional = userRepository.findByGithubId(githubId);
@@ -31,8 +32,10 @@ public class UserService {
 	}
 
 	public List<UserResponseDto> getUsers() {
-		List<User> users = userRepository.findAllByAuthority(Authority.ROLE_USER);
-		return UserResponseDto.listOf(users);
+		List<Authority> authorities = List.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
+		List<User> users = userRepository.findAllByAuthorityIn(authorities);
+		List<User> sortingUsers = userSortingService.sortUserList(users);
+		return UserResponseDto.listOf(sortingUsers);
 	}
 
 	public String addUser(String username, String githubId) {

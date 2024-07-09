@@ -27,6 +27,9 @@ public class UserServiceTest {
 	@Mock
 	private UserRepository userRepository;
 
+	@Mock
+	private UserSortingService userSortingService;
+
 	@InjectMocks
 	private UserService userService;
 
@@ -80,7 +83,9 @@ public class UserServiceTest {
 	@DisplayName("스터디 멤버 목록 조회 테스트")
 	void getUsers_shouldReturnOnlyRegularUsers() {
 		// Given
-		when(userRepository.findAllByAuthority(Authority.ROLE_USER)).thenReturn(Arrays.asList(regularUser));
+		List<Authority> authorities = Arrays.asList(Authority.ROLE_USER, Authority.ROLE_ADMIN);
+		when(userRepository.findAllByAuthorityIn(authorities)).thenReturn(Arrays.asList(regularUser));
+		when(userSortingService.sortUserList(Arrays.asList(regularUser))).thenReturn(Arrays.asList(regularUser));
 
 		// When
 		List<UserResponseDto> result = userService.getUsers();
@@ -88,7 +93,8 @@ public class UserServiceTest {
 		// Then
 		assertEquals(1, result.size());
 		assertEquals(regularUser.getUsername(), result.get(0).getUsername());
-		verify(userRepository).findAllByAuthority(Authority.ROLE_USER);
+
+		verify(userRepository).findAllByAuthorityIn(authorities);
 	}
 
 	@Test
