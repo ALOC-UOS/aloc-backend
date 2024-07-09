@@ -23,7 +23,7 @@ public class HistoryController {
 
 	@GetMapping()
 	@Operation(summary = "히스토리 목록 조회", description = "최근 추가된 순서로 모든 히스토리 목록 조회")
-	public CustomApiResponse<List<HistoryResponseDto>> getProblems() {
+	public CustomApiResponse<List<HistoryResponseDto>> getHistories() {
 		return CustomApiResponse.onSuccess(historyService.getHistories());
 	}
 }
