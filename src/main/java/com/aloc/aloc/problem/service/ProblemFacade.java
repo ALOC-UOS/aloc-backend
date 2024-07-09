@@ -96,7 +96,7 @@ public class ProblemFacade {
 			.collect(Collectors.toList());
 
 		// 사용자가 풀지 않은 문제 목록을 가져옵니다.
-		List<Problem> unsolvedProblems = problemService.getUnsolvedProblemsByUserIdAndSolvedProblemIds(user.getId(), solvedProblemIds);
+		List<Problem> unsolvedProblems = problemService.getUnsolvedProblemsBySolvedProblemIds(solvedProblemIds);
 
 		return unsolvedProblems.stream()
 			.map(problem -> problemMapper.mapToProblemSolvedResponseDto(problem, false))
