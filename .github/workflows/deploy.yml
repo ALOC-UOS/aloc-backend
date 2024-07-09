@@ -62,6 +62,10 @@ jobs:
           username: ${{ secrets.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest
+            docker stop aloc-spring || true
+            docker rm aloc-spring || true
             docker run -d --name aloc-spring \
                --network my_network \
                --ip 172.18.0.2 \
