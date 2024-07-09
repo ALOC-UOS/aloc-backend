@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,5 +199,38 @@ public class ProblemControllerTest {
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.isSuccess").value(false))
 			.andExpect(jsonPath("$.code").value("COMMON400"));
+	}
+
+	@Test
+	@WithMockUser
+	@Tag("알고리즘 Id와 시즌으로 공개된 문제 불러오기")
+	void getProblemsByAlgorithmIdAndSeason() throws Exception {
+		// given
+		int season = 1;
+		int algorithmId = 1;
+
+		List<ProblemResponseDto> problems = Arrays.asList(
+			new ProblemResponseDto(1L, "Problem 1", null, 3, 100),
+			new ProblemResponseDto(2L, "Problem 2", null, 4, 50)
+		);
+		when(problemService.getVisibleProblemsByAlgorithm(season, algorithmId)).thenReturn(problems);
+
+		// when & then
+		mockMvc.perform(get("/api2/problem/season/{season}/algorithmId/{algorithmId}", season, algorithmId)
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.isSuccess").value(true))
+			.andExpect(jsonPath("$.code").value("COMMON200"))
+			.andExpect(jsonPath("$.result").isArray())
+			.andExpect(jsonPath("$.result[0].id").value(1))
+			.andExpect(jsonPath("$.result[0].title").value("Problem 1"))
+			.andExpect(jsonPath("$.result[0].tags").isEmpty())
+			.andExpect(jsonPath("$.result[0].difficulty").value(3))
+			.andExpect(jsonPath("$.result[0].solvingCount").value(100))
+			.andExpect(jsonPath("$.result[1].id").value(2))
+			.andExpect(jsonPath("$.result[1].title").value("Problem 2"))
+			.andExpect(jsonPath("$.result[1].tags").isEmpty())
+			.andExpect(jsonPath("$.result[1].difficulty").value(4))
+			.andExpect(jsonPath("$.result[1].solvingCount").value(50));
 	}
 }

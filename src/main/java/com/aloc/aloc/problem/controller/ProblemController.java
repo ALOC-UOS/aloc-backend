@@ -37,12 +37,12 @@ public class ProblemController {
 		return CustomApiResponse.onSuccess(problemService.getVisibleProblemsWithSolvingCount());
 	}
 
-	@GetMapping("/")
+	@GetMapping("/season/{season}/algorithmId/{algorithmId}")
 	@Operation(summary = "알고리즘 Id와 시즌로 문제 목록 조회",
 		description = "특정 시즌의 최근 생성일 기준으로 정렬하여 특정 알고리즘 문제 목록을 조회합니다.")
 	public CustomApiResponse<List<ProblemResponseDto>> getProblemsByAlgorithmIdAndSeason(
-		@Parameter(description = "시즌", required = true) @RequestParam int season,
-		@Parameter(description = "알고리즘 ID", required = true) @RequestParam int algorithmId) {
+		@Parameter(description = "시즌", required = true) @PathVariable int season,
+		@Parameter(description = "알고리즘 ID", required = true) @PathVariable int algorithmId) {
 		return CustomApiResponse.onSuccess(problemService.getVisibleProblemsByAlgorithm(season, algorithmId));
 	}
 
