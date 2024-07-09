@@ -16,11 +16,11 @@ import com.aloc.aloc.problemtype.enums.Routine;
 public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
 	// hidden이 none인 문제들만 날짜 역순으로정렬해서 가져오기
-	List<Problem> findAllByHiddenIsNullOrderByCreatedAtDesc();
+	List<Problem> findAllByHiddenIsFalseOrderByCreatedAtDesc();
 
 	// updatedAt이 현재 날짜 이후인 공개된 문제 찾기
 	@Query("SELECT p FROM Problem p "
-		+ "WHERE p.problemType.id = :problemTypeId AND p.hidden IS NULL "
+		+ "WHERE p.problemType.id = :problemTypeId AND p.hidden IS FALSE "
 		+ "ORDER BY p.updatedAt DESC "
 		+ "LIMIT 1")
 	Problem findLatestPublicProblemByProblemTypeId(@Param("problemTypeId") Long problemTypeId);

@@ -38,7 +38,7 @@ public class ProblemService {
 
 	public List<ProblemResponseDto> getVisibleProblemsWithSolvingCount() {
 		// 공개된 문제 목록을 정렬하여 가져옵니다.
-		List<Problem> problems = problemRepository.findAllByHiddenIsNullOrderByCreatedAtDesc();
+		List<Problem> problems = problemRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
 		return problems.stream()
 			.map(problemMapper::mapToProblemResponseDto)
 			.collect(Collectors.toList());
