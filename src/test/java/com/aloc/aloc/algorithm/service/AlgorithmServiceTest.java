@@ -48,7 +48,7 @@ class AlgorithmServiceTest {
 	@DisplayName("모든 알고리즘 조회 성공")
 	void getAlgorithms() {
 		// given
-		when(algorithmRepository.findAllByOrderByCreatedAtDesc())
+		when(algorithmRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc())
 			.thenReturn(algorithms);
 
 		// when
@@ -75,7 +75,7 @@ class AlgorithmServiceTest {
 	void getAlgorithmsBySeason() {
 		// given
 		int season = 2;
-		when(algorithmRepository.findAllBySeasonOrderByCreatedAtDesc(season))
+		when(algorithmRepository.findAllBySeasonAndHiddenFalseOrderByCreatedAtDesc(season))
 			.thenReturn(algorithms.subList(0, 3));
 
 		// when
