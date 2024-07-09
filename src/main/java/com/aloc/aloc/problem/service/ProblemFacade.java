@@ -96,11 +96,13 @@ public class ProblemFacade {
 			.collect(Collectors.toList());
 
 		// 사용자가 풀지 않은 문제 목록을 가져옵니다.
-		List<Problem> unsolvedProblems = problemService.getUnsolvedProblemsBySolvedProblemIds(solvedProblemIds);
+		List<Problem> unsolvedProblems = problemService.getUnsolvedProblemsBySolvedProblemIds(
+			solvedProblemIds);
 
 		return unsolvedProblems.stream()
 			.map(problem -> problemMapper.mapToProblemSolvedResponseDto(problem, false))
 			.collect(Collectors.toList());
+	}
 
 	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId) {
 		User user = problemService.findUser(githubId);
