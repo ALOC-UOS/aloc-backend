@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.algorithm.dto.response.AlgorithmDto;
@@ -23,7 +21,7 @@ public class AlgorithmService {
 	private final AlgorithmRepository algorithmRepository;
 
 	public List<AlgorithmResponseDto> getAlgorithms() {
-		List<Algorithm> algorithms = algorithmRepository.findAllByOrderByCreatedAtDesc();
+		List<Algorithm> algorithms = algorithmRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
 		// 시즌별로 그룹화
 		Map<Integer, List<AlgorithmDto>> groupedBySeason = algorithms.stream()
 				.collect(Collectors.groupingBy(
@@ -32,7 +30,6 @@ public class AlgorithmService {
 										.week(algorithm.getWeek())
 										.algorithmId(algorithm.getAlgorithmId())
 										.name(algorithm.getName())
-										.hidden(algorithm.getHidden())
 										.build(),
 								Collectors.toList())
 				));
@@ -46,7 +43,7 @@ public class AlgorithmService {
 	}
 
 	public AlgorithmResponseDto getAlgorithmsBySeason(int season) {
-		List<Algorithm> algorithms = algorithmRepository.findAllBySeasonOrderByCreatedAtDesc(season);
+		List<Algorithm> algorithms = algorithmRepository.findAllBySeasonAndHiddenFalseOrderByCreatedAtDesc(season);
 		return AlgorithmResponseDto.builder()
 						.season(season)
 						.algorithms(AlgorithmDto.listOf(algorithms))

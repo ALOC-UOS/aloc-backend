@@ -101,5 +101,12 @@ public class ProblemFacade {
 		return unsolvedProblems.stream()
 			.map(problem -> problemMapper.mapToProblemSolvedResponseDto(problem, false))
 			.collect(Collectors.toList());
+
+	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId) {
+		User user = problemService.findUser(githubId);
+
+		List<SolvedProblem> solvedProblems = problemSolvingService.getSolvedProblemListByUser(user.getId());
+
+		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
 }

@@ -27,8 +27,8 @@ public class ProblemService {
 	private final ProblemMapper problemMapper;
 	private final PasswordEncoder passwordEncoder;
 
-	User findUser(String username) {
-		return userRepository.findByGithubId(username)
+	User findUser(String githubId) {
+		return userRepository.findByGithubId(githubId)
 			.orElseThrow(() -> new IllegalArgumentException("사용자 정보가 없습니다."));
 	}
 

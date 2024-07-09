@@ -18,7 +18,7 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, AlgorithmP
 	// 특정 season 중에서 hidden이 false인 것 중 가장 마지막 항목 가져오기
 	Optional<Algorithm> findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(int season);
 
-	List<Algorithm> findAllByOrderByCreatedAtDesc();
+	List<Algorithm> findAllByHiddenIsFalseOrderByCreatedAtDesc();
 
-	List<Algorithm> findAllBySeasonOrderByCreatedAtDesc(int season);
+	List<Algorithm> findAllBySeasonAndHiddenFalseOrderByCreatedAtDesc(int season);
 }
