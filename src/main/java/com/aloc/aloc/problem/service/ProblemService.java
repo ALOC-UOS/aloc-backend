@@ -9,14 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.SolvedProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.problem.repository.SolvedProblemRepository;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
 import com.aloc.aloc.user.User;
-import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 import com.aloc.aloc.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,11 +21,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ProblemService {
-	private final ProblemSolvingService problemSolvingService;
 	private final UserRepository userRepository;
 	private final ProblemRepository problemRepository;
 	private final ProblemTypeRepository problemTypeRepository;
-	private final SolvedProblemRepository solvedProblemRepository;
 	private final ProblemMapper problemMapper;
 	private final PasswordEncoder passwordEncoder;
 
@@ -50,20 +45,6 @@ public class ProblemService {
 			.findPublicProblemsByAlgorithm(season, algorithmId);
 		return problems.stream()
 			.map(problemMapper::mapToProblemResponseDto)
-			.collect(Collectors.toList());
-	}
-
-	public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
-		// 문제가 존재하는지 확인합니다.
-		checkProblemExist(problemId);
-
-		// 문제를 푼 사용자 목록을 가져옵니다.
-		List<SolvedProblem> solvedProblems = solvedProblemRepository.findAllByProblemId(problemId);
-		return solvedProblems.stream()
-			.map(solvedProblem -> {
-				User user = solvedProblem.getUser();
-				return problemMapper.mapToSolvedUserResponseDto(user, solvedProblem);
-			})
 			.collect(Collectors.toList());
 	}
 
