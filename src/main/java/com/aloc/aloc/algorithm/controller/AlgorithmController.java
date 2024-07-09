@@ -25,13 +25,13 @@ public class AlgorithmController {
 	private final AlgorithmService algorithmService;
 
 	@GetMapping()
-	@Operation(summary = "알고리즘 목록 조회", description = "모든 알고리즘 목록을 최신 순서로 조회합니다.")
+	@Operation(summary = "알고리즘 목록 조회", description = "모든 공개된 알고리즘 목록을 최신 순서로 조회합니다.")
 	public CustomApiResponse<List<AlgorithmResponseDto>> getAlgorithms() {
 		return CustomApiResponse.onSuccess(algorithmService.getAlgorithms());
 	}
 
 	@GetMapping("/{season}")
-	@Operation(summary = "특정 시즌 알고리즘 목록 조회", description = "특정 시즌의 알고리즘 목록을 최신 순서로 조회합니다.")
+	@Operation(summary = "특정 시즌 알고리즘 목록 조회", description = "특정 시즌의 공개된 알고리즘 목록을 최신 순서로 조회합니다.")
 	public CustomApiResponse<AlgorithmResponseDto> getAlgorithmsBySeason(
 		@Parameter(description = "알고리즘 시즌", required = true) @PathVariable() int season
 	) {

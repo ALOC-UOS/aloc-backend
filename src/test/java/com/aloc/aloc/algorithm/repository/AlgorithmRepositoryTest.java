@@ -88,4 +88,24 @@ public class AlgorithmRepositoryTest {
 		assertNotNull(result);
 		assertEquals("수학", result.get().getName());
 	}
+
+	@Test
+	@DisplayName("최신 순으로 특정 시즌의 공개된 알고리즘 목록 불러오기")
+	void findAllBySeasonOrderByCreatedAtDesc() {
+		List<Algorithm> result = algorithmRepository.findAllBySeasonAndHiddenFalseOrderByCreatedAtDesc(1);
+
+		assertNotNull(result);
+		assertEquals(3, result.get(0).getWeek());
+	}
+
+	@Test
+	@DisplayName("최신 순으로 모든 공개된 알고리즘 목록 불러오기")
+	void findAllByOrderByCreatedAtDesc() {
+		List<Algorithm> result = algorithmRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
+
+		assertNotNull(result);
+		assertEquals(3, result.size());
+		assertEquals(3, result.get(0).getWeek());
+		assertEquals(false, result.get(0).getHidden());
+	}
 }

@@ -39,6 +39,15 @@ public class ProblemController {
 		return CustomApiResponse.onSuccess(problemService.getVisibleProblemsWithSolvingCount());
 	}
 
+	@GetMapping("/season/{season}/algorithmId/{algorithmId}")
+	@Operation(summary = "알고리즘 Id와 시즌로 문제 목록 조회",
+		description = "특정 시즌의 최근 생성일 기준으로 정렬하여 특정 알고리즘 문제 목록을 조회합니다.")
+	public CustomApiResponse<List<ProblemResponseDto>> getProblemsByAlgorithmIdAndSeason(
+		@Parameter(description = "시즌", required = true) @PathVariable int season,
+		@Parameter(description = "알고리즘 ID", required = true) @PathVariable int algorithmId) {
+		return CustomApiResponse.onSuccess(problemService.getVisibleProblemsByAlgorithm(season, algorithmId));
+	}
+
 	@GetMapping("/solved-user/{problemId}")
 	@Operation(summary = "해당 문제를 푼 사용자 목록 조회", description = "해당 문제를 푼 사용자 목록을 조회합니다.")
 	public CustomApiResponse<List<SolvedUserResponseDto>> getSolvedUserList(
@@ -73,9 +82,17 @@ public class ProblemController {
 		return CustomApiResponse.onSuccess(problemFacade.getWeeklyCompletionStatus(user.getUsername()));
 	}
 
-	@GetMapping("/solved/{githubId}")
+	@GetMapping("/unsolved/user/{githubId}")
+	@Operation(summary = "유저의 풀지 않은 문제 조회", description = "유저가 풀지 않은 문제를 조회합니다.")
+	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUnsolvedProblemList(
+		@Parameter(required = true) @PathVariable() String githubId
+	) {
+		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId));
+	}
+
+	@GetMapping("/solved/user/{githubId}")
 	@Operation(summary = "유저의 문제 해결 정보 조회", description = "유저가 푼 문제 리스트를 가져옵니다.")
-	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUserCompletionStatus(
+	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUserSolvedProblemList(
 		@Parameter(description = "유저 깃허브 아이디", required = true) @PathVariable() String githubId
 	) {
 		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId));

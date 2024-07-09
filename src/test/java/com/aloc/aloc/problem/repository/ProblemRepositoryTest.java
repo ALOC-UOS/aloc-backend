@@ -44,7 +44,7 @@ public class ProblemRepositoryTest {
 	@DisplayName("공개된 문제를 생성일 기준 정렬하여 가져오기")
 	void findAllByHiddenIsNullOrderByCreatedAtDesc_ShouldReturnNonHiddenProblemsOrderedByCreatedAtDesc() {
 		// when
-		List<Problem> problems = problemRepository.findAllByHiddenIsNullOrderByCreatedAtDesc();
+		List<Problem> problems = problemRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
 
 		// then
 		assertThat(problems).hasSize(3);

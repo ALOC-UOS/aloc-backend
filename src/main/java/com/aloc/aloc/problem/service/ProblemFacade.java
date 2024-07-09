@@ -84,6 +84,26 @@ public class ProblemFacade {
 			.collect(Collectors.toList());
 	}
 
+	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(String githubId) {
+		// 사용자 정보를 가져옵니다.
+		User user = problemService.findUser(githubId);
+
+		// 사용자가 푼 문제 ID 목록을 가져옵니다.
+		List<Long> solvedProblemIds = problemSolvingService.getSolvedProblemListByUser(user.getId())
+			.stream()
+			.map(SolvedProblem::getProblem)
+			.map(Problem::getId)
+			.collect(Collectors.toList());
+
+		// 사용자가 풀지 않은 문제 목록을 가져옵니다.
+		List<Problem> unsolvedProblems = problemService.getUnsolvedProblemsBySolvedProblemIds(
+			solvedProblemIds);
+
+		return unsolvedProblems.stream()
+			.map(problem -> problemMapper.mapToProblemSolvedResponseDto(problem, false))
+			.collect(Collectors.toList());
+	}
+
 	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId) {
 		User user = problemService.findUser(githubId);
 

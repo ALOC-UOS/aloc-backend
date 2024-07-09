@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
@@ -24,6 +25,7 @@ public class ProblemService {
 	private final ProblemRepository problemRepository;
 	private final ProblemTypeRepository problemTypeRepository;
 	private final ProblemMapper problemMapper;
+	private final PasswordEncoder passwordEncoder;
 
 	User findUser(String githubId) {
 		return userRepository.findByGithubId(githubId)
@@ -32,7 +34,15 @@ public class ProblemService {
 
 	public List<ProblemResponseDto> getVisibleProblemsWithSolvingCount() {
 		// 공개된 문제 목록을 정렬하여 가져옵니다.
-		List<Problem> problems = problemRepository.findAllByHiddenIsNullOrderByCreatedAtDesc();
+		List<Problem> problems = problemRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
+		return problems.stream()
+			.map(problemMapper::mapToProblemResponseDto)
+			.collect(Collectors.toList());
+	}
+
+	public List<ProblemResponseDto> getVisibleProblemsByAlgorithm(int season, int algorithmId) {
+		List<Problem> problems = problemRepository
+			.findPublicProblemsByAlgorithm(season, algorithmId);
 		return problems.stream()
 			.map(problemMapper::mapToProblemResponseDto)
 			.collect(Collectors.toList());
@@ -87,5 +97,9 @@ public class ProblemService {
 
 	List<Problem> getProblemsByAlgorithmWeekAndProblemTypeId(Integer algorithmId, Long problemTypeId) {
 		return problemRepository.findAllByAlgorithmWeekAndProblemTypeId(algorithmId, problemTypeId);
+	}
+
+	public List<Problem> getUnsolvedProblemsBySolvedProblemIds(List<Long> solvedProblemIds) {
+		return problemRepository.findAllByIdNotInAndHiddenIsFalseOrderByCreatedAtDesc(solvedProblemIds);
 	}
 }

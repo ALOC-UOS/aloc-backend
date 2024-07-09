@@ -27,7 +27,7 @@ public class ProblemDummyEntity {
 		em.persist(problemType1);
 		em.persist(problemType2);
 
-		algorithm1 = new Algorithm(1, 1, "Algorithm 1", 2, null);
+		algorithm1 = new Algorithm(1, 1, "Algorithm 1", 2, false);
 		algorithm2 = new Algorithm(2, 2, "Algorithm 2", 2, true);
 		em.persist(algorithm1);
 		em.persist(algorithm2);
@@ -42,10 +42,10 @@ public class ProblemDummyEntity {
 		problem3.setUpdatedAt(LocalDateTime.now().plusDays(3));
 		problem4.setUpdatedAt(LocalDateTime.now().minusDays(1));
 
-		problem1.setHidden(null);
+		problem1.setHidden(false);
 		problem2.setHidden(true);
-		problem3.setHidden(null);
-		problem4.setHidden(null);
+		problem3.setHidden(false);
+		problem4.setHidden(false);
 
 		em.persist(problem1);
 		em.persist(problem2);
