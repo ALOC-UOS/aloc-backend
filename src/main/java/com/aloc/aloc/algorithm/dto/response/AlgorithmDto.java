@@ -16,7 +16,6 @@ public class AlgorithmDto {
 	private int week;
 	private int algorithmId;
 	private String name;
-	private Boolean hidden;
 
 	public static List<AlgorithmDto> listOf(List<Algorithm> algorithms) {
 		return algorithms.stream()
@@ -24,7 +23,6 @@ public class AlgorithmDto {
 				.week(algorithm.getWeek())
 				.algorithmId(algorithm.getAlgorithmId())
 				.name(algorithm.getName())
-				.hidden(algorithm.getHidden())
 				.build())
 			.collect(Collectors.toList());
 	}

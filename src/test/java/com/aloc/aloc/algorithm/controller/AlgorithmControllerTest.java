@@ -59,7 +59,7 @@ class AlgorithmControllerTest {
 
 	private AlgorithmDto createAlgorithmDto(int id, int season) {
 		int algorithmId = 3 * season - (3 - id);
-		return new AlgorithmDto(id, algorithmId, "알고리즘 " + algorithmId, false);
+		return new AlgorithmDto(id, algorithmId, "알고리즘 " + algorithmId);
 	}
 
 	@Test
@@ -77,8 +77,7 @@ class AlgorithmControllerTest {
 			.andExpect(jsonPath("$.result[0].season").value(3))
 			.andExpect(jsonPath("$.result[0].algorithms[0].week").value(3))
 			.andExpect(jsonPath("$.result[0].algorithms[0].algorithmId").value(9))
-			.andExpect(jsonPath("$.result[0].algorithms[0].name").value("알고리즘 9"))
-			.andExpect(jsonPath("$.result[0].algorithms[0].hidden").value(false));
+			.andExpect(jsonPath("$.result[0].algorithms[0].name").value("알고리즘 9"));
 	}
 
 	@Test
@@ -95,7 +94,6 @@ class AlgorithmControllerTest {
 			.andExpect(jsonPath("$.result.season").value(1))
 			.andExpect(jsonPath("$.result.algorithms[0].week").value(3))
 			.andExpect(jsonPath("$.result.algorithms[0].algorithmId").value(3))
-			.andExpect(jsonPath("$.result.algorithms[0].name").value("알고리즘 3"))
-			.andExpect(jsonPath("$.result.algorithms[0].hidden").value(false));
+			.andExpect(jsonPath("$.result.algorithms[0].name").value("알고리즘 3"));
 	}
 }
