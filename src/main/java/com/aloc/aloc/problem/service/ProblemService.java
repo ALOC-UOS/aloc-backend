@@ -25,8 +25,8 @@ public class ProblemService {
 	private final ProblemTypeRepository problemTypeRepository;
 	private final ProblemMapper problemMapper;
 
-	User findUser(String username) {
-		return userRepository.findByGithubId(username)
+	User findUser(String githubId) {
+		return userRepository.findByGithubId(githubId)
 			.orElseThrow(() -> new IllegalArgumentException("사용자 정보가 없습니다."));
 	}
 

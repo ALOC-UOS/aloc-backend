@@ -19,5 +19,5 @@ public interface SolvedProblemRepository extends JpaRepository<SolvedProblem, Lo
 
 	boolean existsByUserIdAndProblemId(Long userId, Long problemId);
 
-	List<SolvedProblem> findAllByUserIdAndProblemIdIn(Long userId, List<Long> problemId);
+	List<SolvedProblem> findAllByUserIdOrderBySolvedAtDesc(Long userId);
 }
