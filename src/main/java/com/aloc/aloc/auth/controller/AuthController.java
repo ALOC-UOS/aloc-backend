@@ -41,6 +41,19 @@ public class AuthController {
 		responseCode = "200",
 		description = "success"
 	)
+	@ApiResponse(
+		responseCode = "400",
+		description = "이미 존재하는 유저입니다."
+	)
+	@ApiResponse(
+		responseCode = "400",
+		description = "깃허브 프로필을 찾을 수 없습니다."
+	)
+	@ApiResponse(
+		responseCode = "400",
+		description = "잘못된 백준 아이디입니다."
+
+	)
 	@Operation(summary = "회원 가입", description = "새로운 회원으로 가입합니다.")
 	public void signUp(@RequestBody @Valid UserRequestDto userRequestDto) {
 		authService.signUp(userRequestDto);
