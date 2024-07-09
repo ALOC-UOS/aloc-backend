@@ -5,7 +5,7 @@ on:
     branches: [ develop ]
 env:
   DOCKER_IMAGE: bae4614/aloc-spring
-  VERSION: ${{ github.sha }}
+  VERSION: latest
 
 jobs:
   deploy:
@@ -53,7 +53,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest
 
       - name: Deploy to Amazon Lightsail
         uses: appleboy/ssh-action@master
@@ -62,11 +62,11 @@ jobs:
           username: ${{ secrets.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
-            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker pull ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
-            docker stop aloc-spring || true
-            docker rm aloc-spring || true
-            docker run -d -p 8080:8080 --name aloc-spring --restart always --network shared-network ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
+            docker run -d --name aloc-spring \
+               --network my_network \
+               --ip 172.18.0.2 \
+               -p 8080:8080 \
+               ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest
 
       - name: Send deployment status to Discord
         if: success()
@@ -75,7 +75,7 @@ jobs:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           content: |
             배포가 성공적으로 완료되었어요 🚀
-            Docker image: ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
+            Docker image: ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest
 
       - name: Send deployment failure to Discord
         if: failure()
@@ -84,5 +84,5 @@ jobs:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           content: |
             배포 중 문제가 발생했어요 ❌
-            Docker image: ${{ secrets.DOCKER_USERNAME }}/aloc-spring:${{ github.sha }}
+            Docker image: ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest
             url: https://github.com/ALOC-UOS/aloc-backend/actions/runs/${{ github.run_id }}
