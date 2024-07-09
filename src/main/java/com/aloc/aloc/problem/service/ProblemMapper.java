@@ -65,6 +65,7 @@ public class ProblemMapper {
 			.build();
 	}
 
+	// 안 푼 문제 + 푼 문제 모두 합쳐져 있음.
 	List<ProblemSolvedResponseDto> mapToProblemSolvedResponseDtoList(
 		List<Problem> problems, List<SolvedProblem> solvedProblems
 	) {
@@ -81,6 +82,22 @@ public class ProblemMapper {
 				.problemDifficulty(problem.getDifficulty())
 				.isSolved(solvedProblemIds.contains(problem.getId()))
 				.build())
+			.collect(Collectors.toList());
+	}
+
+	List<ProblemSolvedResponseDto> mapSolvedProblemToDtoList(
+		List<SolvedProblem> solvedProblemList
+	) {
+		return solvedProblemList.stream()
+			.map(solvedProblem -> {
+				Problem problem = solvedProblem.getProblem();
+				return ProblemSolvedResponseDto.builder()
+					.problemId(problem.getId())
+					.problemTitle(problem.getTitle())
+					.problemDifficulty(problem.getDifficulty())
+					.isSolved(true)
+					.build();
+			})
 			.collect(Collectors.toList());
 	}
 

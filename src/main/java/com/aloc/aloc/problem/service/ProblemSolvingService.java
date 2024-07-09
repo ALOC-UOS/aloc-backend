@@ -71,4 +71,8 @@ public class ProblemSolvingService {
 	public List<SolvedProblem> getSolvedUserListByProblemId(Long problemId) {
 		return solvedProblemRepository.findAllByProblemId(problemId);
 	}
+
+	public List<SolvedProblem> getSolvedProblemListByUser(Long userId) {
+		return solvedProblemRepository.findAllByUserIdOrderBySolvedAtDesc(userId);
+	}
 }
