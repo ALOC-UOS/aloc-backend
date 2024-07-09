@@ -88,4 +88,8 @@ public class ProblemService {
 	List<Problem> getProblemsByAlgorithmWeekAndProblemTypeId(Integer algorithmId, Long problemTypeId) {
 		return problemRepository.findAllByAlgorithmWeekAndProblemTypeId(algorithmId, problemTypeId);
 	}
+
+	public List<Problem> getUnsolvedProblemsByUserIdAndSolvedProblemIds(Long id, List<Long> solvedProblemIds) {
+		return problemRepository.findAllByIdNotInAndHiddenIsFalse(solvedProblemIds);
+	}
 }
