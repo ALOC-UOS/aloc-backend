@@ -33,8 +33,11 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
 	List<Problem> findAllByAlgorithmWeekAndProblemTypeId(Integer id, Long problemTypeId);
 
+	List<Problem> findAllByIdNotInAndHiddenIsFalseOrderByCreatedAtDesc(List<Long> solvedProblemIds);
+
 	@Query("SELECT p FROM Problem p "
 		+ "WHERE p.algorithm.season = :season AND p.algorithm.algorithmId = :algorithmId AND p.hidden = false "
 		+ "ORDER BY p.createdAt DESC")
 	List<Problem> findPublicProblemsByAlgorithm(@Param("season") int season, @Param("algorithmId") int algorithmId);
+
 }

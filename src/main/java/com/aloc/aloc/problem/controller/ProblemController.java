@@ -82,6 +82,13 @@ public class ProblemController {
 		return CustomApiResponse.onSuccess(problemFacade.getWeeklyCompletionStatus(user.getUsername()));
 	}
 
+	@GetMapping("/unsolved/user/{githubId}")
+	@Operation(summary = "유저의 풀지 않은 문제 조회", description = "유저가 풀지 않은 문제를 조회합니다.")
+	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUnsolvedProblemList(
+		@Parameter(required = true) @PathVariable() String githubId
+	) {
+		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId));
+
 	@GetMapping("/solved/user/{githubId}")
 	@Operation(summary = "유저의 문제 해결 정보 조회", description = "유저가 푼 문제 리스트를 가져옵니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUserSolvedProblemList(
