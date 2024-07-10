@@ -13,6 +13,7 @@ import com.aloc.aloc.color.service.ColorService;
 import com.aloc.aloc.problem.service.ProblemFacade;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problem.service.ProblemSolvingService;
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
 import com.aloc.aloc.user.enums.Authority;
@@ -34,6 +35,8 @@ public class UserFacade {
 
 	@Value("${app.season}")
 	private int season;
+	private int thisWeekUnsolvedCount;
+
 
 	public List<UserDetailResponseDto> getUsers() {
 		List<Authority> authorities = List.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
@@ -41,10 +44,10 @@ public class UserFacade {
 		List<User> sortingUsers = userSortingService.sortUserList(users);
 		return sortingUsers.stream().map( user -> {
 			int solvedCount = problemSolvingService.getSolvedCount(user.getId());
-			int totalProblemCount = problemService.getTotalProblemCount();
+			int totalProblemCount = problemService.getTotalProblemCount(user.getCourse());
 			int unsolvedCount = totalProblemCount - solvedCount;
-			int thisWeekSolvedCount = getThisWeekCount(user.getId());
-
+			getThisWeekCount(user.getId(), user.getCourse());
+//			int thisWeekProblemCount, thisWeekUnSolvedCount =  getThisWeekCount(user.getId(), user.getCourse());
 			// Color 데이터 가져오기
 			Color userColor = colorService.getColorById(user.getProfileColor());
 
@@ -59,7 +62,8 @@ public class UserFacade {
 				.coin(user.getCoin())
 				.solved(solvedCount)
 				.unsolved(unsolvedCount)
-				.thisWeekUnsolved(totalProblemCount - thisWeekSolvedCount)
+				.todayUnsolved(problemFacade.getTodayProblemSolved(user.getId(), user.getCourse()))
+				.thisWeekUnsolved(thisWeekUnsolvedCount)
 				.colorCategory(userColor.getCategory())
 				.color1(userColor.getColor1())
 				.color2(userColor.getColor2())
@@ -72,8 +76,15 @@ public class UserFacade {
 		}).collect(Collectors.toList());
 	}
 
-	private int getThisWeekCount(Long userId) {
+	private void getThisWeekCount(Long userId, Course course) {
+		// 이번주에 푼 문제, 안 푼 문제들의 횟수를 가져옵니다.
 		Algorithm algorithm = algorithmService.getAlgorithmBySeason(season).orElseThrow();
-		return problemFacade.getThisWeekSolvedCount(userId, algorithm.getAlgorithmId(), season);
+		List<Integer> thisWeekData =
+			problemFacade.getThisWeekSolvedCount(userId, algorithm.getAlgorithmId(), season, course);
+
+		// 나중에 필요할 경우를 대비해 남겨둠
+//		int thisWeekSolvedCount = thisWeekData.get(0);
+//		int thisWeekProblemCount = thisWeekData.get(1);
+		thisWeekUnsolvedCount = thisWeekData.get(2);
 	}
 }

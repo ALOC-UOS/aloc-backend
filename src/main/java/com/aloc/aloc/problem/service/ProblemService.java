@@ -105,11 +105,7 @@ public class ProblemService {
 		return problemRepository.findAllByIdNotInAndHiddenIsFalseOrderByCreatedAtDesc(solvedProblemIds);
 	}
 
-	public int getTotalProblemCount() {
-		return problemRepository.countAll();
-	}
-
-	public List<Problem> getProblemsByAlgorithmId(int algorithmId, int season) {
-		return problemRepository.findPublicProblemsByAlgorithm(season, algorithmId);
+	public int getTotalProblemCount(Course course) {
+		return problemRepository.countAllByCourse(course);
 	}
 }

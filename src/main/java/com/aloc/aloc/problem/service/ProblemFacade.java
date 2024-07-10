@@ -13,6 +13,7 @@ import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.SolvedProblem;
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
@@ -112,10 +113,20 @@ public class ProblemFacade {
 		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
 
-	public Integer getThisWeekSolvedCount(Long userId, int algorithmId, int season) {
-		List<Problem> thisWeekProblems = problemService.getProblemsByAlgorithmId(season, algorithmId);
-		return (int) thisWeekProblems.stream()
+	public List<Integer> getThisWeekSolvedCount(Long userId, int algorithmId, int season, Course course) {
+		List<ProblemResponseDto> thisWeekProblems =
+			problemService.getVisibleProblemsByAlgorithm(season, algorithmId, course);
+		int solvedCount =  (int) thisWeekProblems.stream()
 			.filter(problem -> problemSolvingService.isProblemAlreadySolved(userId, problem.getId()))
 			.count();
+		Integer problemCount = thisWeekProblems.size();
+		Integer unsolvedCount = thisWeekProblems.size() - solvedCount;
+		return List.of(solvedCount, problemCount, unsolvedCount);
+	}
+
+	public Boolean getTodayProblemSolved(Long userId, Course course) {
+		// 오늘의 문제를 가져옵니다.
+		ProblemResponseDto todayProblem = problemService.findTodayProblemByCourse(course);
+		return problemSolvingService.isProblemAlreadySolved(userId, todayProblem.getId());
 	}
 }

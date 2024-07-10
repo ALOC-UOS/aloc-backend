@@ -13,7 +13,7 @@ public class UserDetailResponseDto extends UserResponseDto {
 	private final Integer solved;
 	private final Integer unsolved;
 	private final Integer thisWeekUnsolved;
-	private final Integer todayUnsolved;
+	private final Boolean todayUnsolved;
 	private final String colorCategory;
 	private final String color1;
 	private final String color2;
@@ -27,7 +27,7 @@ public class UserDetailResponseDto extends UserResponseDto {
 		Integer solved,
 		Integer unsolved,
 		Integer thisWeekUnsolved,
-		Integer todayUnsolved,
+		Boolean todayUnsolved,
 		String colorCategory,
 		String color1,
 		String color2,
