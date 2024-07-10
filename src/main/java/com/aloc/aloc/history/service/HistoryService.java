@@ -14,6 +14,7 @@ import com.aloc.aloc.history.History;
 import com.aloc.aloc.history.dto.response.HistoryContentDto;
 import com.aloc.aloc.history.dto.response.HistoryResponseDto;
 import com.aloc.aloc.history.repository.HistoryRepository;
+import com.aloc.aloc.user.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,5 +52,15 @@ public class HistoryService {
 						.sorted(Comparator.comparing(History::getCreatedAt).reversed())
 						.collect(Collectors.toList())
 				)));
+	}
+
+	public void addHistory(User user, String icon, Integer rank) {
+		historyRepository.save(History.builder()
+				.user(user)
+				.username(user.getUsername())
+				.icon(icon)
+				.rank(rank)
+				.build()
+		);
 	}
 }
