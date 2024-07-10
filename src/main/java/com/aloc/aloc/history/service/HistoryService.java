@@ -35,7 +35,7 @@ public class HistoryService {
 			.map(entry -> {
 				String date = entry.getKey();
 				String formattedDate = date.substring(0, date.length() - 1)
-					+ WEEKDAY_LIST.get(Integer.parseInt(date.substring(date.length() - 1))) + "요일";
+					+ WEEKDAY_LIST.get(Integer.parseInt(date.substring(date.length() - 1)) - 1) + "요일";
 				List<HistoryContentDto> contentDtos = HistoryContentDto.listOf(entry.getValue());
 				return new HistoryResponseDto(formattedDate, contentDtos);
 			})
