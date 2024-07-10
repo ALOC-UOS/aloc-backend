@@ -40,4 +40,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		+ "ORDER BY p.createdAt DESC")
 	List<Problem> findPublicProblemsByAlgorithm(@Param("season") int season, @Param("algorithmId") int algorithmId);
 
+	@Query("SELECT COUNT(p) FROM Problem p")
+	int countAll();
 }

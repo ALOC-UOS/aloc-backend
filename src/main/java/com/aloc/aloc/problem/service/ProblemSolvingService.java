@@ -78,4 +78,8 @@ public class ProblemSolvingService {
 	public List<SolvedProblem> getSolvedProblemListByUser(Long userId) {
 		return solvedProblemRepository.findAllByUserIdOrderBySolvedAtDesc(userId);
 	}
+
+	public int getSolvedCount(Long userId) {
+		return solvedProblemRepository.countByUserId(userId);
+	}
 }
