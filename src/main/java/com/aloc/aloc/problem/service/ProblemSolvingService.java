@@ -12,6 +12,7 @@ import com.aloc.aloc.problem.repository.SolvedProblemRepository;
 import com.aloc.aloc.scraper.SolvedScrapingService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.repository.UserRepository;
+import com.aloc.aloc.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,7 @@ public class ProblemSolvingService {
 	private final SolvedProblemRepository solvedProblemRepository;
 	private final SolvedScrapingService solvedScrapingService;
 	private final UserRepository userRepository;
+	private final UserService userService;
 
 
 	boolean isProblemAlreadySolved(Long userId, Long problemId) {
@@ -59,6 +61,7 @@ public class ProblemSolvingService {
 		int coinToAdd = calculateCoinToAdd(problemId);
 		user.addCoin(coinToAdd);
 		userRepository.save(user);
+		userService.checkUserRank(user);
 
 		// 문제를 푼 정보를 저장합니다.
 		SolvedProblem solvedProblem = SolvedProblem.builder()
