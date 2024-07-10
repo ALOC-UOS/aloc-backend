@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
-import com.aloc.aloc.user.dto.response.UserResponseDto;
+import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
+import com.aloc.aloc.user.service.UserFacade;
 import com.aloc.aloc.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,11 +30,12 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
+	private final UserFacade userFacade;
 
 	@GetMapping("/users")
 	@Operation(summary = "유저 목록 조회", description = "전체 유저 목록을 조회합니다.")
-	public CustomApiResponse<List<UserResponseDto>> getUsers() {
-		return CustomApiResponse.onSuccess(userService.getUsers());
+	public CustomApiResponse<List<UserDetailResponseDto>> getUsers() {
+		return CustomApiResponse.onSuccess(userFacade.getUsers());
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
