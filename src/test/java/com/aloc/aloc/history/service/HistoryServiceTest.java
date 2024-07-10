@@ -1,6 +1,9 @@
 package com.aloc.aloc.history.service;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aloc.aloc.history.History;
 import com.aloc.aloc.history.dto.response.HistoryResponseDto;
 import com.aloc.aloc.history.repository.HistoryRepository;
+import com.aloc.aloc.user.User;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
@@ -32,7 +37,7 @@ class HistoryServiceTest {
 	private HistoryService historyService;
 
 	private List<History> histories;
-
+	private User user;
 	@BeforeEach
 	void setUp() {
 		histories = new ArrayList<>();
@@ -46,6 +51,18 @@ class HistoryServiceTest {
 		histories.add(history1);
 		histories.add(history2);
 		histories.add(history3);
+
+		user = new User(
+			"username",
+			"userBaekjoon",
+			"serGithub",
+			"20210001",
+			"password",
+			"userDiscord",
+			1,
+			"userNotion",
+			"1"
+		);
 	}
 
 	@Test
@@ -66,5 +83,21 @@ class HistoryServiceTest {
 		assertThat(history2).isNotNull();
 		assertThat(history2.getDate()).isNotNull();
 		assertThat(history2.getContents().get(0).getRank()).isEqualTo(33);
+	}
+
+	@Test
+	@DisplayName("히스토리 추가하기 - 멤버 추가")
+	void addHistory() {
+		String icon = "plusMember";
+
+		historyService.addHistory(user, icon, null);
+
+		ArgumentCaptor<History> captor = ArgumentCaptor.forClass(History.class);
+		verify(historyRepository).save(captor.capture());
+		History history = captor.getValue();
+		assertEquals(user, history.getUser());
+		assertEquals(user.getUsername(), history.getUsername());
+		assertEquals(icon, history.getIcon());
+		assertNull(history.getRank());
 	}
 }
