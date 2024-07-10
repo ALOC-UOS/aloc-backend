@@ -45,4 +45,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		@Param("problemTypeId") Long problemTypeId
 	);
 
+	@Query("SELECT COUNT(p) FROM Problem p")
+	int countAll();
 }

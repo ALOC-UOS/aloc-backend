@@ -25,4 +25,6 @@ public interface SolvedProblemRepository extends JpaRepository<SolvedProblem, Lo
 	List<SolvedProblem> findAllByUserIdOrderBySolvedAtDesc(Long userId);
 
 	Optional<SolvedProblem> findByUserIdAndProblemId(Long userId, Long problemId);
+
+	Integer countByUserId(Long userId);
 }

@@ -111,4 +111,11 @@ public class ProblemFacade {
 
 		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
+
+	public Integer getThisWeekSolvedCount(Long userId, int algorithmId, int season) {
+		List<Problem> thisWeekProblems = problemService.getProblemsByAlgorithmId(season, algorithmId);
+		return (int) thisWeekProblems.stream()
+			.filter(problem -> problemSolvingService.isProblemAlreadySolved(userId, problem.getId()))
+			.count();
+	}
 }
