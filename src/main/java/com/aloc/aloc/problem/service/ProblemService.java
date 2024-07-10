@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
+import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
@@ -25,7 +25,6 @@ public class ProblemService {
 	private final ProblemRepository problemRepository;
 	private final ProblemTypeRepository problemTypeRepository;
 	private final ProblemMapper problemMapper;
-	private final PasswordEncoder passwordEncoder;
 
 	User findUser(String githubId) {
 		return userRepository.findByGithubId(githubId)
@@ -40,9 +39,12 @@ public class ProblemService {
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemResponseDto> getVisibleProblemsByAlgorithm(int season, int algorithmId) {
+	public List<ProblemResponseDto> getVisibleProblemsByAlgorithm(int season, int algorithmId, Course course) {
+		ProblemType problemType = problemTypeRepository.findProblemTypeByCourseAndRoutine(course, Routine.DAILY)
+			.orElseThrow(() -> new IllegalArgumentException("문제 타입이 없습니다.")
+		);
 		List<Problem> problems = problemRepository
-			.findPublicProblemsByAlgorithm(season, algorithmId);
+			.findPublicProblemsByAlgorithmAndCourse(season, algorithmId, problemType.getId());
 		return problems.stream()
 			.map(problemMapper::mapToProblemResponseDto)
 			.collect(Collectors.toList());

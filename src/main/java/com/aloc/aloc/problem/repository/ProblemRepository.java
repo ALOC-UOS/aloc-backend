@@ -1,7 +1,5 @@
 package com.aloc.aloc.problem.repository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,8 +34,15 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 	List<Problem> findAllByIdNotInAndHiddenIsFalseOrderByCreatedAtDesc(List<Long> solvedProblemIds);
 
 	@Query("SELECT p FROM Problem p "
-		+ "WHERE p.algorithm.season = :season AND p.algorithm.algorithmId = :algorithmId AND p.hidden = false "
+		+ "WHERE p.algorithm.season = :season "
+		+ "AND p.algorithm.algorithmId = :algorithmId "
+		+ "AND p.problemType.id = :problemTypeId "
+		+ "AND p.hidden = false "
 		+ "ORDER BY p.createdAt DESC")
-	List<Problem> findPublicProblemsByAlgorithm(@Param("season") int season, @Param("algorithmId") int algorithmId);
+	List<Problem> findPublicProblemsByAlgorithmAndCourse(
+		@Param("season") int season,
+		@Param("algorithmId") int algorithmId,
+		@Param("problemTypeId") Long problemTypeId
+	);
 
 }
