@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.aloc.aloc.history.service.HistoryService;
+import com.aloc.aloc.scraper.BaekjoonRankScrapingService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserResponseDto;
 import com.aloc.aloc.user.enums.Authority;
@@ -19,6 +21,8 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final UserSortingService userSortingService;
+	private final HistoryService historyService;
+	private final BaekjoonRankScrapingService baekjoonRankScrapingService;
 
 	private void checkAdmin(String githubId) {
 		Optional<User> userOptional = userRepository.findByGithubId(githubId);
@@ -49,6 +53,20 @@ public class UserService {
 			throw new IllegalArgumentException("이미 등록된 멤버입니다.");
 		}
 		user.setAuthority(Authority.ROLE_USER);
+		historyService.addHistory(user, "plusMember", null);
 		return "스터디 멤버로 등록되었습니다.";
+	}
+
+	public void checkUserRank(User user) {
+		Integer rank = baekjoonRankScrapingService.extractBaekjoonRank(user.getBaekjoonId());
+		if (!user.getRank().equals(rank)) {
+			updateUserRank(user, rank);
+		}
+	}
+
+	private void updateUserRank(User user, Integer rank) {
+		user.setRank(rank);
+		userRepository.save(user);
+		historyService.addHistory(user, "changeRank", rank);
 	}
 }

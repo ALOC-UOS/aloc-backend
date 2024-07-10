@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.aloc.aloc.history.service.HistoryService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserResponseDto;
 import com.aloc.aloc.user.enums.Authority;
@@ -29,6 +30,9 @@ public class UserServiceTest {
 
 	@Mock
 	private UserSortingService userSortingService;
+
+	@Mock
+	private HistoryService historyService;
 
 	@InjectMocks
 	private UserService userService;
@@ -112,6 +116,7 @@ public class UserServiceTest {
 		assertEquals(Authority.ROLE_USER, newUser.getAuthority());
 		verify(userRepository).findByGithubId("adminGithub");
 		verify(userRepository).findByGithubId("newGithub");
+		verify(historyService).addHistory(newUser, "plusMember", null);
 	}
 
 	@Test

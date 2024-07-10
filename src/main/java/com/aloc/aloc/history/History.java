@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,4 +40,12 @@ public class History extends AuditingTimeEntity {
 	private String icon;
 
 	private Integer rank;
+
+	@Builder
+	public History(User user, String username, String icon, Integer rank) {
+		this.user = user;
+		this.username = username;
+		this.icon = icon;
+		this.rank = rank;
+	}
 }
