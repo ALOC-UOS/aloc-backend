@@ -1,5 +1,7 @@
 package com.aloc.aloc.scraper;
 
+import java.util.Optional;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -8,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GithubProfileScrapingService {
 
-	public String extractProfileNumber(String githubId) {
+	public Optional<String> extractProfileNumber(String githubId) {
 		try {
 			// HTML 파싱
 			String url = buildUrl(githubId);
@@ -19,12 +21,12 @@ public class GithubProfileScrapingService {
 			if (imgElement != null) {
 				String imgSrc = imgElement.attr("src");
 				// 프로필 번호 추출
-				return imgSrc.split("/")[4].split("\\?")[0];
+				return Optional.of(imgSrc.split("/")[4].split("\\?")[0]);
 			}
 		} catch (Exception e) {
 			throw new IllegalArgumentException("잘못된 깃허브 정보입니다");
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	private String buildUrl(String githubId) {
