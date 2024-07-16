@@ -1,11 +1,16 @@
 package com.aloc.aloc.global.login.handler;
 
+
 import java.io.IOException;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
-import jakarta.servlet.ServletException;
+import com.aloc.aloc.global.apipayload.CustomApiResponse;
+import com.aloc.aloc.global.apipayload.status.ErrorStatus;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -13,14 +18,23 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
+	private final ObjectMapper objectMapper = new ObjectMapper();
+
 	@Override
 	public void onAuthenticationFailure(
 		HttpServletRequest request,
 		HttpServletResponse response,
 		AuthenticationException exception
-	) throws IOException, ServletException {
-		response.setStatus(HttpServletResponse.SC_BAD_REQUEST); //401 인증 실패
-		response.getWriter().write("fail");
+	) throws IOException {
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		CustomApiResponse<String> apiResponse =
+			CustomApiResponse.onFailure(
+				ErrorStatus._LOGIN_FAILURE.getCode(),
+				"Username or password is incorrect",
+				ErrorStatus._LOGIN_FAILURE.getMessage()
+			);
+		objectMapper.writeValue(response.getWriter(), apiResponse);
 		log.error(Exception.class.getName() + " : " + exception.getMessage());
 		log.info("로그인 실패");
 	}
