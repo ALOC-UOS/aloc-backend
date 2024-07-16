@@ -1,6 +1,8 @@
 package com.aloc.aloc.auth.controller;
 
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.aloc.aloc.auth.service.AuthService;
@@ -53,5 +56,15 @@ public class AuthControllerTest {
 			.content(objectMapper.writeValueAsString(userRequestDto)))
 		// then
 			.andExpect(status().isOk());
+	}
+
+	@Test
+	@DisplayName("탈퇴 컨트롤러 테스트")
+	@WithMockUser(username = "testuser")
+	public void testWithdraw() throws Exception {
+		mockMvc.perform(delete("/api2/withdraw"))
+			.andExpect(status().isOk());
+
+		verify(authService).withdraw("testuser");
 	}
 }
