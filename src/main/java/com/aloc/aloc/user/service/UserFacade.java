@@ -16,7 +16,6 @@ import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
 import com.aloc.aloc.user.enums.Authority;
 import com.aloc.aloc.user.repository.UserRepository;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -57,10 +56,10 @@ public class UserFacade {
 			.profileNumber(user.getProfileNumber())
 			.rank(user.getRank())
 			.coin(user.getCoin())
-			.solved(solvedCount)
-			.unsolved(problemCounts.totalDailyCount() - solvedCount)
-			.todaySolved(problemFacade.getTodayProblemSolved(user.getId(), user.getCourse()))
-			.thisWeekUnsolved(thisWeekUnsolvedCount)
+			.solvedCount(solvedCount)
+			.unsolvedCount(problemCounts.totalDailyCount() - solvedCount)
+			.todaySolvedCount(problemFacade.getTodayProblemSolved(user.getId(), user.getCourse()))
+			.thisWeekUnsolvedCount(thisWeekUnsolvedCount)
 			.colorCategory(userColor.getCategory())
 			.color1(userColor.getColor1())
 			.color2(userColor.getColor2())
@@ -74,9 +73,6 @@ public class UserFacade {
 
 	Integer getThisWeekUnsolvedCount(User user) {
 		List<Integer> thisWeekData = problemFacade.getThisWeekSolvedCount(user);
-//		if (thisWeekData.size() < 3) {
-//			throw new IllegalArgumentException("이번 주차 문제 통계 데이터가 부족합니다.");
-//		}
 		return thisWeekData.get(2);
 	}
 
