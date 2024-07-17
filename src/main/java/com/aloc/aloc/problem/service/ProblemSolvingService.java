@@ -27,7 +27,7 @@ public class ProblemSolvingService {
 	private final UserService userService;
 
 	@Value("${app.season}")
-	private Integer curSeason;
+	private Integer currentSeason;
 
 	// TODO: 변수명 & 로직 확인하기
 
@@ -58,7 +58,7 @@ public class ProblemSolvingService {
 
 	private int calculateCoinToAdd(Long problemId) {
 		// 2등까지는 50코인, 3등부터는 30코인을 지급합니다.
-		long solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, curSeason);
+		long solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, currentSeason);
 		return solvedUserCount <= 2 ? 50 : 30;
 	}
 
@@ -75,7 +75,7 @@ public class ProblemSolvingService {
 				UserProblem.builder()
 					.user(user)
 					.problem(problemRepository.getReferenceById(problemId))
-					.season(curSeason)
+					.season(currentSeason)
 					.build()
 			);
 		userProblem.setIsSolved(true);
@@ -107,6 +107,6 @@ public class ProblemSolvingService {
 	}
 
 	public int getSolvedCount(Long userId) {
-		return getSolvedProblemListByUserAndSeason(userId, curSeason).size();
+		return getSolvedProblemListByUserAndSeason(userId, currentSeason).size();
 	}
 }

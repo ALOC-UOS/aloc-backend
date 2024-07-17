@@ -15,7 +15,6 @@ import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
@@ -30,7 +29,7 @@ public class ProblemFacade {
 	private final ProblemMapper problemMapper;
 
 	@Value("${app.season}")
-	private Integer curSeason;
+	private Integer currentSeason;
 
 
 	public String checkSolved(String username) throws IOException {
@@ -64,10 +63,10 @@ public class ProblemFacade {
 
 	// 이번 주차 문제 가져오는 공통 메소드
 	private List<Problem> getThisWeekProblems(User user) {
-		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(curSeason)
+		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
 			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
 		return problemService.getVisibleDailyProblemsByAlgorithm(
-			curSeason, thisWeekAlgorithm.getAlgorithmId(), user.getCourse()
+			currentSeason, thisWeekAlgorithm.getAlgorithmId(), user.getCourse()
 		);
 	}
 

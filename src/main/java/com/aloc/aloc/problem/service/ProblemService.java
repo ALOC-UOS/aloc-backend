@@ -28,7 +28,7 @@ public class ProblemService {
 	private final ProblemMapper problemMapper;
 
 	@Value("${app.season}")
-	private Integer curSeason;
+	private Integer currentSeason;
 
 	User findUser(String githubId) {
 		return userRepository.findByGithubId(githubId)
@@ -91,8 +91,8 @@ public class ProblemService {
 
 	public List<Integer> getTotalProblemCount(Course course) {
 		// 해당 코스의 공개 된 문제 중 Weekly와 Daily 문제의 개수를 가져옵니다.
-		Integer weeklyCount = problemRepository.countAllByCourseAndRoutine(curSeason, course, Routine.WEEKLY);
-		Integer dailyCount = problemRepository.countAllByCourseAndRoutine(curSeason, course, Routine.DAILY);
+		Integer weeklyCount = problemRepository.countAllByCourseAndRoutine(currentSeason, course, Routine.WEEKLY);
+		Integer dailyCount = problemRepository.countAllByCourseAndRoutine(currentSeason, course, Routine.DAILY);
 		return List.of(weeklyCount, dailyCount);
 	}
 }
