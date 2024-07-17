@@ -27,12 +27,13 @@ public class ProblemSolvingService {
 	private final UserService userService;
 
 	@Value("${app.season}")
-	private Integer season;
+	private Integer cur_season;
 
 	// TODO: 변수명 & 로직 확인하기
 
 	boolean isProblemAlreadySolved(Long userId, Long problemId) {
-		return userProblemRepository.existsByUserIdAndProblemId(userId, problemId);
+		// 사용자가 이미 푼 문제인지 확인합니다.
+		return userProblemRepository.existsByUserIdAndProblemIdAndIsSolvedIsTrue(userId, problemId);
 	}
 
 	public String checkAndUpdateProblemSolved(ProblemResponseDto problem, User user)
@@ -57,7 +58,7 @@ public class ProblemSolvingService {
 
 	private int calculateCoinToAdd(Long problemId) {
 		// 2등까지는 50코인, 3등부터는 30코인을 지급합니다.
-		long solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, season);
+		long solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, cur_season);
 		return solvedUserCount <= 2 ? 50 : 30;
 	}
 
@@ -68,23 +69,41 @@ public class ProblemSolvingService {
 		userRepository.save(user);
 		userService.checkUserRank(user);
 
-		// 문제를 푼 정보를 저장합니다.
-		UserProblem solvedProblem = UserProblem.builder()
-			.user(user)
-			.problem(problemRepository.getReferenceById(problemId))
-			.season(season)
-			.isSolved(true)
-			.build();
-		userProblemRepository.save(solvedProblem);
+		// 해결 정보가 있으면 업데이트하고 없으면 새로 생성합니다.
+		UserProblem userProblem = userProblemRepository.findByUserIdAndProblemId(user.getId(), problemId)
+			.orElse(
+				UserProblem.builder()
+					.user(user)
+					.problem(problemRepository.getReferenceById(problemId))
+					.season(cur_season)
+					.build()
+			);
+		userProblem.setIsSolved(true);
+		userProblemRepository.save(userProblem);
 	}
 
 	public List<UserProblem> getSolvedUserListByProblemId(Long problemId) {
-		return userProblemRepository.findAllByProblemId(problemId);
+		return userProblemRepository.findAllByProblemIdAndIsSolvedIsTrue(problemId);
 	}
 
 	public List<UserProblem> getSolvedProblemListByUser(Long userId) {
-		// 현재 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
-		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedIsTrueOrderBySolvedAtDesc(userId, season);
+		// 모든 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
+		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, null, true);
+	}
+
+	public List<UserProblem> getSolvedProblemListByUserAndSeason(Long userId, Integer season) {
+		// 특정 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
+		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, season, true);
+	}
+
+	public List<UserProblem> getUnSolvedProblemListByUserAndSeason(Long userId, Integer season) {
+		// 특정 시즌 동안 유저가 풀지 않은 문제 목록을 가져옵니다.
+		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, season, false);
+	}
+
+	public List<UserProblem> getUnSolvedProblemListByUser(Long userId) {
+		// 모든 시즌 동안 유저가 풀지 않은 문제 목록을 가져옵니다.
+		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, null, false);
 	}
 
 	public int getSolvedCount(Long userId) {

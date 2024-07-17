@@ -49,4 +49,8 @@ public class UserProblem {
 		this.isSolved = (isSolved != null) ? isSolved : false;
 		this.solvedAt = LocalDateTime.now();
 	}
+
+	public void setIsSolved(boolean b) {
+		this.isSolved = b;
+	}
 }

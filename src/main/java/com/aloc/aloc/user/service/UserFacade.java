@@ -34,7 +34,7 @@ public class UserFacade {
 	private final ColorService colorService;
 
 	@Value("${app.season}")
-	private int season;
+	private Integer season;
 	private int thisWeekUnsolvedCount;
 
 
@@ -80,7 +80,7 @@ public class UserFacade {
 		// 이번주에 푼 문제, 안 푼 문제들의 횟수를 가져옵니다.
 		Algorithm algorithm = algorithmService.getAlgorithmBySeason(season).orElseThrow();
 		List<Integer> thisWeekData =
-			problemFacade.getThisWeekSolvedCount(userId, algorithm.getAlgorithmId(), season, course);
+			problemFacade.getThisWeekSolvedCount(userId, algorithm.getAlgorithmId(), course);
 
 		// 나중에 필요할 경우를 대비해 남겨둠
 //		int thisWeekSolvedCount = thisWeekData.get(0);
