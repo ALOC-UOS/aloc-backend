@@ -184,7 +184,7 @@ public class ProblemControllerTest {
 			new ProblemResponseDto(1L, "Problem 1", null, 3, 100),
 			new ProblemResponseDto(2L, "Problem 2", null, 4, 50)
 		);
-		when(problemService.getVisibleProblemsDtoByAlgorithm(season, algorithmId, Course.FULL)).thenReturn(problems);
+		when(problemService.getVisibleProblemsDtoByAlgorithmId(season, algorithmId, Course.FULL)).thenReturn(problems);
 
 		// when & then
 		mockMvc.perform(get("/api2/problem/season/{season}/algorithmId/{algorithmId}/FULL", season, algorithmId)

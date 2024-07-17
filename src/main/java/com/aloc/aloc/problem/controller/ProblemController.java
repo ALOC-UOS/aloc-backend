@@ -42,7 +42,7 @@ public class ProblemController {
 		@Parameter(description = "코스 ID", required = true) @PathVariable() Course course,
 		@Parameter(description = "알고리즘 ID", required = true) @PathVariable int algorithmId) {
 		return CustomApiResponse.onSuccess(
-			problemService.getVisibleProblemsDtoByAlgorithm(season, algorithmId, course)
+			problemService.getVisibleProblemsDtoByAlgorithmId(season, algorithmId, course)
 		);
 	}
 

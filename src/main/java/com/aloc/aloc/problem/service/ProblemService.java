@@ -35,15 +35,15 @@ public class ProblemService {
 			.orElseThrow(() -> new IllegalArgumentException("사용자 정보가 없습니다."));
 	}
 
-	List<Problem> getVisibleDailyProblemsByAlgorithm(int season, int algorithmId, Course course) {
+	List<Problem> getVisibleDailyProblemsByAlgorithmId(int season, int algorithmId, Course course) {
 		ProblemType problemType = problemTypeRepository.findProblemTypeByCourseAndRoutine(course, Routine.DAILY)
 			.orElseThrow(() -> new IllegalArgumentException("문제 타입이 없습니다.")
 		);
 		return problemRepository.findVisibleProblemsByAlgorithmAndCourse(season, algorithmId, problemType.getId());
 	}
 
-	public List<ProblemResponseDto> getVisibleProblemsDtoByAlgorithm(int season, int algorithmId, Course course) {
-		List<Problem> problems = getVisibleDailyProblemsByAlgorithm(season, algorithmId, course);
+	public List<ProblemResponseDto> getVisibleProblemsDtoByAlgorithmId(int season, int algorithmId, Course course) {
+		List<Problem> problems = getVisibleDailyProblemsByAlgorithmId(season, algorithmId, course);
 		return problems.stream()
 			.map(problemMapper::mapToProblemResponseDto)
 			.collect(Collectors.toList());
