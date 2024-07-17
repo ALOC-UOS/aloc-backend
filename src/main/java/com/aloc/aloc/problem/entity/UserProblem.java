@@ -50,7 +50,7 @@ public class UserProblem {
 		}
 	}
 
-	public void setIsSolved(boolean b) {
-		this.isSolved = b;
+	public void setIsSolved(boolean isSolved) {
+		this.isSolved = isSolved;
 	}
 }
