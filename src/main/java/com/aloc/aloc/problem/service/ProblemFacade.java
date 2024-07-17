@@ -29,7 +29,7 @@ public class ProblemFacade {
 	private final ProblemMapper problemMapper;
 
 	@Value("${app.season}")
-	private Integer cur_season;
+	private Integer curSeason;
 
 
 	public String checkSolved(String username) throws IOException {
@@ -43,6 +43,7 @@ public class ProblemFacade {
 		}
 
 		// 문제를 풀었는지 확인합니다.
+		// TODO: 문제를 풀었는지 확인하는 로직을 구현합니다.
 		return problemSolvingService.checkAndUpdateProblemSolved(problem, user);
 	}
 
@@ -60,23 +61,23 @@ public class ProblemFacade {
 			.collect(Collectors.toList());
 	}
 
+	// 이번 주차 문제 가져오는 공통 메소드
+	private List<Problem> getThisWeekProblems(User user) {
+		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(curSeason)
+			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
+		return problemService.getVisibleProblemsByAlgorithm(
+			curSeason, thisWeekAlgorithm.getAlgorithmId(), user.getCourse()
+		);
+	}
+
 	public List<ProblemSolvedResponseDto> getWeeklyCompletionStatus(String username) {
 		// 사용자 정보를 가져옵니다.
 		User user = problemService.findUser(username);
 
-		// 이번주 Weekly 문제를 가져옵니다.
-		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(cur_season)
-			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
-
-
-		// 사용자에 맞는 문제 타입ID를 가져옵니다.
-		Long problemTypeId = problemService.getProblemTypeIdByCourseAndRoutine(user.getCourse(), Routine.WEEKLY);
+		// 이번 주차 문제를 가져옵니다.
+		List<Problem> thisWeekProblems = getThisWeekProblems(user);
 
 		// 문제 풀이 현황을 리턴합니다.
-		List<Problem> thisWeekProblems = problemService.getProblemsByAlgorithmWeekAndProblemTypeId(
-			thisWeekAlgorithm.getWeek(), problemTypeId
-		);
-
 		return thisWeekProblems.stream()
 			.map(problem -> {
 				boolean isSolved = problemSolvingService.isProblemAlreadySolved(user.getId(), problem.getId());
@@ -115,19 +116,22 @@ public class ProblemFacade {
 		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
 
-	public List<Integer> getThisWeekSolvedCount(Long userId, int algorithmId, Course course) {
-		List<ProblemResponseDto> thisWeekProblems =
-			problemService.getVisibleProblemsByAlgorithm(cur_season, algorithmId, course);
-		int solvedCount =  (int) thisWeekProblems.stream()
-			.filter(problem -> problemSolvingService.isProblemAlreadySolved(userId, problem.getId()))
-			.count();
+	public List<Integer> getThisWeekSolvedCount(User user) {
+		// 이번 주차 문제를 가져옵니다.
+		List<Problem> thisWeekProblems = getThisWeekProblems(user);
+
+		// 이번 주차 문제 중 푼 문제 수, 문제 수, 안 푼 문제 수를 가져옵니다.
+		Integer solvedCount = Math.toIntExact(thisWeekProblems.stream()
+			.filter(problem -> problemSolvingService.isProblemAlreadySolved(user.getId(),
+				problem.getId()))
+			.count());
 		Integer problemCount = thisWeekProblems.size();
-		Integer unsolvedCount = thisWeekProblems.size() - solvedCount;
+		Integer unsolvedCount = problemCount - solvedCount;
 		return List.of(solvedCount, problemCount, unsolvedCount);
 	}
 
 	public Boolean getTodayProblemSolved(Long userId, Course course) {
-		// 오늘의 문제를 가져옵니다.
+		// 오늘의 문제를 풀었는지 확인합니다.
 		ProblemResponseDto todayProblem = problemService.findTodayProblemByCourse(course);
 		return problemSolvingService.isProblemAlreadySolved(userId, todayProblem.getId());
 	}

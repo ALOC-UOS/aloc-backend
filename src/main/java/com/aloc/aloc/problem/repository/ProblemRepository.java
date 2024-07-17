@@ -29,10 +29,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
 	List<Problem> findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(Routine routine);
 
-	List<Problem> findAllByAlgorithmWeekAndProblemTypeIdAndHiddenIsFalse(Integer id, Long problemTypeId);
-
-	List<Problem> findAllByIdNotInAndHiddenIsFalseOrderByCreatedAtDesc(List<Long> solvedProblemIds);
-
 	@Query("SELECT p FROM Problem p "
 		+ "WHERE p.algorithm.season = :season "
 		+ "AND p.algorithm.algorithmId = :algorithmId "
@@ -45,16 +41,10 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		@Param("problemTypeId") Long problemTypeId
 	);
 
-	@Query("SELECT COUNT(p) FROM Problem p WHERE p.problemType.course = :course AND p.hidden = false")
-	int countAllByCourse(Course course);
-
-	@Query("SELECT p FROM Problem p "
-		+ "WHERE p.algorithm.season = :season "
-		+ "AND p.algorithm.algorithmId = :algorithmId "
-		+ "AND p.hidden = false "
-		+ "ORDER BY p.createdAt DESC")
-	List<Problem> findPublicProblemsByAlgorithm(
-		@Param("season") int season,
-		@Param("algorithmId") int algorithmId
-	);
+	@Query("SELECT COUNT(p) FROM Problem p"
+		+ " WHERE p.problemType.course = :course "
+		+ "AND p.algorithm.season = :season "
+		+ "AND p.problemType.routine = :routine AND p.hidden = false")
+	int countAllByCourseAndRoutine(Integer season, Course course, Routine routine);
 }
+

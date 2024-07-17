@@ -49,8 +49,8 @@ public class SolvedProblemDummyEntity {
 			new Problem("Problem 1", 3, algorithm1, 1, problemType1);
 		em.persist(problem1);
 
-		up1 = UserProblem.builder().user(user1).problem(problem1).season(2).build();
-		up2 = UserProblem.builder().user(user2).problem(problem1).season(2).build();
+		up1 = UserProblem.builder().user(user1).problem(problem1).season(2).isSolved(true).build();
+		up2 = UserProblem.builder().user(user2).problem(problem1).season(2).isSolved(true).build();
 		em.persist(up1);
 		em.persist(up2);
 	}

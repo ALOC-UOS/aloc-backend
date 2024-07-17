@@ -39,7 +39,8 @@ public class UserProblemRepositoryTest {
 	@DisplayName("문제 ID를 통해 해결된 문제 리스트 가져오기")
 	void findAllByProblemId_ShouldReturnSolvedProblemList() {
 		// when
-		List<UserProblem> problems = userProblemRepository.findAllByProblemIdAndIsSolvedIsTrue(dummyEntity.problem1.getId());
+		List<UserProblem> problems =
+			userProblemRepository.findAllByProblemIdAndIsSolvedIsTrue(dummyEntity.problem1.getId());
 
 		// then
 		assertThat(problems).hasSize(2);

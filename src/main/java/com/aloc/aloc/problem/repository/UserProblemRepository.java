@@ -25,11 +25,7 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
 
 	boolean existsByUserIdAndProblemIdAndIsSolvedIsTrue(Long userId, Long problemId);
 
-	List<UserProblem> findAllByUserIdAndProblemIdIn(Long userId, List<Long> problemId);
-
 	Optional<UserProblem> findByUserIdAndProblemId(Long userId, Long problemId);
-
-	Integer countByUserId(Long userId);
 
 	@Query("SELECT up FROM UserProblem up WHERE up.user.id = :userId "
 		+ "AND (:season IS NULL OR up.season = :season) "

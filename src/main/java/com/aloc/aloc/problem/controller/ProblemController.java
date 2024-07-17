@@ -41,7 +41,9 @@ public class ProblemController {
 		@Parameter(description = "시즌", required = true) @PathVariable int season,
 		@Parameter(description = "코스 ID", required = true) @PathVariable() Course course,
 		@Parameter(description = "알고리즘 ID", required = true) @PathVariable int algorithmId) {
-		return CustomApiResponse.onSuccess(problemService.getVisibleProblemsByAlgorithm(season, algorithmId, course));
+		return CustomApiResponse.onSuccess(
+			problemService.getVisibleProblemsDtoByAlgorithm(season, algorithmId, course)
+		);
 	}
 
 	@GetMapping("/solved-user/{problemId}")
