@@ -29,7 +29,7 @@ public class ProblemFacade {
 	private final ProblemMapper problemMapper;
 
 	@Value("${app.season}")
-	private Integer season;
+	private Integer cur_season;
 
 
 	public String checkSolved(String username) throws IOException {
@@ -65,7 +65,7 @@ public class ProblemFacade {
 		User user = problemService.findUser(username);
 
 		// 이번주 Weekly 문제를 가져옵니다.
-		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(season)
+		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(cur_season)
 			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
 
 
@@ -85,23 +85,20 @@ public class ProblemFacade {
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(String githubId) {
+	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(String githubId, Integer season) {
 		// 사용자 정보를 가져옵니다.
 		User user = problemService.findUser(githubId);
 
-		// 사용자가 푼 문제 ID 목록을 가져옵니다.
-		List<Long> solvedProblemIds = problemSolvingService.getSolvedProblemListByUser(user.getId())
-			.stream()
-			.map(UserProblem::getProblem)
-			.map(Problem::getId)
-			.collect(Collectors.toList());
 
-		// 사용자가 풀지 않은 문제 목록을 가져옵니다.
-		List<Problem> unsolvedProblems = problemService.getUnsolvedProblemsBySolvedProblemIds(
-			solvedProblemIds);
+		List<UserProblem> unSolvedProblems;
+		if (season == null) {
+			unSolvedProblems = problemSolvingService.getUnSolvedProblemListByUser(user.getId());
+		} else {
+			unSolvedProblems = problemSolvingService.getUnSolvedProblemListByUserAndSeason(user.getId(), season);
+		}
 
-		return unsolvedProblems.stream()
-			.map(problem -> problemMapper.mapToProblemSolvedResponseDto(problem, false))
+		return unSolvedProblems.stream()
+			.map(problemMapper::mapToProblemSolvedResponseDto)
 			.collect(Collectors.toList());
 	}
 
@@ -115,9 +112,9 @@ public class ProblemFacade {
 		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
 
-	public List<Integer> getThisWeekSolvedCount(Long userId, int algorithmId, int season, Course course) {
+	public List<Integer> getThisWeekSolvedCount(Long userId, int algorithmId, Course course) {
 		List<ProblemResponseDto> thisWeekProblems =
-			problemService.getVisibleProblemsByAlgorithm(season, algorithmId, course);
+			problemService.getVisibleProblemsByAlgorithm(cur_season, algorithmId, course);
 		int solvedCount =  (int) thisWeekProblems.stream()
 			.filter(problem -> problemSolvingService.isProblemAlreadySolved(userId, problem.getId()))
 			.count();

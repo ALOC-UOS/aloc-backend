@@ -13,7 +13,9 @@ import com.aloc.aloc.problem.entity.UserProblem;
 // TODO: 메소드 확인하기
 @Repository
 public interface UserProblemRepository extends JpaRepository<UserProblem, Long> {
-	List<UserProblem> findAllByProblemId(Long problemId);
+
+	// 문제를 푼 사용자 목록을 가져옵니다.
+	List<UserProblem> findAllByProblemIdAndIsSolvedIsTrue(Long problemId);
 
 	@Query("SELECT COUNT(DISTINCT up.user) "
 		+ "FROM UserProblem up WHERE up.problem.id = :problemId "
@@ -21,15 +23,21 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
 	int countSolvingUsersByProblemId(@Param("problemId") Long problemId, @Param(
 		"season") int season);
 
-	boolean existsByUserIdAndProblemId(Long userId, Long problemId);
+	boolean existsByUserIdAndProblemIdAndIsSolvedIsTrue(Long userId, Long problemId);
 
 	List<UserProblem> findAllByUserIdAndProblemIdIn(Long userId, List<Long> problemId);
-
-	List<UserProblem> findAllByUserIdOrderBySolvedAtDesc(Long userId);
 
 	Optional<UserProblem> findByUserIdAndProblemId(Long userId, Long problemId);
 
 	Integer countByUserId(Long userId);
 
-	List<UserProblem> findAllByUserIdAndSeasonAndIsSolvedIsTrueOrderBySolvedAtDesc(Long userId, int season);
+	@Query("SELECT up FROM UserProblem up WHERE up.user.id = :userId "
+		+ "AND (:season IS NULL OR up.season = :season) "
+		+ "AND up.isSolved = :isSolved "
+		+ "ORDER BY up.solvedAt DESC")
+	List<UserProblem> findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
+		@Param("userId") Long userId,
+		@Param("season") Integer season,
+		@Param("isSolved") Boolean isSolved
+	);
 }

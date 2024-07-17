@@ -71,23 +71,16 @@ public class ProblemMapper {
 
 	// 안 푼 문제 + 푼 문제 모두 합쳐져 있음.
 	// TODO: 안쓰면 삭제
-	List<ProblemSolvedResponseDto> mapToProblemSolvedResponseDtoList(
-		List<Problem> problems, List<UserProblem> solvedProblems
+	ProblemSolvedResponseDto mapToProblemSolvedResponseDto(
+		UserProblem solvedProblems
 	) {
-		// 풀린 문제의 ID 집합을 생성합니다.
-		Set<Long> solvedProblemIds = solvedProblems.stream()
-			.map(solvedProblem -> solvedProblem.getProblem().getId())
-			.collect(Collectors.toSet());
-
-		// 각 문제를 ProblemResponseDto로 변환합니다.
-		return problems.stream()
-			.map(problem -> ProblemSolvedResponseDto.builder()
-				.problemId(problem.getId())
-				.problemTitle(problem.getTitle())
-				.problemDifficulty(problem.getDifficulty())
-				.isSolved(solvedProblemIds.contains(problem.getId()))
-				.build())
-			.collect(Collectors.toList());
+		Problem problem = solvedProblems.getProblem();
+		return ProblemSolvedResponseDto.builder()
+			.problemId(problem.getId())
+			.problemTitle(problem.getTitle())
+			.problemDifficulty(problem.getDifficulty())
+			.isSolved(solvedProblems.getIsSolved())
+			.build();
 	}
 
 	// TODO: 수정

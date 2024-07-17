@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
@@ -78,11 +79,13 @@ public class ProblemController {
 	}
 
 	@GetMapping("/unsolved/user/{githubId}")
-	@Operation(summary = "유저의 풀지 않은 문제 조회", description = "유저가 풀지 않은 문제를 조회합니다.")
+	@Operation(summary = "유저의 풀지 않은 문제 조회", description = "유저가 풀지 않은 문제를 조회합니다. 시즌이 null이면 모든 시즌을 조회합니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUnsolvedProblemList(
-		@Parameter(required = true) @PathVariable() String githubId
+		@Parameter(required = true) @PathVariable() String githubId,
+		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season
+
 	) {
-		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId));
+		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId, season));
 	}
 
 	@GetMapping("/solved/user/{githubId}")
