@@ -78,6 +78,7 @@ public class ProblemSolvingService {
 				UserProblem.builder()
 					.user(user)
 					.problem(problemRepository.getReferenceById(problemId))
+					.isSolved(true)
 					.season(currentSeason)
 					.build()
 			);

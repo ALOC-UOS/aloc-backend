@@ -41,16 +41,12 @@ public class UserProblem {
 
 	private LocalDateTime solvedAt;
 
-	@Builder
-	public UserProblem(User user, Problem problem, Integer season, Boolean isSolved) {
-		this.user = user;
-		this.problem = problem;
-		this.season = season;
-		this.isSolved = (isSolved != null) ? isSolved : false;
-		this.solvedAt = LocalDateTime.now();
-	}
-
 	public void setIsSolved(boolean isSolved) {
 		this.isSolved = isSolved;
+		if (isSolved) {
+			this.solvedAt = LocalDateTime.now();
+		} else {
+			this.solvedAt = null;
+		}
 	}
 }
