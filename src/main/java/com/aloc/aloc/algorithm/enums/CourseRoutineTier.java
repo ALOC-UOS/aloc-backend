@@ -11,6 +11,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+// TODO: 나중에 백오피스로 관리할 수 있도록 분리하기
 public enum CourseRoutineTier {
 	HALF_WEEKLY(Course.HALF, Routine.WEEKLY, Arrays.asList(5, 6, 7, 8, 9)),
 	HALF_DAILY(Course.HALF, Routine.DAILY, Arrays.asList(7, 7, 7, 8, 9)),
