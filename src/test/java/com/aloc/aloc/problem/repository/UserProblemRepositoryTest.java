@@ -46,8 +46,8 @@ public class UserProblemRepositoryTest {
 		assertThat(problems).hasSize(2);
 
 		// 푼 사용자 목록을 가져오기 위한 함수, 정렬은 보장되지 않음
-		AssertionsForClassTypes.assertThat(problems.get(0).getId()).isEqualTo(dummyEntity.up1.getId());
-		AssertionsForClassTypes.assertThat(problems.get(1).getId()).isEqualTo(dummyEntity.up2.getId());
+		AssertionsForClassTypes.assertThat(problems.get(0).getId()).isEqualTo(dummyEntity.userProblem1.getId());
+		AssertionsForClassTypes.assertThat(problems.get(1).getId()).isEqualTo(dummyEntity.userProblem2.getId());
 	}
 
 	@Test
