@@ -15,7 +15,7 @@ public class ProblemCrawlingScheduler {
 
 	private final ProblemScrapingService problemScraperService;
 
-	@Scheduled(cron = "0 0 0 * * TUE")
+	@Scheduled(cron = "0 0 0 * * MON")
 	public void scheduleAddProblemsForThisWeek() {
 		try {
 			problemScraperService.addProblemsForThisWeek();
