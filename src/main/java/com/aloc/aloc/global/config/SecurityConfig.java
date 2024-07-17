@@ -61,6 +61,7 @@ public class SecurityConfig {
 					"/api2/authorize/*",
 					"/api2/problem/solved",
 					"/api2/withdraw",
+					"/api2/color/change",
 					"/api2/problem/weekly/status"
 				).authenticated()
 				.anyRequest().permitAll())
