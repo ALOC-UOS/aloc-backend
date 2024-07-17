@@ -15,6 +15,7 @@ import com.aloc.aloc.user.dto.request.UserRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,6 +27,16 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Auth API", description = "인증 관련 API 입니다.")
 public class AuthController {
 	private final AuthService authService;
+	@PostMapping("/sign-up")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "201", description = "회원 가입 성공"),
+		@ApiResponse(responseCode = "400", description = "깃허브 프로필을 찾을 수 없습니다.")
+	})
+	@Operation(summary = "회원 가입", description = "새로운 회원으로 가입합니다.")
+	public void signUp(@RequestBody @Valid UserRequestDto userRequestDto) {
+		authService.signUp(userRequestDto);
+	}
+
 	@PostMapping("/login")
 	@ApiResponse(
 		responseCode = "200",
@@ -36,40 +47,16 @@ public class AuthController {
 		authService.login(userLoginRequestDto);
 	}
 
-	@PostMapping("/sign-up")
-	@ApiResponse(
-		responseCode = "200",
-		description = "success"
-	)
-	@ApiResponse(
-		responseCode = "400",
-		description = "이미 존재하는 유저입니다."
-	)
-	@ApiResponse(
-		responseCode = "400",
-		description = "깃허브 프로필을 찾을 수 없습니다."
-	)
-	@ApiResponse(
-		responseCode = "400",
-		description = "잘못된 백준 아이디입니다."
-
-	)
-	@Operation(summary = "회원 가입", description = "새로운 회원으로 가입합니다.")
-	public void signUp(@RequestBody @Valid UserRequestDto userRequestDto) {
-		authService.signUp(userRequestDto);
-	}
-
 	@SecurityRequirement(name = "JWT Auth")
 	@DeleteMapping("/withdraw")
 	@ApiResponse(
-		responseCode = "204",
+		responseCode = "200",
 		description = "success"
 	)
 	@Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 진행합니다.")
 	public void withdraw(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) {
-		System.out.println(user.getUsername());
 		authService.withdraw(user.getUsername());
 	}
 }
