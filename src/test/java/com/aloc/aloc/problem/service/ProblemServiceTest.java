@@ -1,10 +1,6 @@
 package com.aloc.aloc.problem.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -23,7 +19,6 @@ import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.user.User;
 
 @ExtendWith(MockitoExtension.class)
 public class ProblemServiceTest {
@@ -33,9 +28,6 @@ public class ProblemServiceTest {
 
 	@Mock
 	private ProblemRepository problemRepository;
-
-	@Mock
-	private ProblemMapper problemMapper;
 
 	private List<Problem> problems;
 	private List<ProblemResponseDto> problemResponseDtos;
