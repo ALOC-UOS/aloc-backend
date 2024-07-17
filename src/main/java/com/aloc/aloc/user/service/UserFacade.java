@@ -35,8 +35,8 @@ public class UserFacade {
 	public List<UserDetailResponseDto> getUsers() {
 		List<Authority> authorities = List.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
 		List<User> users = userRepository.findAllByAuthorityIn(authorities);
-		List<User> sortedUsers = userSortingService.sortUserList(users);
-		return sortedUsers.stream()
+		List<User> sortedUserList = userSortingService.sortUserList(users);
+		return sortedUserList.stream()
 			.map(this::mapToUserDetailResponseDto)
 			.collect(Collectors.toList());
 	}
