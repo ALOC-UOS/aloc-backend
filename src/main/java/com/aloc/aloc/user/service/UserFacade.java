@@ -2,7 +2,6 @@ package com.aloc.aloc.user.service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -99,11 +98,9 @@ public class UserFacade {
 
 	public String addUser(String username, String githubId) throws IOException {
 		userService.checkAdmin(username);
-		Optional<User> userOptional = userRepository.findByGithubId(githubId);
-		if (userOptional.isEmpty()) {
-			throw new IllegalArgumentException("해당 깃허브 아이디로 가입된 사용자가 없습니다.");
-		}
-		User user = userOptional.get();
+		User user = userRepository.findByGithubId(githubId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 깃허브 아이디로 가입된 사용자가 없습니다."));
+
 		if (Authority.ROLE_USER.equals(user.getAuthority())) {
 			throw new IllegalArgumentException("이미 등록된 멤버입니다.");
 		}
