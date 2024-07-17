@@ -31,14 +31,6 @@ public class ProblemService {
 			.orElseThrow(() -> new IllegalArgumentException("사용자 정보가 없습니다."));
 	}
 
-	public List<ProblemResponseDto> getVisibleProblemsWithSolvingCount() {
-		// 공개된 문제 목록을 정렬하여 가져옵니다.
-		List<Problem> problems = problemRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
-		return problems.stream()
-			.map(problemMapper::mapToProblemResponseDto)
-			.collect(Collectors.toList());
-	}
-
 	public List<ProblemResponseDto> getVisibleProblemsByAlgorithm(int season, int algorithmId, Course course) {
 		ProblemType problemType = problemTypeRepository.findProblemTypeByCourseAndRoutine(course, Routine.DAILY)
 			.orElseThrow(() -> new IllegalArgumentException("문제 타입이 없습니다.")

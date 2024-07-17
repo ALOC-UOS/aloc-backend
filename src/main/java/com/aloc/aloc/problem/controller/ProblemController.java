@@ -33,15 +33,9 @@ public class ProblemController {
 	private final ProblemService problemService;
 	private final ProblemFacade problemFacade;
 
-	@GetMapping()
-	@Operation(summary = "문제 목록 조회", description = "최근 생성일 기준으로 정렬하여 전체 문제 목록을 조회합니다.")
-	public CustomApiResponse<List<ProblemResponseDto>> getProblems() {
-		return CustomApiResponse.onSuccess(problemService.getVisibleProblemsWithSolvingCount());
-	}
-
 	@GetMapping("/season/{season}/algorithmId/{algorithmId}/{course}")
 	@Operation(summary = "알고리즘 Id와 시즌로 문제 목록 조회",
-		description = "특정 시즌의 최근 생성일 기준으로 정렬하여 특정 알고리즘 문제 목록을 조회합니다. (Daily)")
+		description = "특정 시즌과 알고리즘의 공개된 문제 목록을 최근 순으로 정렬하여 조회합니다. (Daily)")
 	public CustomApiResponse<List<ProblemResponseDto>> getProblemsByAlgorithmIdAndSeason(
 		@Parameter(description = "시즌", required = true) @PathVariable int season,
 		@Parameter(description = "코스 ID", required = true) @PathVariable() Course course,
