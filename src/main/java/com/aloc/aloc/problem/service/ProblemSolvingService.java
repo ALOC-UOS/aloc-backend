@@ -65,7 +65,7 @@ public class ProblemSolvingService {
 		return solvedUserCount <= MAX_SOLVED_USER_COUNT_FOR_BONUS ? COINS_FOR_TOP_SOLVERS : COINS_FOR_OTHER_SOLVERS;
 	}
 
-	private void updateUserAndSaveSolvedProblem(User user, Long problemId) {
+	public void updateUserAndSaveSolvedProblem(User user, Long problemId) {
 		// 코인을 지급하고 사용자 정보를 저장합니다.
 		int coinToAdd = calculateCoinToAdd(problemId);
 		user.addCoin(coinToAdd);
@@ -112,5 +112,12 @@ public class ProblemSolvingService {
 
 	public int getSolvedCount(Long userId) {
 		return getSolvedProblemListByUserAndSeason(userId, currentSeason).size();
+	}
+
+	public void checkProblemIsSolvedAndAddSolvedProblem(User user, Problem problem)
+		throws IOException {
+		if (solvedScrapingService.isProblemSolved(user.getBaekjoonId(), problem)) {
+			saveSolvedProblem(user, problem.getId());
+		}
 	}
 }
