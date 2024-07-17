@@ -66,7 +66,7 @@ public class ProblemFacade {
 	private List<Problem> getThisWeekProblems(User user) {
 		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(curSeason)
 			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
-		return problemService.getVisibleProblemsByAlgorithm(
+		return problemService.getVisibleDailyProblemsByAlgorithm(
 			curSeason, thisWeekAlgorithm.getAlgorithmId(), user.getCourse()
 		);
 	}

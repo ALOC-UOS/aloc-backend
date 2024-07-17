@@ -35,7 +35,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		+ "AND p.problemType.id = :problemTypeId "
 		+ "AND p.hidden = false "
 		+ "ORDER BY p.createdAt DESC")
-	List<Problem> findPublicProblemsByAlgorithmAndCourse(
+	List<Problem> findVisibleProblemsByAlgorithmAndCourse(
 		@Param("season") int season,
 		@Param("algorithmId") int algorithmId,
 		@Param("problemTypeId") Long problemTypeId
