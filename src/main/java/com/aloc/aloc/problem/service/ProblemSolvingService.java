@@ -60,7 +60,7 @@ public class ProblemSolvingService {
 	}
 
 	private int calculateCoinToAdd(Long problemId) {
-		// 2등까지는 50코인, 3등부터는 30코인을 지급합니다.
+		// 3등까지는 50코인, 4등부터는 30코인을 지급합니다.
 		long solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, currentSeason);
 		return solvedUserCount <= MAX_SOLVED_USER_COUNT_FOR_BONUS ? COINS_FOR_TOP_SOLVERS : COINS_FOR_OTHER_SOLVERS;
 	}
