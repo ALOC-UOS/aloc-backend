@@ -102,13 +102,16 @@ public class ProblemFacade {
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId) {
+	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId, Integer season) {
 		User user = problemService.findUser(githubId);
 
+		List<UserProblem> solvedProblems;
 		// 현재 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
-		List<UserProblem> solvedProblems =
-			problemSolvingService.getSolvedProblemListByUser(user.getId());
-
+		if (season == null) {
+			solvedProblems = problemSolvingService.getSolvedProblemListByUser(user.getId());
+		} else {
+			solvedProblems = problemSolvingService.getSolvedProblemListByUserAndSeason(user.getId(), season);
+		}
 		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
 

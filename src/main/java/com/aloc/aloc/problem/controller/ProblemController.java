@@ -83,16 +83,16 @@ public class ProblemController {
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUnsolvedProblemList(
 		@Parameter(required = true) @PathVariable() String githubId,
 		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season
-
 	) {
 		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId, season));
 	}
 
 	@GetMapping("/solved/user/{githubId}")
-	@Operation(summary = "유저의 문제 해결 정보 조회", description = "유저가 푼 문제 리스트를 가져옵니다.")
+	@Operation(summary = "유저의 이미 푼 문제 조회", description = "유저가 푼 문제를 조회합니다. 시즌이 null이면 모든 시즌을 조회합니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUserSolvedProblemList(
-		@Parameter(description = "유저 깃허브 아이디", required = true) @PathVariable() String githubId
+		@Parameter(description = "유저 깃허브 아이디", required = true) @PathVariable() String githubId,
+		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season
 	) {
-		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId));
+		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId, season));
 	}
 }

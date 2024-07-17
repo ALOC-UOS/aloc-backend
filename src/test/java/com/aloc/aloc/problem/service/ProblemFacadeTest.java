@@ -169,7 +169,7 @@ public class ProblemFacadeTest {
 			));
 
 		// When
-		List<ProblemSolvedResponseDto> result = problemFacade.getSolvedProblemListByUser(user1.getGithubId());
+		List<ProblemSolvedResponseDto> result = problemFacade.getSolvedProblemListByUser(user1.getGithubId(), 2);
 		// Then
 		assertEquals(2, result.size());
 		verify(problemService).findUser(user1.getGithubId()); // 추가된 부분
