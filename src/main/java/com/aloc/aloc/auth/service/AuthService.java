@@ -34,10 +34,8 @@ public class AuthService {
 
 		// 깃허브 프로필 아이디 가져오기
 		String githubProfileNumber = githubProfileScrapingService
-			.extractProfileNumber(userRequestDto.getGithubId());
-		if (githubProfileNumber == null) {
-			throw new IllegalArgumentException("깃허브 프로필을 찾을 수 없습니다.");
-		}
+			.extractProfileNumber(userRequestDto.getGithubId())
+			.orElseThrow(() -> new IllegalArgumentException("깃허브 프로필을 찾을 수 없습니다."));
 
 		// 백준 랭킹 가져오기
 		Integer rank = baekjoonRankScrapingService.extractBaekjoonRank(userRequestDto.getBaekjoonId());
@@ -46,7 +44,6 @@ public class AuthService {
 
 	@Transactional
 	public void withdraw(String githubId) {
-		System.out.println(githubId);
 		userRepository.deleteByGithubId(githubId);
 	}
 }
