@@ -24,6 +24,7 @@ public class UserSortingService {
 	private final UserProblemRepository userProblemRepository;
 
 	public List<User> sortUserList(List<User> userList) {
+		// TODO: Weekly 들어오면 수정 예정
 		Problem fullCourseProblem = problemRepository.findLatestPublicProblemByProblemTypeId(1L);
 		Problem halfCourseProblem = problemRepository.findLatestPublicProblemByProblemTypeId(2L);
 		return userList.stream()

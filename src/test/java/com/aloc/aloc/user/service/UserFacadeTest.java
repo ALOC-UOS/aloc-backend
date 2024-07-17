@@ -103,8 +103,8 @@ public class UserFacadeTest {
 		assertEquals("user1", result.get(0).getUsername());
 		assertEquals("github1", result.get(0).getGithubId());
 		assertEquals("baekjoon1", result.get(0).getBaekjoonId());
-		assertEquals(10, result.get(0).getSolved());
-		assertEquals(7, result.get(0).getThisWeekUnsolved());
+		assertEquals(10, result.get(0).getSolvedCount());
+		assertEquals(7, result.get(0).getThisWeekUnsolvedCount());
 
 		UserDetailResponseDto userDetailResponseDto1 = result.get(0);
 		assertEquals("user1", userDetailResponseDto1.getUsername());
