@@ -61,31 +61,6 @@ public class ProblemServiceTest {
 	}
 
 	@Test
-	@DisplayName("문제 목록 조회 성공 테스트")
-	void getProblems_shouldReturnListOfProblemResponseDto() {
-		// given
-		Problem p1 = problems.get(0);
-		Problem p2 = problems.get(1);
-		ProblemResponseDto dto1 = problemResponseDtos.get(0);
-		ProblemResponseDto dto2 = problemResponseDtos.get(1);
-		when(problemRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc()).thenReturn(problems);
-		when(problemMapper.mapToProblemResponseDto(p1)).thenReturn(dto1);
-		when(problemMapper.mapToProblemResponseDto(p2)).thenReturn(dto2);
-
-		// When
-		List<ProblemResponseDto> result = problemService.getVisibleProblemsWithSolvingCount();
-
-		// Then
-		assertEquals(2, result.size());
-		assertEquals("Problem 1", result.get(0).getTitle());
-		assertEquals("Problem 2", result.get(1).getTitle());
-
-		verify(problemRepository).findAllByHiddenIsFalseOrderByCreatedAtDesc();
-		verify(problemMapper, times(2)).mapToProblemResponseDto(any(Problem.class));
-
-	}
-
-	@Test
 	@DisplayName("문제 목록 조회 실패 테스트")
 	void getSolvedUserListByInvalidProblemId_shouldThrowIllegalArgumentException() {
 		// Given

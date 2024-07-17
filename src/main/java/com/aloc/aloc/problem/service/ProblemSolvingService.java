@@ -3,12 +3,13 @@ package com.aloc.aloc.problem.service;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
-import com.aloc.aloc.problem.entity.SolvedProblem;
+import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.problem.repository.SolvedProblemRepository;
+import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.scraper.SolvedScrapingService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.repository.UserRepository;
@@ -20,14 +21,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProblemSolvingService {
 	private final ProblemRepository problemRepository;
-	private final SolvedProblemRepository solvedProblemRepository;
+	private final UserProblemRepository userProblemRepository;
 	private final SolvedScrapingService solvedScrapingService;
 	private final UserRepository userRepository;
 	private final UserService userService;
 
+	@Value("${app.season}")
+	private Integer season;
+
+	// TODO: 변수명 & 로직 확인하기
 
 	boolean isProblemAlreadySolved(Long userId, Long problemId) {
-		return solvedProblemRepository.existsByUserIdAndProblemId(userId, problemId);
+		return userProblemRepository.existsByUserIdAndProblemId(userId, problemId);
 	}
 
 	public String checkAndUpdateProblemSolved(ProblemResponseDto problem, User user)
@@ -52,7 +57,7 @@ public class ProblemSolvingService {
 
 	private int calculateCoinToAdd(Long problemId) {
 		// 2등까지는 50코인, 3등부터는 30코인을 지급합니다.
-		long solvedUserCount = solvedProblemRepository.countSolvingUsersByProblemId(problemId);
+		long solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, season);
 		return solvedUserCount <= 2 ? 50 : 30;
 	}
 
@@ -64,22 +69,25 @@ public class ProblemSolvingService {
 		userService.checkUserRank(user);
 
 		// 문제를 푼 정보를 저장합니다.
-		SolvedProblem solvedProblem = SolvedProblem.builder()
+		UserProblem solvedProblem = UserProblem.builder()
 			.user(user)
 			.problem(problemRepository.getReferenceById(problemId))
+			.season(season)
+			.isSolved(true)
 			.build();
-		solvedProblemRepository.save(solvedProblem);
+		userProblemRepository.save(solvedProblem);
 	}
 
-	public List<SolvedProblem> getSolvedUserListByProblemId(Long problemId) {
-		return solvedProblemRepository.findAllByProblemId(problemId);
+	public List<UserProblem> getSolvedUserListByProblemId(Long problemId) {
+		return userProblemRepository.findAllByProblemId(problemId);
 	}
 
-	public List<SolvedProblem> getSolvedProblemListByUser(Long userId) {
-		return solvedProblemRepository.findAllByUserIdOrderBySolvedAtDesc(userId);
+	public List<UserProblem> getSolvedProblemListByUser(Long userId) {
+		// 현재 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
+		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedIsTrueOrderBySolvedAtDesc(userId, season);
 	}
 
 	public int getSolvedCount(Long userId) {
-		return solvedProblemRepository.countByUserId(userId);
+		return userProblemRepository.countByUserId(userId);
 	}
 }

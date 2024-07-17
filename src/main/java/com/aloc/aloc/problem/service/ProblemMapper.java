@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.SolvedProblem;
-import com.aloc.aloc.problem.repository.SolvedProblemRepository;
+import com.aloc.aloc.problem.entity.UserProblem;
+import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.tag.Tag;
 import com.aloc.aloc.tag.dto.TagSimpleDto;
@@ -24,7 +25,10 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class ProblemMapper {
-	private final SolvedProblemRepository solvedProblemRepository;
+	private final UserProblemRepository userProblemRepository;
+
+	@Value("${app.season}")
+	private Integer season;
 
 	ProblemResponseDto mapToProblemResponseDto(Problem problem) {
 		return ProblemResponseDto.builder()
@@ -32,7 +36,7 @@ public class ProblemMapper {
 			.title(problem.getTitle())
 			.tags(mapToTagSimpleDtoList(problem.getProblemTagList()))
 			.difficulty(problem.getDifficulty())
-			.solvingCount(solvedProblemRepository.countSolvingUsersByProblemId(problem.getId()))
+			.solvingCount(userProblemRepository.countSolvingUsersByProblemId(problem.getId(), season))
 			.build();
 	}
 
@@ -51,7 +55,7 @@ public class ProblemMapper {
 			.build();
 	}
 
-	SolvedUserResponseDto mapToSolvedUserResponseDto(User user, SolvedProblem solvedProblem) {
+	SolvedUserResponseDto mapToSolvedUserResponseDto(User user, UserProblem userProblem) {
 		return SolvedUserResponseDto.builder()
 			.username(user.getUsername())
 			.githubId(user.getGithubId())
@@ -61,13 +65,14 @@ public class ProblemMapper {
 			.profileNumber(user.getProfileNumber())
 			.rank(user.getRank())
 			.coin(user.getCoin())
-			.solvedAt(solvedProblem.getSolvedAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+			.solvedAt(userProblem.getSolvedAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
 			.build();
 	}
 
 	// 안 푼 문제 + 푼 문제 모두 합쳐져 있음.
+	// TODO: 안쓰면 삭제
 	List<ProblemSolvedResponseDto> mapToProblemSolvedResponseDtoList(
-		List<Problem> problems, List<SolvedProblem> solvedProblems
+		List<Problem> problems, List<UserProblem> solvedProblems
 	) {
 		// 풀린 문제의 ID 집합을 생성합니다.
 		Set<Long> solvedProblemIds = solvedProblems.stream()
@@ -85,8 +90,9 @@ public class ProblemMapper {
 			.collect(Collectors.toList());
 	}
 
+	// TODO: 수정
 	List<ProblemSolvedResponseDto> mapSolvedProblemToDtoList(
-		List<SolvedProblem> solvedProblemList
+		List<UserProblem> solvedProblemList
 	) {
 		return solvedProblemList.stream()
 			.map(solvedProblem -> {
@@ -101,6 +107,7 @@ public class ProblemMapper {
 			.collect(Collectors.toList());
 	}
 
+	// TODO: 수정
 	public ProblemSolvedResponseDto mapToProblemSolvedResponseDto(Problem problem, boolean isSolved) {
 		return ProblemSolvedResponseDto.builder()
 			.problemId(problem.getId())

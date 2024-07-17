@@ -12,7 +12,7 @@ import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.SolvedProblem;
+import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
@@ -51,7 +51,7 @@ public class ProblemFacade {
 		problemService.checkProblemExist(problemId);
 
 		// 문제를 푼 사용자 목록을 가져옵니다.
-		List<SolvedProblem> solvedProblems = problemSolvingService.getSolvedUserListByProblemId(problemId);
+		List<UserProblem> solvedProblems = problemSolvingService.getSolvedUserListByProblemId(problemId);
 		return solvedProblems.stream()
 			.map(solvedProblem -> {
 				User user = solvedProblem.getUser();
@@ -92,7 +92,7 @@ public class ProblemFacade {
 		// 사용자가 푼 문제 ID 목록을 가져옵니다.
 		List<Long> solvedProblemIds = problemSolvingService.getSolvedProblemListByUser(user.getId())
 			.stream()
-			.map(SolvedProblem::getProblem)
+			.map(UserProblem::getProblem)
 			.map(Problem::getId)
 			.collect(Collectors.toList());
 
@@ -108,7 +108,9 @@ public class ProblemFacade {
 	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId) {
 		User user = problemService.findUser(githubId);
 
-		List<SolvedProblem> solvedProblems = problemSolvingService.getSolvedProblemListByUser(user.getId());
+		// 현재 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
+		List<UserProblem> solvedProblems =
+			problemSolvingService.getSolvedProblemListByUser(user.getId());
 
 		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
