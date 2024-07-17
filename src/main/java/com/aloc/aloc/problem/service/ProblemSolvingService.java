@@ -28,6 +28,9 @@ public class ProblemSolvingService {
 
 	@Value("${app.season}")
 	private Integer currentSeason;
+	private static final int MAX_SOLVED_USER_COUNT_FOR_BONUS = 2;
+	private static final int COINS_FOR_TOP_SOLVERS = 50;
+	private static final int COINS_FOR_OTHER_SOLVERS = 30;
 
 	// TODO: 변수명 & 로직 확인하기
 
@@ -59,7 +62,7 @@ public class ProblemSolvingService {
 	private int calculateCoinToAdd(Long problemId) {
 		// 2등까지는 50코인, 3등부터는 30코인을 지급합니다.
 		long solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, currentSeason);
-		return solvedUserCount <= 2 ? 50 : 30;
+		return solvedUserCount <= MAX_SOLVED_USER_COUNT_FOR_BONUS ? COINS_FOR_TOP_SOLVERS : COINS_FOR_OTHER_SOLVERS;
 	}
 
 	private void updateUserAndSaveSolvedProblem(User user, Long problemId) {
