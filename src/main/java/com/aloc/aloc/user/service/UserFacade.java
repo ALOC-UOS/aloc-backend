@@ -62,7 +62,7 @@ public class UserFacade {
 				.coin(user.getCoin())
 				.solved(solvedCount)
 				.unsolved(unsolvedCount)
-				.todayUnsolved(problemFacade.getTodayProblemSolved(user.getId(), user.getCourse()))
+				.todaySolved(problemFacade.getTodayProblemSolved(user.getId(), user.getCourse()))
 				.thisWeekUnsolved(thisWeekUnsolvedCount)
 				.colorCategory(userColor.getCategory())
 				.color1(userColor.getColor1())
