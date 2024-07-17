@@ -91,14 +91,14 @@ public class ProblemFacade {
 		User user = problemService.findUser(githubId);
 
 
-		List<UserProblem> unSolvedProblems;
+		List<UserProblem> unsolvedProblems;
 		if (season == null) {
-			unSolvedProblems = problemSolvingService.getUnSolvedProblemListByUser(user.getId());
+			unsolvedProblems = problemSolvingService.getUnsolvedProblemListByUser(user.getId());
 		} else {
-			unSolvedProblems = problemSolvingService.getUnSolvedProblemListByUserAndSeason(user.getId(), season);
+			unsolvedProblems = problemSolvingService.getUnsolvedProblemListByUserAndSeason(user.getId(), season);
 		}
 
-		return unSolvedProblems.stream()
+		return unsolvedProblems.stream()
 			.map(problemMapper::mapToProblemSolvedResponseDto)
 			.collect(Collectors.toList());
 	}

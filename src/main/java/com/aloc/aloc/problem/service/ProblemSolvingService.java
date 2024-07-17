@@ -96,12 +96,12 @@ public class ProblemSolvingService {
 		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, season, true);
 	}
 
-	public List<UserProblem> getUnSolvedProblemListByUserAndSeason(Long userId, Integer season) {
+	public List<UserProblem> getUnsolvedProblemListByUserAndSeason(Long userId, Integer season) {
 		// 특정 시즌 동안 유저가 풀지 않은 문제 목록을 가져옵니다.
 		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, season, false);
 	}
 
-	public List<UserProblem> getUnSolvedProblemListByUser(Long userId) {
+	public List<UserProblem> getUnsolvedProblemListByUser(Long userId) {
 		// 모든 시즌 동안 유저가 풀지 않은 문제 목록을 가져옵니다.
 		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, null, false);
 	}
