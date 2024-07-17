@@ -49,4 +49,8 @@ public class UserProblem {
 			this.solvedAt = null;
 		}
 	}
+
+	public void setIsSolved(boolean b) {
+		this.isSolved = b;
+	}
 }
