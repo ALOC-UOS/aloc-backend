@@ -44,7 +44,7 @@ public class UserFacade {
 
 	private UserDetailResponseDto mapToUserDetailResponseDto(User user) {
 		int solvedCount = problemSolvingService.getSolvedCount(user.getId());
-		int thisWeekUnsolvedCount = getThisWeekUnsolvedCount(user);
+		Integer thisWeekUnsolvedCount = getThisWeekUnsolvedCount(user);
 		ProblemCounts problemCounts = getProblemCounts(user);
 		Color userColor = colorService.getColorById(user.getProfileColor());
 
@@ -58,7 +58,7 @@ public class UserFacade {
 			.rank(user.getRank())
 			.coin(user.getCoin())
 			.solved(solvedCount)
-			.unsolved(problemCounts.getTotalDailyCount() - solvedCount)
+			.unsolved(problemCounts.totalDailyCount() - solvedCount)
 			.todaySolved(problemFacade.getTodayProblemSolved(user.getId(), user.getCourse()))
 			.thisWeekUnsolved(thisWeekUnsolvedCount)
 			.colorCategory(userColor.getCategory())
@@ -72,26 +72,19 @@ public class UserFacade {
 			.build();
 	}
 
-	private int getThisWeekUnsolvedCount(User user) {
+	Integer getThisWeekUnsolvedCount(User user) {
 		List<Integer> thisWeekData = problemFacade.getThisWeekSolvedCount(user);
+//		if (thisWeekData.size() < 3) {
+//			throw new IllegalArgumentException("이번 주차 문제 통계 데이터가 부족합니다.");
+//		}
 		return thisWeekData.get(2);
 	}
 
-	private ProblemCounts getProblemCounts(User user) {
+	ProblemCounts getProblemCounts(User user) {
 		List<Integer> counts = problemService.getTotalProblemCount(user.getCourse());
 		return new ProblemCounts(counts.get(0), counts.get(1));
 	}
 
-	@Getter
-	private static class ProblemCounts {
-
-		private final int totalWeeklyCount;
-		private final int totalDailyCount;
-
-		public ProblemCounts(int totalWeeklyCount, int totalDailyCount) {
-			this.totalWeeklyCount = totalWeeklyCount;
-			this.totalDailyCount = totalDailyCount;
-		}
-
+	public record ProblemCounts(int totalWeeklyCount, int totalDailyCount) {
 	}
 }

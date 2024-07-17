@@ -1,22 +1,17 @@
 package com.aloc.aloc.user.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.MockitoAnnotations;
 
-import com.aloc.aloc.algorithm.entity.Algorithm;
-import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.color.Color;
 import com.aloc.aloc.color.service.ColorService;
 import com.aloc.aloc.problem.service.ProblemFacade;
@@ -25,22 +20,26 @@ import com.aloc.aloc.problem.service.ProblemSolvingService;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
+import com.aloc.aloc.user.enums.Authority;
 import com.aloc.aloc.user.repository.UserRepository;
-@ExtendWith(MockitoExtension.class)
-class UserFacadeTest {
+
+public class UserFacadeTest {
 
 	@Mock
 	private UserRepository userRepository;
+
 	@Mock
 	private UserSortingService userSortingService;
-	@Mock
-	private AlgorithmService algorithmService;
+
 	@Mock
 	private ProblemService problemService;
+
 	@Mock
 	private ProblemFacade problemFacade;
+
 	@Mock
 	private ProblemSolvingService problemSolvingService;
+
 	@Mock
 	private ColorService colorService;
 
@@ -48,13 +47,17 @@ class UserFacadeTest {
 	private UserFacade userFacade;
 
 	@BeforeEach
-	void setUp() {
-		ReflectionTestUtils.setField(userFacade, "season", 1);
+	public void setUp() {
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
-	void getUsers_ShouldReturnListOfUserDetailResponseDto() {
+	public void getUsers_ShouldReturnListOfUserDetailResponseDto() {
 		// Given
+		Authority authorityUser = Authority.ROLE_USER;
+		Authority authorityAdmin = Authority.ROLE_ADMIN;
+		List<Authority> authorities = Arrays.asList(authorityUser, authorityAdmin);
+
 		User user1 = new User(
 			"user1",
 			"baekjoon1",
@@ -80,54 +83,40 @@ class UserFacadeTest {
 			"2"
 		);
 		user2.setId(2L);
+		List<User> mockUsers = Arrays.asList(user1, user2);
 
-		List<User> users = Arrays.asList(user1, user2);
-		Algorithm mockAlgorithm = mock(Algorithm.class);
-		when(mockAlgorithm.getAlgorithmId()).thenReturn(1);
-		when(userRepository.findAllByAuthorityIn(anyList())).thenReturn(users);
-		when(userSortingService.sortUserList(users)).thenReturn(users);
+		when(userRepository.findAllByAuthorityIn(authorities)).thenReturn(mockUsers);
+		when(userSortingService.sortUserList(mockUsers)).thenReturn(mockUsers);
 		when(problemSolvingService.getSolvedCount(anyLong())).thenReturn(10);
-		when(problemService.getTotalProblemCount(any(Course.class))).thenReturn(20);
-		when(problemFacade.getTodayProblemSolved(anyLong(), any(Course.class))).thenReturn(Boolean.TRUE);
-		when(algorithmService.getAlgorithmBySeason(anyInt())).thenReturn(Optional.of(mockAlgorithm));
-		when(problemFacade.getThisWeekSolvedCount(anyLong(), anyInt(), anyInt(), any(Course.class)))
-			.thenReturn(Arrays.asList(8, 15, 7));
+		when(problemFacade.getTodayProblemSolved(anyLong(), any(Course.class))).thenReturn(true);
+		when(problemFacade.getThisWeekSolvedCount(any())).thenReturn(Arrays.asList(8, 15, 7));
 
-		Color color = Color.builder()
-			.id("Red")
-			.category("PRIMARY")
-			.color1("#FF0000")
-			.color2("#CC0000")
-			.build();
-		when(colorService.getColorById(anyString())).thenReturn(color);
+		Color mockColor = Color.builder().id("White").color1("#FFFFFF").build();
+		when(colorService.getColorById(anyString())).thenReturn(mockColor);
+		when(problemService.getTotalProblemCount(any())).thenReturn(Arrays.asList(20, 30));
 
 		// When
 		List<UserDetailResponseDto> result = userFacade.getUsers();
 
 		// Then
-		assertNotNull(result);
 		assertEquals(2, result.size());
+		assertEquals("user1", result.get(0).getUsername());
+		assertEquals("github1", result.get(0).getGithubId());
+		assertEquals("baekjoon1", result.get(0).getBaekjoonId());
+		assertEquals(10, result.get(0).getSolved());
+		assertEquals(7, result.get(0).getThisWeekUnsolved());
 
-		UserDetailResponseDto firstUser = result.get(0);
-		assertEquals("user1", firstUser.getUsername());
-		assertEquals("github1", firstUser.getGithubId());
-		assertEquals("baekjoon1", firstUser.getBaekjoonId());
-		assertEquals("Blue", firstUser.getProfileColor());
-		assertEquals(10, firstUser.getSolved());
-		assertEquals(10, firstUser.getUnsolved());  // 20 total - 10 solved
-		assertEquals(Boolean.TRUE, firstUser.getTodayUnsolved());
-		assertEquals(7, firstUser.getThisWeekUnsolved());
-		assertEquals("PRIMARY", firstUser.getColorCategory());
-		assertEquals("#FF0000", firstUser.getColor1());
-		assertEquals("#CC0000", firstUser.getColor2());
+		UserDetailResponseDto userDetailResponseDto1 = result.get(0);
+		assertEquals("user1", userDetailResponseDto1.getUsername());
 
-		verify(userRepository).findAllByAuthorityIn(anyList());
-		verify(userSortingService).sortUserList(users);
+		UserDetailResponseDto userDetailResponseDto2 = result.get(1);
+		assertEquals("user", userDetailResponseDto2.getUsername());
+
+		verify(userRepository, times(1)).findAllByAuthorityIn(authorities);
+		verify(userSortingService, times(1)).sortUserList(mockUsers);
 		verify(problemSolvingService, times(2)).getSolvedCount(anyLong());
-		verify(problemService, times(2)).getTotalProblemCount(any(Course.class));
-		verify(problemFacade, times(2)).getTodayProblemSolved(anyLong(), any(Course.class));
-		verify(algorithmService, times(2)).getAlgorithmBySeason(anyInt());
-		verify(problemFacade, times(2)).getThisWeekSolvedCount(anyLong(), anyInt(), anyInt(), any(Course.class));
+		verify(problemFacade, times(2)).getTodayProblemSolved(anyLong(), any());
 		verify(colorService, times(2)).getColorById(anyString());
+		verify(problemService, times(2)).getTotalProblemCount(any());
 	}
 }

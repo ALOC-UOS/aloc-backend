@@ -1,6 +1,7 @@
 package com.aloc.aloc.problem.service;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -119,15 +120,16 @@ public class ProblemFacade {
 	public List<Integer> getThisWeekSolvedCount(User user) {
 		// 이번 주차 문제를 가져옵니다.
 		List<Problem> thisWeekProblems = getThisWeekProblems(user);
-
+		System.out.println("thisWeekProblems: " + thisWeekProblems);
 		// 이번 주차 문제 중 푼 문제 수, 문제 수, 안 푼 문제 수를 가져옵니다.
-		Integer solvedCount = Math.toIntExact(thisWeekProblems.stream()
-			.filter(problem -> problemSolvingService.isProblemAlreadySolved(user.getId(),
-				problem.getId()))
-			.count());
-		Integer problemCount = thisWeekProblems.size();
-		Integer unsolvedCount = problemCount - solvedCount;
-		return List.of(solvedCount, problemCount, unsolvedCount);
+		long solvedCount = thisWeekProblems.stream()
+			.filter(problem -> problemSolvingService.isProblemAlreadySolved(user.getId(), problem.getId()))
+			.count();
+		int totalProblems = thisWeekProblems.size();
+		int unsolvedCount = totalProblems - Math.toIntExact(solvedCount);
+
+		// List에 결과를 담아 반환
+		return Arrays.asList(Math.toIntExact(solvedCount), totalProblems, unsolvedCount);
 	}
 
 	public Boolean getTodayProblemSolved(Long userId, Course course) {
