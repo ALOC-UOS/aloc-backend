@@ -34,7 +34,7 @@ public class ProblemController {
 	private final ProblemService problemService;
 	private final ProblemFacade problemFacade;
 
-	@GetMapping("/season/{season}/algorithmId/{algorithmId}/{course}")
+	@GetMapping("/season/{season}/algorithmId/{algorithmId}/course/{course}")
 	@Operation(summary = "알고리즘 Id와 시즌으로 문제 목록 조회",
 		description = "특정 시즌과 알고리즘의 공개된 문제 목록을 최근 순으로 정렬하여 조회합니다. (Daily)")
 	public CustomApiResponse<List<ProblemResponseDto>> getProblemsByAlgorithmIdAndSeason(

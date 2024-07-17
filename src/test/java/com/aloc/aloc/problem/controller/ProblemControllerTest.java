@@ -187,7 +187,7 @@ public class ProblemControllerTest {
 		when(problemService.getVisibleProblemsDtoByAlgorithmId(season, algorithmId, Course.FULL)).thenReturn(problems);
 
 		// when & then
-		mockMvc.perform(get("/api2/problem/season/{season}/algorithmId/{algorithmId}/FULL", season, algorithmId)
+		mockMvc.perform(get("/api2/problem/season/{season}/algorithmId/{algorithmId}/course/FULL", season, algorithmId)
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
