@@ -151,7 +151,7 @@ class ProblemScraperServiceTest {
 
 		List<Problem> savedProblems = problemCaptor.getAllValues();
 		assertFalse(savedProblems.isEmpty());
-		assertEquals(40, savedProblems.size()); // 문제 선 저장 -> 태그 초기화 -> 문제 저장 (20 * 2개)
+		assertEquals(48, savedProblems.size()); // 문제 선 저장 -> 태그 초기화 -> 문제 저장 (24 * 2개)
 
 		// 각 문제가 잘 저장되었는지 확인
 		for (Problem problem : savedProblems) {

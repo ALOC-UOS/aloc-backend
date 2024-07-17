@@ -1,4 +1,4 @@
-package com.aloc.aloc.problem.scheduler;
+package com.aloc.aloc.scheduler;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

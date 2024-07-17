@@ -52,14 +52,20 @@ public class ProblemScrapingService {
 	private final ProblemTagRepository problemTagRepository;
 
 	public void addProblemsForThisWeek() throws IOException {
-		Algorithm weeklyAlgorithm = findWeeklyAlgorithm();
-		Algorithm dailyAlgorithm = findDailyAlgorithm();
+		Algorithm weeklyAlgorithm = findWeeklyAlgorithm(); // 예습
+		Algorithm dailyAlgorithm = findDailyAlgorithm(); // 복습
 
 		addProblemsByType(weeklyAlgorithm, CourseRoutineTier.HALF_WEEKLY);
 		addProblemsByType(weeklyAlgorithm, CourseRoutineTier.FULL_WEEKLY);
 
 		addProblemsByType(dailyAlgorithm, CourseRoutineTier.HALF_DAILY);
 		addProblemsByType(dailyAlgorithm, CourseRoutineTier.FULL_DAILY);
+		updateWeeklyAlgorithmHidden(weeklyAlgorithm);
+	}
+
+	private void updateWeeklyAlgorithmHidden(Algorithm weeklyAlgorithm) {
+		weeklyAlgorithm.setHiddenFalse();
+		algorithmRepository.save(weeklyAlgorithm);
 	}
 
 	public Algorithm findWeeklyAlgorithm() {
@@ -69,9 +75,7 @@ public class ProblemScrapingService {
 
 	public Algorithm findDailyAlgorithm() {
 		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(SEASON)
-			.orElseGet(
-				() -> algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(SEASON)
-					.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다.")));
+		.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다."));
 	}
 
 	private void addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
