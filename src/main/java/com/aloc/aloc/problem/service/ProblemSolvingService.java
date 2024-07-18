@@ -1,6 +1,5 @@
 package com.aloc.aloc.problem.service;
 
-import com.aloc.aloc.problem.entity.Problem;
 import java.io.IOException;
 import java.util.List;
 
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
+import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
@@ -111,14 +111,22 @@ public class ProblemSolvingService {
 		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, null, false);
 	}
 
-	public int getSolvedCount(Long userId) {
+	public int getSolvedCountByUserId(Long userId) {
 		return getSolvedProblemListByUserAndSeason(userId, currentSeason).size();
 	}
 
-	public void checkProblemIsSolvedAndAddSolvedProblem(User user, Problem problem)
+	public void addUserProblem(User user, Problem problem)
 		throws IOException {
+		UserProblem userProblem = UserProblem.builder()
+			.user(user)
+			.problem(problemRepository.getReferenceById(problem.getId()))
+			.isSolved(false)
+			.season(currentSeason)
+			.build();
+
 		if (solvedScrapingService.isProblemSolved(user.getBaekjoonId(), problem)) {
-			saveSolvedProblem(user, problem.getId());
+			userProblem.setIsSolved(true);
 		}
+		userProblemRepository.save(userProblem);
 	}
 }

@@ -48,7 +48,7 @@ public class UserFacade {
 	}
 
 	private UserDetailResponseDto mapToUserDetailResponseDto(User user) {
-		int solvedCount = problemSolvingService.getSolvedCount(user.getId());
+		int solvedCount = problemSolvingService.getSolvedCountByUserId(user.getId());
 		Integer thisWeekUnsolvedCount = getThisWeekUnsolvedCount(user);
 		ProblemCounts problemCounts = getProblemCounts(user);
 		Color userColor = colorService.getColorById(user.getProfileColor());
@@ -91,9 +91,9 @@ public class UserFacade {
 	}
 
 	private void loadNewUserProblemRecord(User user) throws IOException {
-		List<Problem> problems = problemService.getAllOpenedProblems();
+		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
 		for (Problem problem : problems) {
-			problemSolvingService.checkProblemIsSolvedAndAddSolvedProblem(user, problem);
+			problemSolvingService.addUserProblem(user, problem);
 		}
 	}
 
@@ -109,6 +109,7 @@ public class UserFacade {
 		}
 		user.setAuthority(Authority.ROLE_USER);
 		loadNewUserProblemRecord(user);
+		// TODO User의 solvedCount 저장
 		historyService.addHistory(user, "plusMember", null);
 		return "스터디 멤버로 등록되었습니다.";
 	}

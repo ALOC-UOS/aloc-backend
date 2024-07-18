@@ -96,7 +96,7 @@ public class ProblemService {
 		return List.of(weeklyCount, dailyCount);
 	}
 
-	public List<Problem> getAllOpenedProblems() {
-		return problemRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
+	public List<Problem> getVisibleProblemsBySeasonAndCourse(Course course) {
+		return problemRepository.findVisibleProblemsBySeasonAndCourse(currentSeason, course);
 	}
 }
