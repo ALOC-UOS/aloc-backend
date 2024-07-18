@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.SolvedProblem;
+import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.problem.repository.SolvedProblemRepository;
+import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.user.User;
 
 import lombok.AllArgsConstructor;
@@ -21,9 +21,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UserSortingService {
 	private final ProblemRepository problemRepository;
-	private final SolvedProblemRepository solvedProblemRepository;
+	private final UserProblemRepository userProblemRepository;
 
 	public List<User> sortUserList(List<User> userList) {
+		// TODO: Weekly 들어오면 수정 예정
 		Problem fullCourseProblem = problemRepository.findLatestPublicProblemByProblemTypeId(1L);
 		Problem halfCourseProblem = problemRepository.findLatestPublicProblemByProblemTypeId(2L);
 		return userList.stream()
@@ -40,14 +41,14 @@ public class UserSortingService {
 
 	private LocalDateTime sortBySolvedTime(User user, Long fullCourseProblemId, Long halfCourseProblemId) {
 		LocalDateTime fullCourseSolvedTime = Optional.ofNullable(fullCourseProblemId)
-			.flatMap(id -> solvedProblemRepository.findByUserIdAndProblemId(user.getId(), id))
-			.map(SolvedProblem::getSolvedAt)
+			.flatMap(id -> userProblemRepository.findByUserIdAndProblemId(user.getId(), id))
+			.map(UserProblem::getSolvedAt)
 			.orElse(LocalDateTime.now());
 
 
 		LocalDateTime halfCourseSolvedTime = Optional.ofNullable(halfCourseProblemId)
-			.flatMap(id -> solvedProblemRepository.findByUserIdAndProblemId(user.getId(), id))
-			.map(SolvedProblem::getSolvedAt)
+			.flatMap(id -> userProblemRepository.findByUserIdAndProblemId(user.getId(), id))
+			.map(UserProblem::getSolvedAt)
 			.orElse(LocalDateTime.now());
 
 		// 두 시간 중 더 이른 시간을 반환

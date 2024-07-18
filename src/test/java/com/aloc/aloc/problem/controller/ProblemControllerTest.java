@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,38 +39,6 @@ public class ProblemControllerTest {
 
 	@MockBean
 	private ProblemFacade problemFacade;
-
-	@Test
-	@WithMockUser
-	@Tag("최근 생성일 기준으로 정렬하여 전체 문제 목록을 조회합니다.")
-	void getProblems_shouldReturnListOfProblems() throws Exception {
-		// Given
-		List<ProblemResponseDto> problems = Arrays.asList(
-			new ProblemResponseDto(1L, "Problem 1", null, 3, 100),
-			new ProblemResponseDto(2L, "Problem 2", null, 4, 50)
-		);
-		when(problemService.getVisibleProblemsWithSolvingCount()).thenReturn(problems);
-
-		// When & Then
-		mockMvc.perform(get("/api2/problem")
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.isSuccess").value(true))
-				.andExpect(jsonPath("$.code").value("COMMON200"))
-				.andExpect(jsonPath("$.message").value("성공입니다."))
-				.andExpect(jsonPath("$.result").isArray())
-				.andExpect(jsonPath("$.result[0].id").value(1))
-				.andExpect(jsonPath("$.result[0].title").value("Problem 1"))
-				.andExpect(jsonPath("$.result[0].tags").isEmpty())
-				.andExpect(jsonPath("$.result[0].difficulty").value(3))
-				.andExpect(jsonPath("$.result[0].solvingCount").value(100))
-				.andExpect(jsonPath("$.result[1].id").value(2))
-				.andExpect(jsonPath("$.result[1].title").value("Problem 2"))
-				.andExpect(jsonPath("$.result[1].tags").isEmpty())
-				.andExpect(jsonPath("$.result[1].difficulty").value(4))
-				.andExpect(jsonPath("$.result[1].solvingCount").value(50));
-	}
-
 	@Test
 	@WithMockUser
 	@Tag("해당 문제를 푼 사용자 목록을 조회합니다.")
@@ -217,10 +184,10 @@ public class ProblemControllerTest {
 			new ProblemResponseDto(1L, "Problem 1", null, 3, 100),
 			new ProblemResponseDto(2L, "Problem 2", null, 4, 50)
 		);
-		when(problemService.getVisibleProblemsByAlgorithm(season, algorithmId, Course.FULL)).thenReturn(problems);
+		when(problemService.getVisibleProblemsDtoByAlgorithmId(season, algorithmId, Course.FULL)).thenReturn(problems);
 
 		// when & then
-		mockMvc.perform(get("/api2/problem/season/{season}/algorithmId/{algorithmId}/FULL", season, algorithmId)
+		mockMvc.perform(get("/api2/problem/season/{season}/algorithmId/{algorithmId}/course/FULL", season, algorithmId)
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))

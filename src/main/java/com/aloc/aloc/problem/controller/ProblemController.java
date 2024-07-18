@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
@@ -33,20 +34,16 @@ public class ProblemController {
 	private final ProblemService problemService;
 	private final ProblemFacade problemFacade;
 
-	@GetMapping()
-	@Operation(summary = "문제 목록 조회", description = "최근 생성일 기준으로 정렬하여 전체 문제 목록을 조회합니다.")
-	public CustomApiResponse<List<ProblemResponseDto>> getProblems() {
-		return CustomApiResponse.onSuccess(problemService.getVisibleProblemsWithSolvingCount());
-	}
-
-	@GetMapping("/season/{season}/algorithmId/{algorithmId}/{course}")
-	@Operation(summary = "알고리즘 Id와 시즌로 문제 목록 조회",
-		description = "특정 시즌의 최근 생성일 기준으로 정렬하여 특정 알고리즘 문제 목록을 조회합니다. (Daily)")
+	@GetMapping("/season/{season}/algorithmId/{algorithmId}/course/{course}")
+	@Operation(summary = "알고리즘 Id와 시즌으로 문제 목록 조회",
+		description = "특정 시즌과 알고리즘의 공개된 문제 목록을 최근 순으로 정렬하여 조회합니다. (Daily)")
 	public CustomApiResponse<List<ProblemResponseDto>> getProblemsByAlgorithmIdAndSeason(
 		@Parameter(description = "시즌", required = true) @PathVariable int season,
-		@Parameter(description = "코스 ID", required = true) @PathVariable() Course course,
+		@Parameter(description = "코스", required = true) @PathVariable() Course course,
 		@Parameter(description = "알고리즘 ID", required = true) @PathVariable int algorithmId) {
-		return CustomApiResponse.onSuccess(problemService.getVisibleProblemsByAlgorithm(season, algorithmId, course));
+		return CustomApiResponse.onSuccess(
+			problemService.getVisibleProblemsDtoByAlgorithmId(season, algorithmId, course)
+		);
 	}
 
 	@GetMapping("/solved-user/{problemId}")
@@ -60,7 +57,7 @@ public class ProblemController {
 	@GetMapping("/today/{course}")
 	@Operation(summary = "오늘의 문제 조회", description = "오늘의 문제를 조회합니다.")
 	public CustomApiResponse<ProblemResponseDto> getTodayProblem(
-		@Parameter(description = "코스 ID", required = true) @PathVariable() Course course
+		@Parameter(description = "코스", required = true) @PathVariable() Course course
 	) {
 		return CustomApiResponse.onSuccess(problemService.findTodayProblemByCourse(course));
 	}
@@ -84,18 +81,20 @@ public class ProblemController {
 	}
 
 	@GetMapping("/unsolved/user/{githubId}")
-	@Operation(summary = "유저의 풀지 않은 문제 조회", description = "유저가 풀지 않은 문제를 조회합니다.")
+	@Operation(summary = "유저의 풀지 않은 문제 조회", description = "유저가 풀지 않은 문제를 조회합니다. 시즌이 null이면 모든 시즌을 조회합니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUnsolvedProblemList(
-		@Parameter(required = true) @PathVariable() String githubId
+		@Parameter(required = true) @PathVariable() String githubId,
+		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season
 	) {
-		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId));
+		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId, season));
 	}
 
 	@GetMapping("/solved/user/{githubId}")
-	@Operation(summary = "유저의 문제 해결 정보 조회", description = "유저가 푼 문제 리스트를 가져옵니다.")
+	@Operation(summary = "유저의 이미 푼 문제 조회", description = "유저가 푼 문제를 조회합니다. 시즌이 null이면 모든 시즌을 조회합니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUserSolvedProblemList(
-		@Parameter(description = "유저 깃허브 아이디", required = true) @PathVariable() String githubId
+		@Parameter(description = "유저 깃허브 아이디", required = true) @PathVariable() String githubId,
+		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season
 	) {
-		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId));
+		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId, season));
 	}
 }

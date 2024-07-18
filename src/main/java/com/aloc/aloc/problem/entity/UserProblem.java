@@ -20,7 +20,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SolvedProblem {
+@Builder
+public class UserProblem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -33,12 +34,19 @@ public class SolvedProblem {
 	@JoinColumn(name = "problem_id")
 	private Problem problem;
 
+	private Integer season;
+
+	@Builder.Default
+	private Boolean isSolved = false;
+
 	private LocalDateTime solvedAt;
 
-	@Builder
-	public SolvedProblem(User user, Problem problem) {
-		this.user = user;
-		this.problem = problem;
-		this.solvedAt = LocalDateTime.now();
+	public void setIsSolved(boolean isSolved) {
+		this.isSolved = isSolved;
+		if (isSolved) {
+			this.solvedAt = LocalDateTime.now();
+		} else {
+			this.solvedAt = null;
+		}
 	}
 }

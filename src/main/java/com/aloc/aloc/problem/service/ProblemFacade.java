@@ -1,6 +1,7 @@
 package com.aloc.aloc.problem.service;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,9 +13,8 @@ import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.SolvedProblem;
+import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
@@ -29,7 +29,7 @@ public class ProblemFacade {
 	private final ProblemMapper problemMapper;
 
 	@Value("${app.season}")
-	private Integer season;
+	private Integer currentSeason;
 
 
 	public String checkSolved(String username) throws IOException {
@@ -43,6 +43,7 @@ public class ProblemFacade {
 		}
 
 		// 문제를 풀었는지 확인합니다.
+		// TODO: 문제를 풀었는지 확인하는 로직을 구현합니다.
 		return problemSolvingService.checkAndUpdateProblemSolved(problem, user);
 	}
 
@@ -51,7 +52,7 @@ public class ProblemFacade {
 		problemService.checkProblemExist(problemId);
 
 		// 문제를 푼 사용자 목록을 가져옵니다.
-		List<SolvedProblem> solvedProblems = problemSolvingService.getSolvedUserListByProblemId(problemId);
+		List<UserProblem> solvedProblems = problemSolvingService.getSolvedUserListByProblemId(problemId);
 		return solvedProblems.stream()
 			.map(solvedProblem -> {
 				User user = solvedProblem.getUser();
@@ -60,23 +61,23 @@ public class ProblemFacade {
 			.collect(Collectors.toList());
 	}
 
+	// 이번 주차 문제 가져오는 공통 메소드
+	private List<Problem> getThisWeekProblems(User user) {
+		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
+			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
+		return problemService.getVisibleDailyProblemsByAlgorithmId(
+			currentSeason, thisWeekAlgorithm.getAlgorithmId(), user.getCourse()
+		);
+	}
+
 	public List<ProblemSolvedResponseDto> getWeeklyCompletionStatus(String username) {
 		// 사용자 정보를 가져옵니다.
 		User user = problemService.findUser(username);
 
-		// 이번주 Weekly 문제를 가져옵니다.
-		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(season)
-			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
-
-
-		// 사용자에 맞는 문제 타입ID를 가져옵니다.
-		Long problemTypeId = problemService.getProblemTypeIdByCourseAndRoutine(user.getCourse(), Routine.WEEKLY);
+		// 이번 주차 문제를 가져옵니다.
+		List<Problem> thisWeekProblems = getThisWeekProblems(user);
 
 		// 문제 풀이 현황을 리턴합니다.
-		List<Problem> thisWeekProblems = problemService.getProblemsByAlgorithmWeekAndProblemTypeId(
-			thisWeekAlgorithm.getWeek(), problemTypeId
-		);
-
 		return thisWeekProblems.stream()
 			.map(problem -> {
 				boolean isSolved = problemSolvingService.isProblemAlreadySolved(user.getId(), problem.getId());
@@ -85,47 +86,53 @@ public class ProblemFacade {
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(String githubId) {
+	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(String githubId, Integer season) {
 		// 사용자 정보를 가져옵니다.
 		User user = problemService.findUser(githubId);
 
-		// 사용자가 푼 문제 ID 목록을 가져옵니다.
-		List<Long> solvedProblemIds = problemSolvingService.getSolvedProblemListByUser(user.getId())
-			.stream()
-			.map(SolvedProblem::getProblem)
-			.map(Problem::getId)
-			.collect(Collectors.toList());
 
-		// 사용자가 풀지 않은 문제 목록을 가져옵니다.
-		List<Problem> unsolvedProblems = problemService.getUnsolvedProblemsBySolvedProblemIds(
-			solvedProblemIds);
+		List<UserProblem> unsolvedProblems;
+		if (season == null) {
+			unsolvedProblems = problemSolvingService.getUnsolvedProblemListByUser(user.getId());
+		} else {
+			unsolvedProblems = problemSolvingService.getUnsolvedProblemListByUserAndSeason(user.getId(), season);
+		}
 
 		return unsolvedProblems.stream()
-			.map(problem -> problemMapper.mapToProblemSolvedResponseDto(problem, false))
+			.map(problemMapper::mapToProblemSolvedResponseDto)
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId) {
+	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId, Integer season) {
 		User user = problemService.findUser(githubId);
 
-		List<SolvedProblem> solvedProblems = problemSolvingService.getSolvedProblemListByUser(user.getId());
-
+		List<UserProblem> solvedProblems;
+		// 현재 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
+		if (season == null) {
+			solvedProblems = problemSolvingService.getSolvedProblemListByUser(user.getId());
+		} else {
+			solvedProblems = problemSolvingService.getSolvedProblemListByUserAndSeason(user.getId(), season);
+		}
 		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
 
-	public List<Integer> getThisWeekSolvedCount(Long userId, int algorithmId, int season, Course course) {
-		List<ProblemResponseDto> thisWeekProblems =
-			problemService.getVisibleProblemsByAlgorithm(season, algorithmId, course);
-		int solvedCount =  (int) thisWeekProblems.stream()
-			.filter(problem -> problemSolvingService.isProblemAlreadySolved(userId, problem.getId()))
+	public List<Integer> getThisWeekSolvedCount(User user) {
+		// 이번 주차 문제를 가져옵니다.
+		List<Problem> thisWeekProblems = getThisWeekProblems(user);
+		System.out.println("thisWeekProblems: " + thisWeekProblems);
+		// 이번 주차 문제 중 푼 문제 수, 문제 수, 안 푼 문제 수를 가져옵니다.
+		long solvedCount = thisWeekProblems.stream()
+			.filter(problem -> problemSolvingService.isProblemAlreadySolved(user.getId(), problem.getId()))
 			.count();
-		Integer problemCount = thisWeekProblems.size();
-		Integer unsolvedCount = thisWeekProblems.size() - solvedCount;
-		return List.of(solvedCount, problemCount, unsolvedCount);
+		int totalProblems = thisWeekProblems.size();
+		int unsolvedCount = totalProblems - Math.toIntExact(solvedCount);
+
+		// List에 결과를 담아 반환
+		return Arrays.asList(Math.toIntExact(solvedCount), totalProblems, unsolvedCount);
 	}
 
 	public Boolean getTodayProblemSolved(Long userId, Course course) {
-		// 오늘의 문제를 가져옵니다.
+		// 오늘의 문제를 풀었는지 확인합니다.
 		ProblemResponseDto todayProblem = problemService.findTodayProblemByCourse(course);
 		return problemSolvingService.isProblemAlreadySolved(userId, todayProblem.getId());
 	}

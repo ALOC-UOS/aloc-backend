@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
@@ -26,25 +27,23 @@ public class ProblemService {
 	private final ProblemTypeRepository problemTypeRepository;
 	private final ProblemMapper problemMapper;
 
+	@Value("${app.season}")
+	private Integer currentSeason;
+
 	User findUser(String githubId) {
 		return userRepository.findByGithubId(githubId)
 			.orElseThrow(() -> new IllegalArgumentException("사용자 정보가 없습니다."));
 	}
 
-	public List<ProblemResponseDto> getVisibleProblemsWithSolvingCount() {
-		// 공개된 문제 목록을 정렬하여 가져옵니다.
-		List<Problem> problems = problemRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
-		return problems.stream()
-			.map(problemMapper::mapToProblemResponseDto)
-			.collect(Collectors.toList());
-	}
-
-	public List<ProblemResponseDto> getVisibleProblemsByAlgorithm(int season, int algorithmId, Course course) {
+	List<Problem> getVisibleDailyProblemsByAlgorithmId(int season, int algorithmId, Course course) {
 		ProblemType problemType = problemTypeRepository.findProblemTypeByCourseAndRoutine(course, Routine.DAILY)
 			.orElseThrow(() -> new IllegalArgumentException("문제 타입이 없습니다.")
 		);
-		List<Problem> problems = problemRepository
-			.findPublicProblemsByAlgorithmAndCourse(season, algorithmId, problemType.getId());
+		return problemRepository.findVisibleProblemsByAlgorithmAndCourse(season, algorithmId, problemType.getId());
+	}
+
+	public List<ProblemResponseDto> getVisibleProblemsDtoByAlgorithmId(int season, int algorithmId, Course course) {
+		List<Problem> problems = getVisibleDailyProblemsByAlgorithmId(season, algorithmId, course);
 		return problems.stream()
 			.map(problemMapper::mapToProblemResponseDto)
 			.collect(Collectors.toList());
@@ -56,7 +55,6 @@ public class ProblemService {
 			throw new IllegalArgumentException("해당 문제가 존재하지 않습니다.");
 		}
 	}
-
 
 	public ProblemResponseDto findTodayProblemByCourse(Course course) {
 		// 오늘의 문제 타입을 가져옵니다.
@@ -91,21 +89,10 @@ public class ProblemService {
 		}
 	}
 
-	public Long getProblemTypeIdByCourseAndRoutine(Course course, Routine routine) {
-		return problemTypeRepository.findProblemTypeByCourseAndRoutine(course, routine)
-			.orElseThrow(() -> new IllegalArgumentException("문제 타입이 없습니다."))
-			.getId();
-	}
-
-	List<Problem> getProblemsByAlgorithmWeekAndProblemTypeId(Integer algorithmId, Long problemTypeId) {
-		return problemRepository.findAllByAlgorithmWeekAndProblemTypeIdAndHiddenIsFalse(algorithmId, problemTypeId);
-	}
-
-	public List<Problem> getUnsolvedProblemsBySolvedProblemIds(List<Long> solvedProblemIds) {
-		return problemRepository.findAllByIdNotInAndHiddenIsFalseOrderByCreatedAtDesc(solvedProblemIds);
-	}
-
-	public int getTotalProblemCount(Course course) {
-		return problemRepository.countAllByCourse(course);
+	public List<Integer> getTotalProblemCount(Course course) {
+		// 해당 코스의 공개 된 문제 중 Weekly와 Daily 문제의 개수를 가져옵니다.
+		Integer weeklyCount = problemRepository.countAllByCourseAndRoutine(currentSeason, course, Routine.WEEKLY);
+		Integer dailyCount = problemRepository.countAllByCourseAndRoutine(currentSeason, course, Routine.DAILY);
+		return List.of(weeklyCount, dailyCount);
 	}
 }

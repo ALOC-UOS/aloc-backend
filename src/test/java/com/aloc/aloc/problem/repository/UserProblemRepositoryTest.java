@@ -14,18 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.problem.entity.SolvedProblem;
+import com.aloc.aloc.problem.entity.UserProblem;
 
 import jakarta.persistence.EntityManager;
 
 @SpringBootTest
 @Transactional
-public class SolvedProblemRepositoryTest {
+public class UserProblemRepositoryTest {
 	@Autowired
 	private EntityManager em;
 
 	@Autowired
-	private SolvedProblemRepository solvedProblemRepository;
+	private UserProblemRepository userProblemRepository;
 
 	private SolvedProblemDummyEntity dummyEntity;
 	@BeforeEach
@@ -39,14 +39,15 @@ public class SolvedProblemRepositoryTest {
 	@DisplayName("문제 ID를 통해 해결된 문제 리스트 가져오기")
 	void findAllByProblemId_ShouldReturnSolvedProblemList() {
 		// when
-		List<SolvedProblem> problems = solvedProblemRepository.findAllByProblemId(dummyEntity.problem1.getId());
+		List<UserProblem> problems =
+			userProblemRepository.findAllByProblemIdAndIsSolvedIsTrue(dummyEntity.problem1.getId());
 
 		// then
 		assertThat(problems).hasSize(2);
 
 		// 푼 사용자 목록을 가져오기 위한 함수, 정렬은 보장되지 않음
-		AssertionsForClassTypes.assertThat(problems.get(0).getId()).isEqualTo(dummyEntity.sp1.getId());
-		AssertionsForClassTypes.assertThat(problems.get(1).getId()).isEqualTo(dummyEntity.sp2.getId());
+		AssertionsForClassTypes.assertThat(problems.get(0).getId()).isEqualTo(dummyEntity.userProblem1.getId());
+		AssertionsForClassTypes.assertThat(problems.get(1).getId()).isEqualTo(dummyEntity.userProblem2.getId());
 	}
 
 	@Test
@@ -54,7 +55,7 @@ public class SolvedProblemRepositoryTest {
 	@DisplayName("문제 ID를 통해 해결한 사용자 수 가져오기")
 	void countSolvingUsersByProblemId_ShouldReturnSolvingUsersCount() {
 		// when
-		Integer count = solvedProblemRepository.countSolvingUsersByProblemId(dummyEntity.problem1.getId());
+		Integer count = userProblemRepository.countSolvingUsersByProblemId(dummyEntity.problem1.getId(), 2);
 
 		// then
 		assertThat(count).isEqualTo(2);
@@ -64,7 +65,7 @@ public class SolvedProblemRepositoryTest {
 	@Tag("Repository")
 	@DisplayName("사용자 ID와 문제 ID를 통해 해결된 문제가 존재하는지 확인")
 	void existsByUserIdAndProblemId_ShouldReturnTrue() {
-		Boolean exists = solvedProblemRepository.existsByUserIdAndProblemId(
+		Boolean exists = userProblemRepository.existsByUserIdAndProblemIdAndIsSolvedIsTrue(
 			dummyEntity.user1.getId(),
 			dummyEntity.problem1.getId()
 		);
@@ -75,7 +76,7 @@ public class SolvedProblemRepositoryTest {
 	@Tag("Repository")
 	@DisplayName("사용자 ID와 문제 ID를 통해 해결된 문제가 존재하지 않는지 확인")
 	void existsByUserIdAndProblemId_ShouldReturnFalse() {
-		Boolean exists = solvedProblemRepository.existsByUserIdAndProblemId(
+		Boolean exists = userProblemRepository.existsByUserIdAndProblemIdAndIsSolvedIsTrue(
 			dummyEntity.user1.getId(),
 			100L
 		);

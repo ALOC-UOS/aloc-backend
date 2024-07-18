@@ -19,9 +19,7 @@ import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.SolvedProblem;
-import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.problem.repository.SolvedProblemRepository;
+import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
@@ -35,12 +33,6 @@ public class ProblemFacadeTest {
 	private ProblemService problemService;
 
 	@Mock
-	private ProblemRepository problemRepository;
-
-	@Mock
-	private SolvedProblemRepository solvedProblemRepository;
-
-	@Mock
 	private ProblemSolvingService problemSolvingService;
 
 	@Mock
@@ -48,9 +40,9 @@ public class ProblemFacadeTest {
 
 	private List<Problem> problems;
 	private List<ProblemResponseDto> problemResponseDtos;
-	private List<SolvedProblem> user1SolvedProblems;
+	private List<UserProblem> user1SolvedProblems;
 	private List<SolvedUserResponseDto> solvedUsers;
-	private List<SolvedProblem> solvedProblems;
+	private List<UserProblem> solvedProblems;
 	private User user1;
 	private User user2;
 
@@ -113,13 +105,13 @@ public class ProblemFacadeTest {
 
 		// Set up SolvedProblem
 		solvedProblems = Arrays.asList(
-			SolvedProblem.builder().user(user1).problem(problem1).build(),
-			SolvedProblem.builder().user(user2).problem(problem1).build()
+			UserProblem.builder().user(user1).problem(problem1).season(2).isSolved(true).build(),
+			UserProblem.builder().user(user2).problem(problem1).season(2).isSolved(true).build()
 		);
 
 		user1SolvedProblems = Arrays.asList(
-			SolvedProblem.builder().user(user1).problem(problem1).build(),
-			SolvedProblem.builder().user(user1).problem(problem2).build()
+			UserProblem.builder().user(user1).problem(problem1).season(2).isSolved(true).build(),
+			UserProblem.builder().user(user1).problem(problem2).season(2).isSolved(true).build()
 		);
 	}
 
@@ -151,7 +143,8 @@ public class ProblemFacadeTest {
 	void getSolvedProblemListByUser_shouldReturnListOfSolvedProblem() {
 		// Given=
 		when(problemService.findUser(user1.getGithubId())).thenReturn(user1); // 추가된 부분
-		when(problemSolvingService.getSolvedProblemListByUser(user1.getId())).thenReturn(user1SolvedProblems);
+		when(problemSolvingService.getSolvedProblemListByUserAndSeason(user1.getId(), 2))
+			.thenReturn(user1SolvedProblems); // 추가된 부분
 		when(problemMapper.mapSolvedProblemToDtoList(user1SolvedProblems)).thenReturn(
 			Arrays.asList(
 				ProblemSolvedResponseDto.builder()
@@ -169,7 +162,8 @@ public class ProblemFacadeTest {
 			));
 
 		// When
-		List<ProblemSolvedResponseDto> result = problemFacade.getSolvedProblemListByUser(user1.getGithubId());
+		List<ProblemSolvedResponseDto> result = problemFacade.getSolvedProblemListByUser(user1.getGithubId(), 2);
+
 		// Then
 		assertEquals(2, result.size());
 		verify(problemService).findUser(user1.getGithubId()); // 추가된 부분

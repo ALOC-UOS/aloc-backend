@@ -2,7 +2,7 @@ package com.aloc.aloc.problem.repository;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.SolvedProblem;
+import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
@@ -17,8 +17,8 @@ public class SolvedProblemDummyEntity {
 	Problem problem1;
 	Algorithm algorithm1;
 	ProblemType problemType1;
-	SolvedProblem sp1;
-	SolvedProblem sp2;
+	UserProblem userProblem1;
+	UserProblem userProblem2;
 	public void setupEntities(EntityManager em) {
 		user1 = User.builder()
 			.githubId("githubId1")
@@ -49,10 +49,10 @@ public class SolvedProblemDummyEntity {
 			new Problem("Problem 1", 3, algorithm1, 1, problemType1);
 		em.persist(problem1);
 
-		sp1 = new SolvedProblem(user1, problem1);
-		sp2 = new SolvedProblem(user2, problem1);
-		em.persist(sp1);
-		em.persist(sp2);
+		userProblem1 = UserProblem.builder().user(user1).problem(problem1).season(2).isSolved(true).build();
+		userProblem2 = UserProblem.builder().user(user2).problem(problem1).season(2).isSolved(true).build();
+		em.persist(userProblem1);
+		em.persist(userProblem2);
 	}
 
 }
