@@ -1,6 +1,8 @@
 package com.aloc.aloc.user.service;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.color.Color;
 import com.aloc.aloc.color.service.ColorService;
+import com.aloc.aloc.history.service.HistoryService;
+import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.service.ProblemFacade;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problem.service.ProblemSolvingService;
@@ -28,6 +32,8 @@ public class UserFacade {
 	private final ProblemFacade problemFacade;
 	private final ProblemSolvingService problemSolvingService;
 	private final ColorService colorService;
+	private final UserService userService;
+	private final HistoryService historyService;
 
 	@Value("${app.season}")
 	private Integer season;
@@ -42,7 +48,7 @@ public class UserFacade {
 	}
 
 	private UserDetailResponseDto mapToUserDetailResponseDto(User user) {
-		int solvedCount = problemSolvingService.getSolvedCount(user.getId());
+		int solvedCount = problemSolvingService.getSolvedCountByUserId(user.getId());
 		Integer thisWeekUnsolvedCount = getThisWeekUnsolvedCount(user);
 		ProblemCounts problemCounts = getProblemCounts(user);
 		Color userColor = colorService.getColorById(user.getProfileColor());
@@ -82,5 +88,29 @@ public class UserFacade {
 	}
 
 	public record ProblemCounts(int totalWeeklyCount, int totalDailyCount) {
+	}
+
+	private void loadNewUserProblemRecord(User user) throws IOException {
+		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
+		for (Problem problem : problems) {
+			problemSolvingService.addUserProblem(user, problem);
+		}
+	}
+
+	public String addUser(String username, String githubId) throws IOException {
+		userService.checkAdmin(username);
+		Optional<User> userOptional = userRepository.findByGithubId(githubId);
+		if (userOptional.isEmpty()) {
+			throw new IllegalArgumentException("해당 깃허브 아이디로 가입된 사용자가 없습니다.");
+		}
+		User user = userOptional.get();
+		if (Authority.ROLE_USER.equals(user.getAuthority())) {
+			throw new IllegalArgumentException("이미 등록된 멤버입니다.");
+		}
+		user.setAuthority(Authority.ROLE_USER);
+		loadNewUserProblemRecord(user);
+		// TODO User의 solvedCount 저장
+		historyService.addHistory(user, "plusMember", null);
+		return "스터디 멤버로 등록되었습니다.";
 	}
 }

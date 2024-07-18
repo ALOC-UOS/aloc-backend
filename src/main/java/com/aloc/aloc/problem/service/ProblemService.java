@@ -95,4 +95,8 @@ public class ProblemService {
 		Integer dailyCount = problemRepository.countAllByCourseAndRoutine(currentSeason, course, Routine.DAILY);
 		return List.of(weeklyCount, dailyCount);
 	}
+
+	public List<Problem> getVisibleProblemsBySeasonAndCourse(Course course) {
+		return problemRepository.findVisibleProblemsBySeasonAndCourse(currentSeason, course);
+	}
 }
