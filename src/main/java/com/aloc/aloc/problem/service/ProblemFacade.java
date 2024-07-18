@@ -15,6 +15,7 @@ import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.enums.Course;
+import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
@@ -86,33 +87,25 @@ public class ProblemFacade {
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(String githubId, Integer season) {
+	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(
+		String githubId, Integer season, Routine routine
+	) {
 		// 사용자 정보를 가져옵니다.
 		User user = problemService.findUser(githubId);
-
-
 		List<UserProblem> unsolvedProblems;
-		if (season == null) {
-			unsolvedProblems = problemSolvingService.getUnsolvedProblemListByUser(user.getId());
-		} else {
-			unsolvedProblems = problemSolvingService.getUnsolvedProblemListByUserAndSeason(user.getId(), season);
-		}
+		unsolvedProblems = problemSolvingService.getUserProblemList(user.getId(), season, false, routine);
 
 		return unsolvedProblems.stream()
 			.map(problemMapper::mapToProblemSolvedResponseDto)
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId, Integer season) {
+	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId, Integer season, Routine routine) {
 		User user = problemService.findUser(githubId);
 
 		List<UserProblem> solvedProblems;
 		// 현재 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
-		if (season == null) {
-			solvedProblems = problemSolvingService.getSolvedProblemListByUser(user.getId());
-		} else {
-			solvedProblems = problemSolvingService.getSolvedProblemListByUserAndSeason(user.getId(), season);
-		}
+		solvedProblems = problemSolvingService.getUserProblemList(user.getId(), season, true, routine);
 		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
 
