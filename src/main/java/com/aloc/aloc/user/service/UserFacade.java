@@ -91,7 +91,7 @@ public class UserFacade {
 	}
 
 	private void loadNewUserProblemRecord(User user) throws IOException {
-		List<Problem> problems = problemService.getAllProblems();
+		List<Problem> problems = problemService.getAllOpenedProblems();
 		for (Problem problem : problems) {
 			problemSolvingService.checkProblemIsSolvedAndAddSolvedProblem(user, problem);
 		}

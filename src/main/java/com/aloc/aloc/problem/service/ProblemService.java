@@ -96,7 +96,7 @@ public class ProblemService {
 		return List.of(weeklyCount, dailyCount);
 	}
 
-	public List<Problem> getAllProblems() {
-		return problemRepository.findAll();
+	public List<Problem> getAllOpenedProblems() {
+		return problemRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
 	}
 }
