@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.service;
 
+import com.aloc.aloc.problem.entity.Problem;
 import java.io.IOException;
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class ProblemSolvingService {
 		return solvedUserCount <= MAX_SOLVED_USER_COUNT_FOR_BONUS ? COINS_FOR_TOP_SOLVERS : COINS_FOR_OTHER_SOLVERS;
 	}
 
-	public void updateUserAndSaveSolvedProblem(User user, Long problemId) {
+	private void updateUserAndSaveSolvedProblem(User user, Long problemId) {
 		// 코인을 지급하고 사용자 정보를 저장합니다.
 		int coinToAdd = calculateCoinToAdd(problemId);
 		user.addCoin(coinToAdd);
