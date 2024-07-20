@@ -100,7 +100,7 @@ public class ProblemSolvingService {
 
 	// TODO: user.solvedCount로 변경
 	// 이번 시즌 동안 해결한 Daily 문제 수를 가져옵니다.
-	public int getSolvedCount(Long userId) {
+	public int getSolvedCountByUserId(Long userId) {
 		return getUserProblemList(userId, currentSeason, true, Routine.DAILY).size();
 
 	}
