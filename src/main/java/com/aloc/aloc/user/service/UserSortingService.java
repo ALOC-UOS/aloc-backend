@@ -28,7 +28,7 @@ public class UserSortingService {
 	public List<User> sortUserList(List<User> userList) {
 		return userList.stream()
 			.sorted(Comparator
-				.comparing(this::sortByRank) // 랭크가 높은 사람 먼저
+				.comparing(this::sortByRank, Comparator.reverseOrder()) // 랭크가 높은 사람 먼저
 				.thenComparing(this::hasSolvedToday).reversed() // 오늘 문제 푼 사람 먼저
 				// 최근에 푼 사람 먼저
 				.thenComparing(this::getLatestSolvedTime, Comparator.nullsLast(Comparator.reverseOrder())))
