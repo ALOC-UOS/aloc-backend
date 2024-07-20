@@ -87,7 +87,7 @@ public class UserFacadeTest {
 
 		when(userRepository.findAllByAuthorityIn(authorities)).thenReturn(mockUsers);
 		when(userSortingService.sortUserList(mockUsers)).thenReturn(mockUsers);
-		when(problemSolvingService.getSolvedCount(anyLong())).thenReturn(10);
+		when(problemSolvingService.getSolvedCountByUserId(anyLong())).thenReturn(10);
 		when(problemFacade.getTodayProblemSolved(anyLong(), any(Course.class))).thenReturn(true);
 		when(problemFacade.getThisWeekSolvedCount(any())).thenReturn(Arrays.asList(8, 15, 7));
 
@@ -114,7 +114,7 @@ public class UserFacadeTest {
 
 		verify(userRepository, times(1)).findAllByAuthorityIn(authorities);
 		verify(userSortingService, times(1)).sortUserList(mockUsers);
-		verify(problemSolvingService, times(2)).getSolvedCount(anyLong());
+		verify(problemSolvingService, times(2)).getSolvedCountByUserId(anyLong());
 		verify(problemFacade, times(2)).getTodayProblemSolved(anyLong(), any());
 		verify(colorService, times(2)).getColorById(anyString());
 		verify(problemService, times(2)).getTotalProblemCount(any());

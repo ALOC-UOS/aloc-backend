@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
+import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
@@ -101,5 +102,21 @@ public class ProblemSolvingService {
 	// 이번 시즌 동안 해결한 Daily 문제 수를 가져옵니다.
 	public int getSolvedCount(Long userId) {
 		return getUserProblemList(userId, currentSeason, true, Routine.DAILY).size();
+
+	}
+
+	public void addUserProblem(User user, Problem problem)
+		throws IOException {
+		UserProblem userProblem = UserProblem.builder()
+			.user(user)
+			.problem(problemRepository.getReferenceById(problem.getId()))
+			.isSolved(false)
+			.season(currentSeason)
+			.build();
+
+		if (solvedScrapingService.isProblemSolved(user.getBaekjoonId(), problem)) {
+			userProblem.setIsSolved(true);
+		}
+		userProblemRepository.save(userProblem);
 	}
 }

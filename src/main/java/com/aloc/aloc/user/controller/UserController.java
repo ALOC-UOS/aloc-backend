@@ -1,5 +1,6 @@
 package com.aloc.aloc.user.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,7 +50,7 @@ public class UserController {
 	public CustomApiResponse<String> addUser(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user,
 		@Parameter(description = "깃허브 ID", required = true) @PathVariable("githubId") String githubId
-	) {
-		return CustomApiResponse.onSuccess(userService.addUser(user.getUsername(), githubId));
+	) throws IOException {
+		return CustomApiResponse.onSuccess(userFacade.addUser(user.getUsername(), githubId));
 	}
 }
