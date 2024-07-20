@@ -42,4 +42,6 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
 		@Param("season") Integer season,
 		@Param("isSolved") Boolean isSolved,
 		@Param("routine") Routine routine);
+
+	Optional<UserProblem> findTopByUserIdOrderBySolvedAtDesc(Long userId);
 }

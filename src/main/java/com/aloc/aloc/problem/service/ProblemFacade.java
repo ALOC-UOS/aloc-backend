@@ -112,7 +112,6 @@ public class ProblemFacade {
 	public List<Integer> getThisWeekSolvedCount(User user) {
 		// 이번 주차 문제를 가져옵니다.
 		List<Problem> thisWeekProblems = getThisWeekProblems(user);
-		System.out.println("thisWeekProblems: " + thisWeekProblems);
 		// 이번 주차 문제 중 푼 문제 수, 문제 수, 안 푼 문제 수를 가져옵니다.
 		long solvedCount = thisWeekProblems.stream()
 			.filter(problem -> problemSolvingService.isProblemAlreadySolved(user.getId(), problem.getId()))
