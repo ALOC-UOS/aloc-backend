@@ -58,7 +58,7 @@ public class UserFacade {
 			.coin(user.getCoin())
 			.solvedCount(solvedCount)
 			.unsolvedCount(problemCounts.totalDailyCount() - solvedCount) // TODO: 지금은 데일리만 제공, 나중엔 위클리도 함께 제공
-			.todaySolvedCount(problemFacade.getTodayProblemSolved(user.getId(), user.getCourse()))
+			.todaySolved(problemFacade.getTodayProblemSolved(user.getId(), user.getCourse())) // 오늘 문제 풀었는지 여부
 			.thisWeekUnsolvedCount(thisWeekUnsolvedCount)
 			.colorCategory(userColor.getCategory())
 			.color1(userColor.getColor1())

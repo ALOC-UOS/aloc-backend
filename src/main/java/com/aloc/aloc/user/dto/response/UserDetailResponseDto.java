@@ -13,7 +13,7 @@ public class UserDetailResponseDto extends UserResponseDto {
 	private final Integer solvedCount;
 	private final Integer unsolvedCount;
 	private final Integer thisWeekUnsolvedCount;
-	private final Boolean todaySolvedCount;
+	private final Boolean todaySolved;
 	private final String colorCategory;
 	private final String color1;
 	private final String color2;
@@ -27,7 +27,7 @@ public class UserDetailResponseDto extends UserResponseDto {
 		Integer solvedCount,
 		Integer unsolvedCount,
 		Integer thisWeekUnsolvedCount,
-		Boolean todaySolvedCount,
+		Boolean todaySolved,
 		String colorCategory,
 		String color1,
 		String color2,
@@ -47,7 +47,7 @@ public class UserDetailResponseDto extends UserResponseDto {
 			.solvedCount(solvedCount)
 			.unsolvedCount(unsolvedCount)
 			.thisWeekUnsolvedCount(thisWeekUnsolvedCount)
-			.todaySolvedCount(todaySolvedCount)
+			.todaySolved(todaySolved)
 			.colorCategory(colorCategory)
 			.color1(color1)
 			.color2(color2)
