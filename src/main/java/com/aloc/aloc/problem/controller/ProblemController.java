@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.controller;
 
+
 import java.io.IOException;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.service.ProblemFacade;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problemtype.enums.Course;
+import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -80,21 +82,22 @@ public class ProblemController {
 		return CustomApiResponse.onSuccess(problemFacade.getWeeklyCompletionStatus(user.getUsername()));
 	}
 
-	@GetMapping("/unsolved/user/{githubId}")
+	@GetMapping("/unsolved/user/{githubId}/routine/{routine}")
 	@Operation(summary = "유저의 풀지 않은 문제 조회", description = "유저가 풀지 않은 문제를 조회합니다. 시즌이 null이면 모든 시즌을 조회합니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUnsolvedProblemList(
 		@Parameter(required = true) @PathVariable() String githubId,
-		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season
-	) {
-		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId, season));
+		@Parameter(description = "루틴", required = true) @PathVariable() Routine routine,
+		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season) {
+		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId, season, routine));
 	}
 
-	@GetMapping("/solved/user/{githubId}")
+	@GetMapping("/solved/user/{githubId}/routine/{routine}")
 	@Operation(summary = "유저의 이미 푼 문제 조회", description = "유저가 푼 문제를 조회합니다. 시즌이 null이면 모든 시즌을 조회합니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUserSolvedProblemList(
 		@Parameter(description = "유저 깃허브 아이디", required = true) @PathVariable() String githubId,
+		@Parameter(description = "루틴", required = true) @PathVariable() Routine routine,
 		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season
 	) {
-		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId, season));
+		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId, season, routine));
 	}
 }

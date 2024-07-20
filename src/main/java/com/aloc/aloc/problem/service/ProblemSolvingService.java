@@ -11,6 +11,7 @@ import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
+import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.scraper.SolvedScrapingService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.repository.UserRepository;
@@ -91,28 +92,17 @@ public class ProblemSolvingService {
 		return userProblemRepository.findAllByProblemIdAndIsSolvedIsTrue(problemId);
 	}
 
-	public List<UserProblem> getSolvedProblemListByUser(Long userId) {
-		// 모든 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
-		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, null, true);
+	// 시즌, 풀이 여부, 루틴에 따라 유저의 문제 목록을 가져옵니다.
+	public List<UserProblem> getUserProblemList(Long userId, Integer season, Boolean isSolved, Routine routine) {
+		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
+			userId, season, isSolved, routine);
 	}
 
-	public List<UserProblem> getSolvedProblemListByUserAndSeason(Long userId, Integer season) {
-		// 특정 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
-		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, season, true);
-	}
+	// TODO: user.solvedCount로 변경
+	// 이번 시즌 동안 해결한 Daily 문제 수를 가져옵니다.
+	public int getSolvedCount(Long userId) {
+		return getUserProblemList(userId, currentSeason, true, Routine.DAILY).size();
 
-	public List<UserProblem> getUnsolvedProblemListByUserAndSeason(Long userId, Integer season) {
-		// 특정 시즌 동안 유저가 풀지 않은 문제 목록을 가져옵니다.
-		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, season, false);
-	}
-
-	public List<UserProblem> getUnsolvedProblemListByUser(Long userId) {
-		// 모든 시즌 동안 유저가 풀지 않은 문제 목록을 가져옵니다.
-		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(userId, null, false);
-	}
-
-	public int getSolvedCountByUserId(Long userId) {
-		return getSolvedProblemListByUserAndSeason(userId, currentSeason).size();
 	}
 
 	public void addUserProblem(User user, Problem problem)
