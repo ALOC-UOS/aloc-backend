@@ -1,6 +1,7 @@
 package com.aloc.aloc.global.jwt.filter;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,47 +33,59 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
 	private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
-	/**
-	 * 1. 리프레시 토큰이 오는 경우 -> 유효하면 AccessToken 재발급후, 필터 진행 X, 바로 튕기기
-	 *
-	 * 2. 리프레시 토큰은 없고 AccessToken만 있는 경우 -> 유저정보 저장후 필터 계속 진행
-	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException, java.io.IOException {
 		String noCheckUrl = "/api2/login";
+		String refreshToken = jwtService.extractRefreshToken(request).orElse(null);
+		String accessToken = jwtService.extractAccessToken(request).orElse(null);
+
+		// 로그인 시도
 		if (request.getRequestURI().equals(noCheckUrl)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		String refreshToken = jwtService
-			.extractRefreshToken(request)
-			.filter(jwtService::isTokenValid)
-			.orElse(null);
-
-
-		if (refreshToken != null) {
-			checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
+		// accessToken이 있고 유효한 경우
+		if (processAccessToken(accessToken)) {
+			filterChain.doFilter(request, response);
 			return;
 		}
 
-		checkAccessTokenAndAuthentication(request, response, filterChain);
-	}
-
-	private void checkAccessTokenAndAuthentication(
-		HttpServletRequest request,
-		HttpServletResponse response,
-		FilterChain filterChain
-	)
-		throws ServletException, IOException, java.io.IOException {
-		jwtService.extractAccessToken(request).filter(jwtService::isTokenValid)
-			.flatMap(accessToken -> jwtService.extractGithubId(accessToken)
-				.flatMap(userRepository::findByGithubId)).ifPresent(this::saveAuthentication);
-
+		// refreshToken이 있고 유효한 경우
+		processRefreshToken(response, refreshToken);
 		filterChain.doFilter(request, response);
 	}
 
+	private boolean processAccessToken(String accessToken) {
+		if (accessToken != null && jwtService.isTokenValid(accessToken)) {
+			setAuthentication(accessToken);
+			return true;
+		}
+		return false;
+	}
+
+	private void processRefreshToken(HttpServletResponse response, String refreshToken) {
+		if (refreshToken != null && jwtService.isTokenValid(refreshToken)) {
+			handleValidRefreshToken(response, refreshToken);
+		}
+	}
+
+	private void handleValidRefreshToken(HttpServletResponse response, String refreshToken) {
+		String githubId = getGithubIdByRefreshToken(refreshToken).orElse(null);
+		if (githubId != null) {
+			String newAccessToken = jwtService.createAccessToken(githubId);
+			jwtService.setAccessTokenHeader(response, newAccessToken);
+//			response.setHeader("Authorization", "Bearer " + newAccessToken);
+			setAuthentication(newAccessToken);
+		}
+	}
+
+	private void setAuthentication(String accessToken) {
+		jwtService.extractGithubId(accessToken)
+			.flatMap(userRepository::findByGithubId)
+			.ifPresent(this::saveAuthentication);
+	}
 
 
 	private void saveAuthentication(User user) {
@@ -98,9 +111,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 		SecurityContextHolder.setContext(context);
 	}
 
-	private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
-		userRepository.findByRefreshToken(refreshToken).ifPresent(
-			user -> jwtService.sendAccessToken(response, jwtService.createAccessToken(user.getGithubId()))
-		);
+	private Optional<String> getGithubIdByRefreshToken(String refreshToken) {
+		return userRepository.findByRefreshToken(refreshToken)
+			.map(User::getGithubId);
 	}
 }
