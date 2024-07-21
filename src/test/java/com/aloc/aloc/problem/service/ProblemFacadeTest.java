@@ -20,6 +20,7 @@ import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
@@ -58,7 +59,8 @@ public class ProblemFacadeTest {
 			"discord",
 			15,
 			"notion",
-			"11550"
+			"11550",
+			Course.FULL
 		);
 		user1.setId(1L);
 		user2 = new User(
@@ -70,7 +72,8 @@ public class ProblemFacadeTest {
 			"discord",
 			15,
 			"11551",
-			"notion"
+			"notion",
+			Course.FULL
 		);
 		user2.setId(2L);
 

@@ -67,7 +67,8 @@ public class UserFacadeTest {
 			"adminDiscord",
 			1,
 			"adminNotion",
-			"1"
+			"1",
+			Course.FULL
 		);
 		user1.setId(1L);
 
@@ -80,7 +81,8 @@ public class UserFacadeTest {
 			"userDiscord",
 			2,
 			"userNotion",
-			"2"
+			"2",
+			Course.FULL
 		);
 		user2.setId(2L);
 		List<User> mockUsers = Arrays.asList(user1, user2);

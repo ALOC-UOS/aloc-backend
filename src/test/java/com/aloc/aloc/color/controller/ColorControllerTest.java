@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.aloc.aloc.color.dto.response.ColorResponseDto;
 import com.aloc.aloc.color.service.ColorService;
 import com.aloc.aloc.global.login.service.UserDetailsServiceImpl;
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.enums.Authority;
 
@@ -50,7 +50,8 @@ public class ColorControllerTest {
 			"userDiscord",
 			2,
 			"userNotion",
-			"2"
+			"2",
+			Course.FULL
 		);
 		user.setAuthority(Authority.ROLE_USER);
 		UserDetails userDetails = new org.springframework.security.core.userdetails.User(
