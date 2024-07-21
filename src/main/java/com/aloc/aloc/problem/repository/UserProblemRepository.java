@@ -50,5 +50,5 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
 		+ "FROM UserProblem up "
 		+ "WHERE up.problem "
 		+ "IN :problems")
-	long countByProblemsIn(@Param("problems") List<Problem> problems);
+	int countByProblemsIn(@Param("problems") List<Problem> problems);
 }

@@ -33,7 +33,7 @@ public class CoinService {
 
 	public int calculateCoinToAddForDaily(Long problemId) {
 		// daily문제 푼 순서 1등 50, 2등 40, 3등 30, 4등 20, 5등 이하 10 코인을 지급합니다.
-		long solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, currentSeason);
+		int solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, currentSeason);
 		return getCoinsForPlace(solvedUserCount);
 	}
 
@@ -41,20 +41,19 @@ public class CoinService {
 		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
 			.orElseThrow(() -> new RuntimeException("이번주 알고리즘이 존재하지 않습니다."));
 		if (thisWeekAlgorithm.equals(algorithm)) {
-			long unsolvedProblemCount = getUnsolvedProblemCount(problemRepository.findAllByAlgorithm(algorithm));
-			if (unsolvedProblemCount == 0) {
+			if (getUnsolvedProblemCount(problemRepository.findAllByAlgorithm(algorithm)) == 0) {
 				return getCoinsForCourse(course);
 			}
 		}
 		return 0;
 	}
 
-	private long getUnsolvedProblemCount(List<Problem> thisWeekProblems) {
+	private int getUnsolvedProblemCount(List<Problem> thisWeekProblems) {
 		return userProblemRepository.countByProblemsIn(thisWeekProblems);
 	}
 
-	private int getCoinsForPlace(long solvedUserCount) {
-		return switch ((int) solvedUserCount) {
+	private int getCoinsForPlace(int solvedUserCount) {
+		return switch (solvedUserCount) {
 			case 0 -> COINS_FOR_1ST_PLACE;
 			case 1 -> COINS_FOR_2ND_PLACE;
 			case 2 -> COINS_FOR_3RD_PLACE;
