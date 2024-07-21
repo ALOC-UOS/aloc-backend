@@ -1,22 +1,29 @@
 package com.aloc.aloc.global.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecuritySchemes;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.servers.Server;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
+@OpenAPIDefinition(
+	info = @Info(title = "ALOC API", version = "v2"),
+	security = {
+		@SecurityRequirement(name = "JWT Auth"),
+		@SecurityRequirement(name = "Refresh Token")
+	}
+)
 @SecuritySchemes({
 	@io.swagger.v3.oas.annotations.security.SecurityScheme(
-		name = "Refresh",
+		name = "Authorization-refresh",
 		type = SecuritySchemeType.APIKEY,
-		in = SecuritySchemeIn.HEADER
+		in = SecuritySchemeIn.HEADER,
+		scheme = "bearer"
 		),
 	@io.swagger.v3.oas.annotations.security.SecurityScheme(
 		name = "JWT Auth",
@@ -27,16 +34,4 @@ import lombok.RequiredArgsConstructor;
 })
 @RequiredArgsConstructor
 public class SwaggerConfig {
-	@Bean
-	public OpenAPI openApi() {
-
-		return new OpenAPI()
-			.addServersItem(new Server().url("/"))
-			.info(new Info()
-				.title("Aloc API")
-				.description("Aloc API 문서")
-				.version("1.0.0")
-			);
-	}
-
 }
