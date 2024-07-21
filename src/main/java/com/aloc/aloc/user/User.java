@@ -96,7 +96,8 @@ public class User extends AuditingTimeEntity {
 		String discordId,
 		Integer rank,
 		String notionEmail,
-		String profileNumber
+		String profileNumber,
+		Course course
 	) {
 		this.username = username;
 		this.baekjoonId = baekjoonId;
@@ -106,7 +107,7 @@ public class User extends AuditingTimeEntity {
 		this.password = password;
 		this.discordId = discordId;
 		this.notionEmail = notionEmail;
-		this.course = Course.FULL;
+		this.course = course;
 		this.authority = Authority.ROLE_GUEST;
 		this.profileNumber = profileNumber;
 		this.rank = rank;
