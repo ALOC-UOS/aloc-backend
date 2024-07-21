@@ -25,6 +25,7 @@ public class ColorController {
 
 	@PutMapping("/change")
 	@SecurityRequirement(name = "JWT Auth")
+	@SecurityRequirement(name = "Authorization-refresh")
 	@Operation(summary = "프로필 색상 변경", description = "프로필 색상을 변경합니다.")
 	public CustomApiResponse<ColorResponseDto> changeColor(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
