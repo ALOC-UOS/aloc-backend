@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.enums.Routine;
 
@@ -44,4 +45,10 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
 		@Param("routine") Routine routine);
 
 	Optional<UserProblem> findTopByUserIdOrderBySolvedAtDesc(Long userId);
+
+	@Query("SELECT COUNT(up) "
+		+ "FROM UserProblem up "
+		+ "WHERE up.problem "
+		+ "IN :problems")
+	long countByProblemsIn(@Param("problems") List<Problem> problems);
 }
