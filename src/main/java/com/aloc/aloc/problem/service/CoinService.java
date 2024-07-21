@@ -1,7 +1,6 @@
 package com.aloc.aloc.problem.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,16 +30,6 @@ public class CoinService {
 	private static final int COINS_FOR_OTHERS = 10;
 	private static final int COINS_FOR_FULL = 200;
 	private static final int COINS_FOR_HALF = 200;
-	private static final Map<Long, Integer> COIN_REWARDS_DAILY = Map.of(
-		0L, COINS_FOR_1ST_PLACE,
-		1L, COINS_FOR_2ND_PLACE,
-		2L, COINS_FOR_3RD_PLACE,
-		3L, COINS_FOR_4TH_PLACE
-	);
-	private static final Map<Course, Integer> COIN_REWARDS_WEEKLY = Map.of(
-		Course.FULL, COINS_FOR_FULL,
-		Course.HALF, COINS_FOR_HALF
-	);
 
 	public int calculateCoinToAddForDaily(Long problemId) {
 		// daily문제 푼 순서 1등 50, 2등 40, 3등 30, 4등 20, 5등 이하 10 코인을 지급합니다.
@@ -65,10 +54,19 @@ public class CoinService {
 	}
 
 	private int getCoinsForPlace(long solvedUserCount) {
-		return COIN_REWARDS_DAILY.getOrDefault(solvedUserCount, COINS_FOR_OTHERS);
+		return switch ((int) solvedUserCount) {
+			case 0 -> COINS_FOR_1ST_PLACE;
+			case 1 -> COINS_FOR_2ND_PLACE;
+			case 2 -> COINS_FOR_3RD_PLACE;
+			case 3 -> COINS_FOR_4TH_PLACE;
+			default -> COINS_FOR_OTHERS;
+		};
 	}
 
 	private int getCoinsForCourse(Course course) {
-		return COIN_REWARDS_WEEKLY.getOrDefault(course, 0);
+		return switch (course) {
+			case FULL -> COINS_FOR_FULL;
+			case HALF -> COINS_FOR_HALF;
+		};
 	}
 }
