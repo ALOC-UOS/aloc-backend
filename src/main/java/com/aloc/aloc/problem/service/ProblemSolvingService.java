@@ -2,6 +2,7 @@ package com.aloc.aloc.problem.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,9 +31,17 @@ public class ProblemSolvingService {
 
 	@Value("${app.season}")
 	private Integer currentSeason;
-	private static final int MAX_SOLVED_USER_COUNT_FOR_BONUS = 2;
-	private static final int COINS_FOR_TOP_SOLVERS = 50;
-	private static final int COINS_FOR_OTHER_SOLVERS = 30;
+	private static final int COINS_FOR_1ST_PLACE = 50;
+	private static final int COINS_FOR_2ND_PLACE = 40;
+	private static final int COINS_FOR_3RD_PLACE = 30;
+	private static final int COINS_FOR_4TH_PLACE = 20;
+	private static final int COINS_FOR_OTHERS = 10;
+	private static final Map<Long, Integer> COIN_REWARDS = Map.of(
+		0L, COINS_FOR_1ST_PLACE,
+		1L, COINS_FOR_2ND_PLACE,
+		2L, COINS_FOR_3RD_PLACE,
+		3L, COINS_FOR_4TH_PLACE
+	);
 
 	// TODO: 변수명 & 로직 확인하기
 
@@ -62,9 +71,13 @@ public class ProblemSolvingService {
 	}
 
 	private int calculateCoinToAdd(Long problemId) {
-		// 3등까지는 50코인, 4등부터는 30코인을 지급합니다.
+		// 1등 50, 2등 40, 3등 30, 4등 20, 5등 이하 10 코인을 지급합니다.
 		long solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, currentSeason);
-		return solvedUserCount <= MAX_SOLVED_USER_COUNT_FOR_BONUS ? COINS_FOR_TOP_SOLVERS : COINS_FOR_OTHER_SOLVERS;
+		return getCoinsForPlace(solvedUserCount);
+	}
+
+	private int getCoinsForPlace(long solvedUserCount) {
+		return COIN_REWARDS.getOrDefault(solvedUserCount, COINS_FOR_OTHERS);
 	}
 
 	private void updateUserAndSaveSolvedProblem(User user, Long problemId) {
