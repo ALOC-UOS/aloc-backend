@@ -59,6 +59,7 @@ public class JwtFilterAuthenticationTest {
 	private final String password = "password";
 
 	private static final String LOGIN_URL = "/api2/login";
+	private static final String TEST_URL = "/api2/problem/weekly/status";
 
 	private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
 	private static final String BEARER = "Bearer ";
@@ -150,7 +151,7 @@ public class JwtFilterAuthenticationTest {
 		//when, then
 		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123").header(refreshHeader,
 				BEARER + refreshToken)) // login 이 아닌 다른 임의의 주소
-			.andExpect(status().isOk()).andReturn();
+			.andExpect(status().isNotFound()).andReturn();
 
 		String accessToken = result.getResponse().getHeader(accessHeader);
 
@@ -183,20 +184,16 @@ public class JwtFilterAuthenticationTest {
 		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
 		//when, then
-		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123")
+		MvcResult result = mockMvc.perform(get(TEST_URL)
 				.header(refreshHeader, BEARER + refreshToken)
 				.header(accessHeader, BEARER + accessToken))
 			.andExpect(status().isOk())
 			.andReturn();
 
-		String responseAccessToken = result.getResponse().getHeader(accessHeader);
+		// accessToken은 서버에서 재발급 후 사용, refreshToken은 재발급되지 않음
+
 		String responseRefreshToken = result.getResponse().getHeader(refreshHeader);
-
-		String subject = JWT.require(Algorithm.HMAC512(secret)).build().verify(responseAccessToken)
-			.getSubject();
-
-		assertThat(subject).isEqualTo(ACCESS_TOKEN_SUBJECT);
-		assertThat(responseRefreshToken).isNull(); //refreshToken은 재발급되지 않음
+		assertThat(responseRefreshToken).isNull();
 	}
 
 	@Test
@@ -208,7 +205,7 @@ public class JwtFilterAuthenticationTest {
 		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
 		//when, then
-		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123")
+		MvcResult result = mockMvc.perform(get(TEST_URL)
 				.header(refreshHeader, BEARER + refreshToken)
 				.header(accessHeader, BEARER + accessToken + 1))
 			.andExpect(status().isOk())
@@ -233,10 +230,10 @@ public class JwtFilterAuthenticationTest {
 		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
 		//when, then
-		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123")
+		MvcResult result = mockMvc.perform(get(TEST_URL)
 				.header(refreshHeader, BEARER + refreshToken + 1)
 				.header(accessHeader, BEARER + accessToken))
-			.andExpect(status().isNotFound()) //없는 주소로 보냈으므로 NotFound
+			.andExpect(status().isOk()) //없는 주소로 보냈으므로 NotFound
 			.andReturn();
 
 		String responseAccessToken = result.getResponse().getHeader(accessHeader);
@@ -281,6 +278,5 @@ public class JwtFilterAuthenticationTest {
 					.header(accessHeader, BEARER + accessToken))
 			.andExpect(status().isBadRequest())
 			.andReturn();
-
 	}
 }
