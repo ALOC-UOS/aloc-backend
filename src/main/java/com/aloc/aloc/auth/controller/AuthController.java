@@ -48,7 +48,7 @@ public class AuthController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@SecurityRequirement(name = "Authorization-refresh")
+	@SecurityRequirement(name = "Refresh Token")
 	@DeleteMapping("/withdraw")
 	@ApiResponse(
 		responseCode = "200",
@@ -59,13 +59,5 @@ public class AuthController {
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) {
 		authService.withdraw(user.getUsername());
-	}
-
-	@Operation(summary = "Token 재발급", description = "refreshToken을 통해 accessToken을 재발급합니다.")
-	@SecurityRequirement(name = "Authorization-refresh")
-	@SecurityRequirement(name = "JWT Auth")
-	@PostMapping("/refresh")
-	public void refreshToken() {
-		System.out.println("refreshToken");
 	}
 }

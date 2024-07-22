@@ -39,7 +39,7 @@ public class UserController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@SecurityRequirement(name = "Authorization-refresh")
+	@SecurityRequirement(name = "Refresh Token")
 	@PostMapping("/authorize/{githubId}")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "스터디 멤버로 등록되었습니다."),
