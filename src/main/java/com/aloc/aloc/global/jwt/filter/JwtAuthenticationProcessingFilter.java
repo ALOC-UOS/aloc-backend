@@ -1,7 +1,6 @@
 package com.aloc.aloc.global.jwt.filter;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,14 +46,11 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		System.out.println(request.getHeader("Authorization-refresh"));
 		// 원래는 refreshToken 안담아서 보냄. 재발급 필요할 때만 보내는 것이 맞음
 		String refreshToken = jwtService
 			.extractRefreshToken(request)
 			.filter(jwtService::isTokenValid)
 			.orElse(null);
-
-		System.out.println(refreshToken);
 		// 리프레시 토큰이 있고 & 유효한 경우 -> AccessToken 재발급 후 필터 진행 X
 		if (refreshToken != null) {
 			checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
