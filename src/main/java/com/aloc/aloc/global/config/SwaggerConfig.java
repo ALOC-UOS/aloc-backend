@@ -20,10 +20,10 @@ import lombok.RequiredArgsConstructor;
 )
 @SecuritySchemes({
 	@io.swagger.v3.oas.annotations.security.SecurityScheme(
-		name = "Authorization-refresh",
+		name = "Refresh Token",
 		type = SecuritySchemeType.APIKEY,
 		in = SecuritySchemeIn.HEADER,
-		scheme = "bearer"
+		paramName = "Authorization-refresh"
 		),
 	@io.swagger.v3.oas.annotations.security.SecurityScheme(
 		name = "JWT Auth",
