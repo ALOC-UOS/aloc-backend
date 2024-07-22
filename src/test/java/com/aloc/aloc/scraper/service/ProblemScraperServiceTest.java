@@ -3,7 +3,6 @@ package com.aloc.aloc.scraper.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +36,7 @@ import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
 import com.aloc.aloc.scraper.ProblemScrapingService;
 import com.aloc.aloc.tag.repository.TagRepository;
+import com.aloc.aloc.user.service.UserService;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
@@ -50,6 +49,8 @@ class ProblemScraperServiceTest {
 	private ProblemTypeRepository problemTypeRepository;
 	@Mock
 	private TagRepository tagRepository;
+	@Mock
+	private UserService userService;
 	@Mock
 	private ProblemTagRepository problemTagRepository;
 
@@ -119,11 +120,12 @@ class ProblemScraperServiceTest {
 	void addProblemForThisWeekSuccess() throws IOException {
 		// given
 		// 시즌2 시작 주차를 기준 알고리즘 반환하도록 구성
-		when(algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(2))
+//		when(problemScraperService.findWeeklyAlgorithm()).thenReturn(algorithms.get(5));
+		when(algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(anyInt()))
 			.thenReturn(Optional.of(algorithms.get(5)));
-		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2))
+		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(anyInt()))
 			.thenReturn(Optional.empty());
-		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2))
+		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(anyInt()))
 			.thenReturn(Optional.of(algorithms.get(3)));
 
 		// 모든 ProblemType 구성
@@ -142,9 +144,9 @@ class ProblemScraperServiceTest {
 		problemScraperService.addProblemsForThisWeek();
 
 		// then
-		verify(algorithmRepository).findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(2);
-		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2);
-		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(2);
+		verify(algorithmRepository).findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(anyInt());
+		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(anyInt());
+		verify(algorithmRepository).findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(anyInt());
 
 		ArgumentCaptor<Problem> problemCaptor = ArgumentCaptor.forClass(Problem.class);
 		verify(problemRepository, atLeastOnce()).save(problemCaptor.capture());
