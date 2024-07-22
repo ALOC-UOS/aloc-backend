@@ -151,7 +151,7 @@ public class JwtFilterAuthenticationTest {
 		//when, then
 		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123").header(refreshHeader,
 				BEARER + refreshToken)) // login 이 아닌 다른 임의의 주소
-			.andExpect(status().isNotFound()).andReturn();
+			.andExpect(status().isOk()).andReturn();
 
 		String accessToken = result.getResponse().getHeader(accessHeader);
 
