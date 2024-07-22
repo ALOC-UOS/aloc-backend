@@ -109,7 +109,6 @@ public class UserFacade {
 		}
 		user.setAuthority(Authority.ROLE_USER);
 		loadNewUserProblemRecord(user);
-		// TODO: User의 solvedCount 저장
 		historyService.addHistory(user, "plusMember", null);
 		return "스터디 멤버로 등록되었습니다.";
 	}

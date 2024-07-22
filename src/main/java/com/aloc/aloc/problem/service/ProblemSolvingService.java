@@ -116,7 +116,9 @@ public class ProblemSolvingService {
 
 		if (solvedScrapingService.isProblemSolved(user.getBaekjoonId(), problem)) {
 			userProblem.setIsSolved(true);
+			user.addSolvedCount();
 		}
 		userProblemRepository.save(userProblem);
+		userRepository.save(user);
 	}
 }

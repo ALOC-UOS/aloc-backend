@@ -89,6 +89,10 @@ public class User extends AuditingTimeEntity {
 		this.password = passwordEncoder.encode(password);
 	}
 
+	public void addSolvedCount() {
+		this.solvedCount++;
+	}
+
 	@Builder
 	public User(
 		String username,
