@@ -35,6 +35,7 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
 		+ "WHERE up.user.id = :userId "
 		+ "AND (:season IS NULL OR up.season = :season) "
 		+ "AND up.isSolved = :isSolved "
+		+ "AND (p.hidden = false)"
 		+ "AND (p.problemType.routine = :routine) "
 		+ "ORDER BY p.createdAt DESC")
 	List<UserProblem> findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
