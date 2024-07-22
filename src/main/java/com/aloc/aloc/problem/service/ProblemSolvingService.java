@@ -70,7 +70,7 @@ public class ProblemSolvingService {
 		int coinToAdd;
 		if (problem.getProblemType().getRoutine().equals(Routine.DAILY)) {
 			coinToAdd = coinService.calculateCoinToAddForDaily(problem.getId());
-		} else  {
+		} else {
 			coinToAdd = coinService.calculateCoinToAddForWeekly(problem.getAlgorithm(), user.getCourse());
 		}
 		user.addCoin(coinToAdd);

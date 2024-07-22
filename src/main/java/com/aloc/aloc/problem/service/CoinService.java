@@ -26,13 +26,12 @@ public class CoinService {
 	private static final int COINS_FOR_1ST_PLACE = 50;
 	private static final int COINS_FOR_2ND_PLACE = 40;
 	private static final int COINS_FOR_3RD_PLACE = 30;
-	private static final int COINS_FOR_4TH_PLACE = 20;
-	private static final int COINS_FOR_OTHERS = 10;
+	private static final int COINS_FOR_OTHERS = 20;
 	private static final int COINS_FOR_FULL = 200;
-	private static final int COINS_FOR_HALF = 200;
+	private static final int COINS_FOR_HALF = 100;
 
 	public int calculateCoinToAddForDaily(Long problemId) {
-		// daily문제 푼 순서 1등 50, 2등 40, 3등 30, 4등 20, 5등 이하 10 코인을 지급합니다.
+		// daily문제 푼 순서 1등 50, 2등 40, 3등 30, 4등 이하 20 코인을 지급합니다.
 		int solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, currentSeason);
 		return getCoinsForPlace(solvedUserCount);
 	}
@@ -40,6 +39,7 @@ public class CoinService {
 	public int calculateCoinToAddForWeekly(Algorithm algorithm, Course course) {
 		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
 			.orElseThrow(() -> new RuntimeException("이번주 알고리즘이 존재하지 않습니다."));
+
 		if (thisWeekAlgorithm.equals(algorithm)) {
 			if (getUnsolvedProblemCount(problemRepository.findAllByAlgorithm(algorithm)) == 0) {
 				return getCoinsForCourse(course);
@@ -57,7 +57,6 @@ public class CoinService {
 			case 0 -> COINS_FOR_1ST_PLACE;
 			case 1 -> COINS_FOR_2ND_PLACE;
 			case 2 -> COINS_FOR_3RD_PLACE;
-			case 3 -> COINS_FOR_4TH_PLACE;
 			default -> COINS_FOR_OTHERS;
 		};
 	}
