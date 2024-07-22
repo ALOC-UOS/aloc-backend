@@ -11,6 +11,7 @@ import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.scraper.SolvedScrapingService;
 import com.aloc.aloc.user.User;
@@ -67,12 +68,7 @@ public class ProblemSolvingService {
 
 	private void updateUserAndSaveSolvedProblem(User user, Problem problem) {
 		// 코인을 지급하고 사용자 정보를 저장합니다.
-		int coinToAdd;
-		if (problem.getProblemType().getRoutine().equals(Routine.DAILY)) {
-			coinToAdd = coinService.calculateCoinToAddForDaily(problem.getId());
-		} else {
-			coinToAdd = coinService.calculateCoinToAddForWeekly(problem.getAlgorithm(), user.getCourse());
-		}
+		int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
 		user.addCoin(coinToAdd);
 		userRepository.save(user);
 		userService.checkUserRank(user);
@@ -89,6 +85,12 @@ public class ProblemSolvingService {
 			);
 		userProblem.setIsSolved(true);
 		userProblemRepository.save(userProblem);
+	}
+
+	private int calculateCoinToAdd(Problem problem, Course course) {
+		return problem.getProblemType().getRoutine().equals(Routine.DAILY)
+			? coinService.calculateCoinToAddForDaily(problem.getId())
+			: coinService.calculateCoinToAddForWeekly(problem.getAlgorithm(), course);
 	}
 
 	// 시즌, 풀이 여부, 루틴에 따라 유저의 문제 목록을 가져옵니다.

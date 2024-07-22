@@ -40,10 +40,9 @@ public class CoinService {
 		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
 			.orElseThrow(() -> new RuntimeException("이번주 알고리즘이 존재하지 않습니다."));
 
-		if (thisWeekAlgorithm.equals(algorithm)) {
-			if (getUnsolvedProblemCount(problemRepository.findAllByAlgorithm(algorithm)) == 0) {
-				return getCoinsForCourse(course);
-			}
+		if (thisWeekAlgorithm.equals(algorithm)
+			&& getUnsolvedProblemCount(problemRepository.findAllByAlgorithm(algorithm)) == 0) {
+			return getCoinsForCourse(course);
 		}
 		return 0;
 	}
