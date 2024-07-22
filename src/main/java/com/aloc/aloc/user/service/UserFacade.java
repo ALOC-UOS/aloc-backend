@@ -39,8 +39,7 @@ public class UserFacade {
 	private Integer season;
 
 	public List<UserDetailResponseDto> getUsers() {
-		List<Authority> authorities = List.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
-		List<User> users = userRepository.findAllByAuthorityIn(authorities);
+		List<User> users = userService.getActiveUsers();
 		List<User> sortedUserList = userSortingService.sortUserList(users);
 		return sortedUserList.stream()
 			.map(this::mapToUserDetailResponseDto)

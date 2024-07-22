@@ -1,5 +1,6 @@
 package com.aloc.aloc.user.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -43,5 +44,10 @@ public class UserService {
 		user.setRank(rank);
 		userRepository.save(user);
 		historyService.addHistory(user, "changeRank", rank);
+	}
+
+	public List<User> getActiveUsers() {
+		List<Authority> authorities = List.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
+		return userRepository.findAllByAuthorityIn(authorities);
 	}
 }
