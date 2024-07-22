@@ -73,6 +73,9 @@ public class User extends AuditingTimeEntity {
 	@Column(length = 1000)
 	private String refreshToken;
 
+	@Column
+	private Integer solvedCount = 0;
+
 
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
