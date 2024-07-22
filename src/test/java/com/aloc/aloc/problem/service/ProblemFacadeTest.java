@@ -122,13 +122,11 @@ public class ProblemFacadeTest {
 		Long problemId = 1L;
 		List<SolvedUserResponseDto> expectedUsers = solvedUsers;
 		when(problemSolvingService.getSolvedUserListByProblemId(problemId)).thenReturn(solvedProblems);
-		System.out.println(solvedProblems.size());
 
 		// problemMapper.mapToSolvedUserResponseDto() 모킹 추가
 		for (int i = 0; i < solvedProblems.size(); i++) {
 			when(problemMapper.mapToSolvedUserResponseDto(solvedProblems.get(i).getUser(), solvedProblems.get(i)))
 				.thenReturn(expectedUsers.get(i));
-			System.out.println(solvedProblems.get(i).getUser().getUsername());
 		}
 
 		// When

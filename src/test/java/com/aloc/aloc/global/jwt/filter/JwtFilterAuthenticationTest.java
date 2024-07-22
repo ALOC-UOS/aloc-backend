@@ -184,7 +184,7 @@ public class JwtFilterAuthenticationTest {
 		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
 		//when, then
-		MvcResult result = mockMvc.perform(get(TEST_URL)
+		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123")
 				.header(refreshHeader, BEARER + refreshToken)
 				.header(accessHeader, BEARER + accessToken))
 			.andExpect(status().isOk())
@@ -205,7 +205,7 @@ public class JwtFilterAuthenticationTest {
 		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
 		//when, then
-		MvcResult result = mockMvc.perform(get(TEST_URL)
+		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123")
 				.header(refreshHeader, BEARER + refreshToken)
 				.header(accessHeader, BEARER + accessToken + 1))
 			.andExpect(status().isOk())
@@ -222,18 +222,18 @@ public class JwtFilterAuthenticationTest {
 	}
 
 	@Test
-	public void invalid_refreshToken_with_valid_accessToken_then_200_nothing_reissued()
+	public void invalid_refreshToken_with_valid_accessToken_then_401()
 		throws Exception {
 		//given
-		Map<String, String> accessAndRefreshToken = getAccessAndRefreshToken();
+		Map accessAndRefreshToken = getAccessAndRefreshToken();
 		String accessToken = (String) accessAndRefreshToken.get(accessHeader);
 		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
 		//when, then
 		MvcResult result = mockMvc.perform(get(TEST_URL)
 				.header(refreshHeader, BEARER + refreshToken + 1)
-				.header(accessHeader, BEARER + accessToken))
-			.andExpect(status().isOk()) //없는 주소로 보냈으므로 NotFound
+				.header(accessHeader, BEARER + accessToken + 1))
+			.andExpect(status().isUnauthorized()) // 모든 토큰이 유효하지 않음
 			.andReturn();
 
 		String responseAccessToken = result.getResponse().getHeader(accessHeader);
