@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
@@ -55,5 +56,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		@Param("season") int season,
 		@Param("course") Course course
 	);
+
+	List<Problem> findAllByAlgorithm(Algorithm algorithm);
 }
 

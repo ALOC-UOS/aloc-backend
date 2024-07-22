@@ -11,6 +11,7 @@ import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.scraper.SolvedScrapingService;
 import com.aloc.aloc.user.User;
@@ -27,12 +28,10 @@ public class ProblemSolvingService {
 	private final SolvedScrapingService solvedScrapingService;
 	private final UserRepository userRepository;
 	private final UserService userService;
+	private final CoinService coinService;
 
 	@Value("${app.season}")
 	private Integer currentSeason;
-	private static final int MAX_SOLVED_USER_COUNT_FOR_BONUS = 2;
-	private static final int COINS_FOR_TOP_SOLVERS = 50;
-	private static final int COINS_FOR_OTHER_SOLVERS = 30;
 
 	// TODO: 변수명 & 로직 확인하기
 
@@ -41,17 +40,19 @@ public class ProblemSolvingService {
 		return userProblemRepository.existsByUserIdAndProblemIdAndIsSolvedIsTrue(userId, problemId);
 	}
 
-	public String checkAndUpdateProblemSolved(ProblemResponseDto problem, User user)
+	public String checkAndUpdateProblemSolved(ProblemResponseDto problemDto, User user)
 		throws IOException {
 		try {
 			// 이미 푼 문제인지 확인합니다.
-			if (isProblemAlreadySolved(user.getId(), problem.getId())) {
+			if (isProblemAlreadySolved(user.getId(), problemDto.getId())) {
 				return "alreadySolved";
 			}
 
 			// 푼 문제가 아니라면 백준에서 푼 문제인지 확인합니다.
-			if (solvedScrapingService.isProblemSolvedToday(user.getBaekjoonId(), problem.getId())) {
-				updateUserAndSaveSolvedProblem(user, problem.getId());
+			if (solvedScrapingService.isProblemSolvedToday(user.getBaekjoonId(), problemDto.getId())) {
+				Problem problem = problemRepository.findById(problemDto.getId())
+						.orElseThrow(() -> new RuntimeException("해당 문제가 존재하지 않습니다."));
+				updateUserAndSaveSolvedProblem(user, problem);
 				return "success";
 			}
 			// 풀지 않은 문제더라도 에러를 반환하지 않습니다.
@@ -61,25 +62,23 @@ public class ProblemSolvingService {
 		}
 	}
 
-	private int calculateCoinToAdd(Long problemId) {
-		// 3등까지는 50코인, 4등부터는 30코인을 지급합니다.
-		long solvedUserCount = userProblemRepository.countSolvingUsersByProblemId(problemId, currentSeason);
-		return solvedUserCount <= MAX_SOLVED_USER_COUNT_FOR_BONUS ? COINS_FOR_TOP_SOLVERS : COINS_FOR_OTHER_SOLVERS;
+	public List<UserProblem> getSolvedUserListByProblemId(Long problemId) {
+		return userProblemRepository.findAllByProblemIdAndIsSolvedIsTrue(problemId);
 	}
 
-	private void updateUserAndSaveSolvedProblem(User user, Long problemId) {
+	private void updateUserAndSaveSolvedProblem(User user, Problem problem) {
 		// 코인을 지급하고 사용자 정보를 저장합니다.
-		int coinToAdd = calculateCoinToAdd(problemId);
+		int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
 		user.addCoin(coinToAdd);
 		userRepository.save(user);
 		userService.checkUserRank(user);
 
 		// 해결 정보가 있으면 업데이트하고 없으면 새로 생성합니다.
-		UserProblem userProblem = userProblemRepository.findByUserIdAndProblemId(user.getId(), problemId)
+		UserProblem userProblem = userProblemRepository.findByUserIdAndProblemId(user.getId(), problem.getId())
 			.orElse(
 				UserProblem.builder()
 					.user(user)
-					.problem(problemRepository.getReferenceById(problemId))
+					.problem(problemRepository.getReferenceById(problem.getId()))
 					.isSolved(true)
 					.season(currentSeason)
 					.build()
@@ -88,8 +87,10 @@ public class ProblemSolvingService {
 		userProblemRepository.save(userProblem);
 	}
 
-	public List<UserProblem> getSolvedUserListByProblemId(Long problemId) {
-		return userProblemRepository.findAllByProblemIdAndIsSolvedIsTrue(problemId);
+	private int calculateCoinToAdd(Problem problem, Course course) {
+		return problem.getProblemType().getRoutine().equals(Routine.DAILY)
+			? coinService.calculateCoinToAddForDaily(problem.getId())
+			: coinService.calculateCoinToAddForWeekly(problem.getAlgorithm(), course);
 	}
 
 	// 시즌, 풀이 여부, 루틴에 따라 유저의 문제 목록을 가져옵니다.
