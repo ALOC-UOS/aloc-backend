@@ -25,8 +25,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		+ "LIMIT 1")
 	Problem findLatestPublicProblemByProblemTypeId(@Param("problemTypeId") Long problemTypeId);
 
-	Boolean existsByProblemIdAndProblemType_Course(Integer problemId, Course course);
-
 	List<Problem> findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(Routine routine);
 
 	@Query("SELECT p FROM Problem p "
@@ -54,6 +52,16 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 	List<Problem> findVisibleProblemsBySeasonAndCourse(
 		@Param("season") int season,
 		@Param("course") Course course
+	);
+
+	@Query("SELECT CASE WHEN COUNT(p) = 0 THEN true ELSE false END FROM Problem p "
+		+ "WHERE p.problemId = :problemId "
+		+ "AND p.problemType.course = :course "
+		+ "AND (:season IS NULL OR p.algorithm.season = :season)")
+	boolean notExistsByProblemIdAndCourseAndSeason(
+		@Param("problemId") Integer problemId,
+		@Param("course") Course course,
+		@Param("season") Integer season
 	);
 }
 
