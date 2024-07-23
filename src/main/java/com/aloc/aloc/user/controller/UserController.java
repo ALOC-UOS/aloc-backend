@@ -30,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "User API", description = "User API 입니다.")
 public class UserController {
 
-	private final UserService userService;
 	private final UserFacade userFacade;
 
 	@GetMapping("/users")
@@ -40,6 +39,7 @@ public class UserController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
+	@SecurityRequirement(name = "Refresh Token")
 	@PostMapping("/authorize/{githubId}")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "스터디 멤버로 등록되었습니다."),

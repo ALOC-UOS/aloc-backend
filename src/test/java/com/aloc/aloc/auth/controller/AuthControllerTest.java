@@ -18,6 +18,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.aloc.aloc.auth.service.AuthService;
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.dto.request.UserRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,6 +48,7 @@ public class AuthControllerTest {
 		userRequestDto.setStudentId("2021920000");
 		userRequestDto.setDiscordId("discord");
 		userRequestDto.setNotionEmail("notion");
+		userRequestDto.setCourse(Course.FULL);
 
 		doNothing().when(authService).signUp(Mockito.any(UserRequestDto.class));
 
