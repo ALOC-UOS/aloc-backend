@@ -6,8 +6,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,6 +39,7 @@ import com.aloc.aloc.tag.repository.TagRepository;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.service.UserService;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -60,15 +67,28 @@ public class ProblemScrapingService {
 	private final ProblemTagRepository problemTagRepository;
 
 	@Transactional
-	public void addProblemsForThisWeek() throws IOException {
+	public void addProblemsForThisWeek()
+		throws ExecutionException, InterruptedException {
 		Algorithm weeklyAlgorithm = findWeeklyAlgorithm(); // 1주에 5개
 		Algorithm dailyAlgorithm = findDailyAlgorithm(); // 1주에 7개
-		System.out.println(weeklyAlgorithm.getName() + dailyAlgorithm.getName());
-		addProblemsByType(weeklyAlgorithm, CourseRoutineTier.HALF_WEEKLY);
-		addProblemsByType(weeklyAlgorithm, CourseRoutineTier.FULL_WEEKLY);
+		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+			try {
+				addProblemsByType(weeklyAlgorithm, CourseRoutineTier.HALF_WEEKLY);
+				TimeUnit.SECONDS.sleep(5); // 5초 대기
 
-		addProblemsByType(dailyAlgorithm, CourseRoutineTier.HALF_DAILY);
-		addProblemsByType(dailyAlgorithm, CourseRoutineTier.FULL_DAILY);
+				addProblemsByType(weeklyAlgorithm, CourseRoutineTier.FULL_WEEKLY);
+				TimeUnit.SECONDS.sleep(5); // 5초 대기
+
+				addProblemsByType(dailyAlgorithm, CourseRoutineTier.HALF_DAILY);
+				TimeUnit.SECONDS.sleep(5); // 5초 대기
+
+				addProblemsByType(dailyAlgorithm, CourseRoutineTier.FULL_DAILY);
+
+			} catch (Exception e) {
+				throw new RuntimeException("Error in addProblemsForThisWeek", e);
+			}
+		});
+		future.get();
 		updateWeeklyAlgorithmHidden(weeklyAlgorithm);
 	}
 
@@ -92,39 +112,48 @@ public class ProblemScrapingService {
 		ProblemType problemType = problemTypeRepository
 			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine())
 			.orElseThrow(() -> new NoSuchElementException("해당 문제 타입이 존재하지 않습니다."));
-		for (int tier : courseRoutineTier.getTierList()) {
-			String url = getProblemUrl(tier, algorithm.getAlgorithmId());
-			crawlAndAddProblems(url, problemType, tier, algorithm);
-		}
+
+		String url = getProblemUrl(courseRoutineTier, algorithm.getAlgorithmId());
+		crawlAndAddProblems(url, problemType, algorithm, courseRoutineTier.getTargetCount());
 	}
 
-	private String getProblemUrl(int tier, int algorithmId) {
+	private String getProblemUrl(CourseRoutineTier courseRoutineTier, int algorithmId) {
+		String tiers = courseRoutineTier.getTierList().stream()
+			.map(Object::toString)
+			.collect(Collectors.joining(","));
+
 		return String.format(
-			"https://www.acmicpc.net/problemset?sort=ac_desc&tier=%d&algo=%d&algo_if=and", tier,
+			"https://www.acmicpc.net/problemset?sort=ac_desc&tier=%s&algo=%d&algo_if=and",
+			tiers,
 			algorithmId);
 	}
 
-	private void crawlAndAddProblems(String url, ProblemType problemType, int tier, Algorithm algorithm)
+	private void crawlAndAddProblems(String url, ProblemType problemType, Algorithm algorithm, int targetCount)
 		throws IOException {
 		Document document = Jsoup.connect(url).get();
 		Elements rows = document.select("tbody tr");
 
 		List<String> problemNumbers = extractProblemNumbers(rows);
+		// 문제 목록을 섞습니다.
+		Collections.shuffle(problemNumbers);
 
-		for (String problemNumber : problemNumbers) {
-			String problemUrl = getProblemUrl(problemNumber);
-			String jsonString = fetchJsonFromUrl(problemUrl);
-			if (isNewProblem(problemNumber, problemType)) {
-				parseAndSaveProblem(jsonString, tier, algorithm, problemType);
-				return;
-			}
-		}
-
-		if (problemNumbers.isEmpty()) {
-			// 한단계 높인 티어로 다시 크롤링
-			String retryUrl = getProblemUrl(tier + 1, algorithm.getAlgorithmId());
-			crawlAndAddProblems(retryUrl, problemType, tier + 1, algorithm);
-		}
+		// 문제를 하나씩 확인하며 새로운 문제인지 확인합니다. 새로운 문제이면 저장합니다.
+		List<Integer> savedProblems = problemNumbers.stream()
+			.filter(problemNumber -> isNewProblem(problemNumber, problemType, currentSeason))
+			.map(problemNumber -> {
+				try {
+					String problemUrl = getProblemUrl(problemNumber);
+					String jsonString = fetchJsonFromUrl(problemUrl);
+					return parseAndSaveProblem(jsonString, algorithm, problemType);
+				} catch (IOException e) {
+					System.err.println("Error fetching problem " + problemNumber + ": " + e.getMessage());
+					return null;
+				}
+			})
+			.filter(Objects::nonNull)
+			.limit(targetCount)
+			.collect(Collectors.toList());
+		System.out.println(savedProblems);
 	}
 
 	private List<String> extractProblemNumbers(Elements rows) {
@@ -139,7 +168,7 @@ public class ProblemScrapingService {
 		return String.format("https://solved.ac/api/v3/problem/show?problemId=%s", problemNumber);
 	}
 
-	private String fetchJsonFromUrl(String url) throws IOException {
+	protected String fetchJsonFromUrl(String url) throws IOException {
 		int maxRetries = 3; // 최대 3번까지 재시도
 		int retryDelayMs = 5000; // 5초
 
@@ -197,27 +226,45 @@ public class ProblemScrapingService {
 		return response.toString();
 	}
 
-	private boolean isNewProblem(String problemNumber, ProblemType problemType) {
+	private boolean isNewProblem(String problemNumber, ProblemType problemType, Integer season) {
 		Integer problemId = Integer.parseInt(problemNumber);
-		return !problemRepository.existsByProblemIdAndProblemType_Course(problemId,
-			problemType.getCourse());
+		return problemRepository.notExistsByProblemIdAndCourseAndSeason(
+			problemId, problemType.getCourse(), season);
 	}
 
-	private void parseAndSaveProblem(String jsonString, int tier, Algorithm algorithm, ProblemType problemType) {
+	private int parseAndSaveProblem(String jsonString, Algorithm algorithm, ProblemType problemType) {
 		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
-		if (jsonObject.has("titles")) {
+
+		String titleKo = extractTitleKo(jsonObject); // 한국어 제목 추출
+		if (titleKo == null) {
+			return 0;
+		}
+		int problemId = jsonObject.get("problemId").getAsInt();
+		int tier = jsonObject.get("level").getAsInt();
+
+		List<Tag> tagList = extractTags(jsonObject);
+		Long createdProblemId = saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList);
+		if (createdProblemId != null) {
+			saveUserProblem(createdProblemId);
+			return 1;
+		}
+		return 0;
+	}
+
+	private String extractTitleKo(JsonObject jsonObject) {
+		if (jsonObject.has("titleKo")) {
+			return jsonObject.get("titleKo").getAsString();
+		} else if (jsonObject.has("titles")) {
 			JsonArray titles = jsonObject.getAsJsonArray("titles");
-			JsonObject titleObject = titles.get(0).getAsJsonObject();
-			if ("ko".equals(titleObject.get("language").getAsString())) {
-				String titleKo = jsonObject.get("titleKo").getAsString();
-				int problemId = jsonObject.get("problemId").getAsInt();
-				List<Tag> tagList = extractTags(jsonObject);
-				Long createdProblemId = saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList);
-				if (createdProblemId != null) {
-					saveUserProblem(createdProblemId);
+			for (JsonElement titleElement : titles) {
+				JsonObject titleObject = titleElement.getAsJsonObject();
+				if ("ko".equals(titleObject.get("language").getAsString())) {
+					return titleObject.get("title").getAsString();
 				}
 			}
 		}
+		// 한국어 제목을 찾지 못한 경우, null을 반환합니다.
+		return null;
 	}
 
 	private void saveUserProblem(Long problemId) {
@@ -266,7 +313,6 @@ public class ProblemScrapingService {
 			.algorithm(algorithm)
 			.problemType(problemType)
 			.build();
-		problemRepository.save(problem);
 
 		for (Tag tag : tagList) {
 			ProblemTag problemTag = ProblemTag.builder()
@@ -276,7 +322,7 @@ public class ProblemScrapingService {
 			problemTagRepository.save(problemTag);
 			problem.addProblemTag(problemTag);
 		}
-		problemRepository.save(problem);
-		return problem.getId();
+		Problem savedProblem = problemRepository.save(problem);
+		return savedProblem.getId();
 	}
 }
