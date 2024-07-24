@@ -1,47 +1,26 @@
 package com.aloc.aloc.user.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.aloc.aloc.color.Color;
-import com.aloc.aloc.color.service.ColorService;
-import com.aloc.aloc.problem.service.ProblemFacade;
-import com.aloc.aloc.problem.service.ProblemService;
-import com.aloc.aloc.problem.service.ProblemSolvingService;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
-import com.aloc.aloc.user.enums.Authority;
-import com.aloc.aloc.user.repository.UserRepository;
 
 public class UserFacadeTest {
 
 	@Mock
-	private UserRepository userRepository;
-
-	@Mock
 	private UserSortingService userSortingService;
-
-	@Mock
-	private ProblemService problemService;
-
-	@Mock
-	private ProblemFacade problemFacade;
-
-	@Mock
-	private ProblemSolvingService problemSolvingService;
-
-	@Mock
-	private ColorService colorService;
 
 	@Mock
 	private UserService userService;
@@ -49,18 +28,16 @@ public class UserFacadeTest {
 	@InjectMocks
 	private UserFacade userFacade;
 
+	@Mock
+	private UserMapper userMapper;
+
+	private List<User> testUsers;
+	private List<UserDetailResponseDto> expectedDtos;
+
 	@BeforeEach
 	public void setUp() {
+
 		MockitoAnnotations.openMocks(this);
-	}
-
-	@Test
-	public void getUsers_ShouldReturnListOfUserDetailResponseDto() {
-		// Given
-		Authority authorityUser = Authority.ROLE_USER;
-		Authority authorityAdmin = Authority.ROLE_ADMIN;
-		List<Authority> authorities = Arrays.asList(authorityUser, authorityAdmin);
-
 		User user1 = new User(
 			"user1",
 			"baekjoon1",
@@ -73,8 +50,6 @@ public class UserFacadeTest {
 			"1",
 			Course.FULL
 		);
-		user1.setId(1L);
-
 		User user2 = new User(
 			"user",
 			"userBaekjoon",
@@ -87,41 +62,110 @@ public class UserFacadeTest {
 			"2",
 			Course.FULL
 		);
-		user2.setId(2L);
-		List<User> mockUsers = Arrays.asList(user1, user2);
 
-		when(userRepository.findAllByAuthorityIn(authorities)).thenReturn(mockUsers);
-		when(userSortingService.sortUserList(mockUsers)).thenReturn(mockUsers);
-		when(problemSolvingService.getSolvedCountByUserId(anyLong())).thenReturn(10);
-		when(problemFacade.getTodayProblemSolved(anyLong(), any(Course.class))).thenReturn(true);
-		when(problemFacade.getThisWeekSolvedCount(any())).thenReturn(Arrays.asList(8, 15, 7));
+		testUsers = Arrays.asList(user1, user2);
 
-		Color mockColor = Color.builder().id("White").color1("#FFFFFF").build();
-		when(colorService.getColorById(anyString())).thenReturn(mockColor);
-		when(problemService.getTotalProblemCount(any())).thenReturn(Arrays.asList(20, 30));
-		when(userService.getActiveUsers()).thenReturn(mockUsers);
+		expectedDtos = Arrays.asList(
+			UserDetailResponseDto.builder()
+				.username("user1")
+				.githubId("github1")
+				.baekjoonId("baekjoon1")
+				.profileColor("1")
+				.studentId("20210001")
+				.profileNumber("adminNotion")
+				.rank(1)
+				.coin(0)
+				.solvedCount(0)
+				.unsolvedCount(0)
+				.todaySolved(false)
+				.thisWeekUnsolvedCount(0)
+				.colorCategory("category")
+				.color1("color1")
+				.color2("color2")
+				.color3("color3")
+				.color4("color4")
+				.color5("color5")
+				.degree(0)
+				.createdAt(null)
+				.build(),
+			UserDetailResponseDto.builder()
+				.username("user")
+				.githubId("userGithub")
+				.baekjoonId("userBaekjoon")
+				.profileColor("2")
+				.studentId("20210002")
+				.profileNumber("userNotion")
+				.rank(2)
+				.coin(0)
+				.solvedCount(0)
+				.unsolvedCount(0)
+				.todaySolved(false)
+				.thisWeekUnsolvedCount(0)
+				.colorCategory("category")
+				.color1("color1")
+				.color2("color2")
+				.color3("color3")
+				.color4("color4")
+				.color5("color5")
+				.degree(0)
+				.createdAt(null)
+				.build()
+		);
 
-		// When
+	}
+
+	@Test
+	@DisplayName("활성 사용자 목록 조회 및 정렬 성공")
+	void getUsers_Success() {
+		// Arrange
+		when(userService.getActiveUsers()).thenReturn(testUsers);
+		when(userSortingService.sortUserList(testUsers)).thenReturn(testUsers);
+
+		when(userMapper.mapToUserDetailResponseDto(any(User.class)))
+			.thenReturn(expectedDtos.get(0), expectedDtos.get(1));
+
+		// Act
 		List<UserDetailResponseDto> result = userFacade.getUsers();
 
-		// Then
+		// Assert
+		assertNotNull(result);
 		assertEquals(2, result.size());
-		assertEquals("user1", result.get(0).getUsername());
-		assertEquals("github1", result.get(0).getGithubId());
-		assertEquals("baekjoon1", result.get(0).getBaekjoonId());
-		assertEquals(10, result.get(0).getSolvedCount());
-		assertEquals(7, result.get(0).getThisWeekUnsolvedCount());
+		assertEquals(expectedDtos, result);
 
-		UserDetailResponseDto userDetailResponseDto1 = result.get(0);
-		assertEquals("user1", userDetailResponseDto1.getUsername());
+		verify(userService).getActiveUsers();
+		verify(userSortingService).sortUserList(testUsers);
+		verify(userMapper, times(2)).mapToUserDetailResponseDto(any(User.class));
+	}
 
-		UserDetailResponseDto userDetailResponseDto2 = result.get(1);
-		assertEquals("user", userDetailResponseDto2.getUsername());
+	@Test
+	@DisplayName("활성 사용자가 없을 때 빈 리스트 반환")
+	void getUsers_NoActiveUsers() {
+		// Arrange
+		when(userService.getActiveUsers()).thenReturn(List.of());
 
-		verify(userSortingService, times(1)).sortUserList(mockUsers);
-		verify(problemSolvingService, times(2)).getSolvedCountByUserId(anyLong());
-		verify(problemFacade, times(2)).getTodayProblemSolved(anyLong(), any());
-		verify(colorService, times(2)).getColorById(anyString());
-		verify(problemService, times(2)).getTotalProblemCount(any());
+		// Act
+		List<UserDetailResponseDto> result = userFacade.getUsers();
+
+		// Assert
+		assertNotNull(result);
+		assertTrue(result.isEmpty());
+
+		verify(userService).getActiveUsers();
+		verify(userSortingService, never()).sortUserList(any());
+		verify(userMapper, never()).mapToUserDetailResponseDto(any(User.class));
+	}
+
+	@Test
+	@DisplayName("예외 발생 시 적절한 처리")
+	void getUsers_ExceptionHandling() {
+		// Arrange
+		when(userService.getActiveUsers()).thenThrow(new RuntimeException("Database error"));
+
+		// Act & Assert
+		assertThrows(RuntimeException.class, () -> userFacade.getUsers());
+
+		verify(userService).getActiveUsers();
+		verify(userSortingService, never()).sortUserList(any());
+		verify(userMapper, never()).mapToUserDetailResponseDto(any(User.class));
 	}
 }

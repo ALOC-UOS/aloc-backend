@@ -2,14 +2,10 @@ package com.aloc.aloc.problem.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +27,6 @@ import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
-
 @ExtendWith(MockitoExtension.class)
 public class ProblemFacadeTest {
 	@Spy
@@ -47,13 +42,10 @@ public class ProblemFacadeTest {
 	@Mock
 	private ProblemMapper problemMapper;
 
-	private List<Problem> problems;
-	private List<ProblemResponseDto> problemResponseDtos;
 	private List<UserProblem> user1SolvedProblems;
 	private List<SolvedUserResponseDto> solvedUsers;
 	private List<UserProblem> solvedProblems;
 	private User user1;
-	private User user2;
 
 	@BeforeEach
 	void setUp() {
@@ -71,7 +63,7 @@ public class ProblemFacadeTest {
 			Course.FULL
 		);
 		user1.setId(1L);
-		user2 = new User(
+		User user2 = new User(
 			"user2",
 			"baekjoon2",
 			"github2",
@@ -94,10 +86,10 @@ public class ProblemFacadeTest {
 		Problem problem2 = new Problem("Problem 2", 4, algorithm2, null, null);
 		problem1.setId(1L);
 		problem2.setId(2L);
-		problems = Arrays.asList(problem1, problem2);
+		List<Problem> problems = Arrays.asList(problem1, problem2);
 
 		// Set up ProblemResponseDtos
-		problemResponseDtos = Arrays.asList(
+		List<ProblemResponseDto> problemResponseDtos = Arrays.asList(
 			ProblemResponseDto.builder().id(1L).title("Problem 1").build(),
 			ProblemResponseDto.builder().id(2L).title("Problem 2").build()
 		);
@@ -184,59 +176,11 @@ public class ProblemFacadeTest {
 		// Arrange
 		String username = "testUser";
 		when(problemService.findUser(username)).thenReturn(user1);
-		doThrow(new RuntimeException("Error loading problem record")).when(problemFacade).loadUserProblemRecord(user1);
+		doThrow(new RuntimeException("Error loading problem record")).when(problemService).loadUserProblemRecord(user1);
 
 		// Act & Assert
 		assertThrows(RuntimeException.class, () -> problemFacade.checkSolved(username));
 		verify(problemService).findUser(username);
-		verify(problemFacade).loadUserProblemRecord(user1);
-	}
-
-	@Test
-	@DisplayName("유저 문제 기록 로드 성공 테스트")
-	void loadUserProblemRecord_WithProblems_UpdatesEachProblem() {
-		// Arrange
-		List<Problem> mockProblems = problems;
-		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
-			.thenReturn(mockProblems);
-
-		// Act
-		problemFacade.loadUserProblemRecord(user1);
-
-		// Assert
-		verify(problemService).getVisibleProblemsBySeasonAndCourse(user1.getCourse());
-		for (Problem problem : mockProblems) {
-			verify(problemSolvingService).updateUserAndSaveSolvedProblem(user1, problem);
-		}
-	}
-
-	@Test
-	@DisplayName("유저 문제 기록 로드 성공 테스트 - 문제가 많은 경우")
-	void loadUserProblemRecord_WithManyProblems_HandlesLargeNumber() {
-		// Arrange
-		List<Problem> mockProblems = createManyMockProblems(1000);
-		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
-			.thenReturn(mockProblems);
-
-		// Act
-		problemFacade.loadUserProblemRecord(user1);
-
-		// Assert
-		verify(problemService).getVisibleProblemsBySeasonAndCourse(user1.getCourse());
-		verify(problemSolvingService, times(1000)).updateUserAndSaveSolvedProblem(eq(user1), any(Problem.class));
-	}
-
-	private Problem createMockProblem(Long id) {
-		Problem problem = new Problem();
-		problem.setId(id);
-		return problem;
-	}
-
-	private List<Problem> createManyMockProblems(int count) {
-		List<Problem> problems = new ArrayList<>();
-		for (int i = 0; i < count; i++) {
-			problems.add(createMockProblem((long) i));
-		}
-		return problems;
+		verify(problemService).loadUserProblemRecord(user1);
 	}
 }
