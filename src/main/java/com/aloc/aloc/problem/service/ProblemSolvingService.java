@@ -1,6 +1,5 @@
 package com.aloc.aloc.problem.service;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -33,30 +32,6 @@ public class ProblemSolvingService {
 
 	@Value("${app.season}")
 	private Integer currentSeason;
-
-	// TODO: 변수명 & 로직 확인하기
-//	public String checkAndUpdateProblemSolved(ProblemResponseDto problemDto, User user)
-//		throws IOException {
-//		try {
-//			// 이미 푼 문제인지 확인합니다.
-//			if (isProblemAlreadySolved(user.getId(), problemDto.getId())) {
-//				return "alreadySolved";
-//			}
-//
-//			// 푼 문제가 아니라면 백준에서 푼 문제인지 확인합니다.
-//			if (solvedScrapingService.isProblemSolvedToday(user.getBaekjoonId(), problemDto.getId())) {
-//				Problem problem = problemRepository.findById(problemDto.getId())
-//						.orElseThrow(() -> new RuntimeException("해당 문제가 존재하지 않습니다."));
-//				updateUserAndSaveSolvedProblem(user, problem);
-//				return "success";
-//			}
-//
-//			// 풀지 않은 문제더라도 에러를 반환하지 않습니다.
-//			return "notSolved";
-//		} catch (IOException e) {
-//			throw new IOException("백준에서 정보를 불러오던 중 오류가 발생했습니다.");
-//		}
-//	}
 
 	boolean isProblemAlreadySolved(Long userId, Long problemId) {
 		// 사용자가 이미 푼 문제인지 확인합니다.
