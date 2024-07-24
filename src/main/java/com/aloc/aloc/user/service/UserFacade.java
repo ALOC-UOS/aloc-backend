@@ -87,13 +87,6 @@ public class UserFacade {
 	public record ProblemCounts(int totalWeeklyCount, int totalDailyCount) {
 	}
 
-	private void loadNewUserProblemRecord(User user) throws IOException {
-		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
-		for (Problem problem : problems) {
-			problemSolvingService.addUserProblem(user, problem);
-		}
-	}
-
 	public String addUser(String username, String githubId) throws IOException {
 		userService.checkAdmin(username);
 		User user = userService.findUser(githubId);
@@ -102,7 +95,7 @@ public class UserFacade {
 			throw new IllegalArgumentException("이미 등록된 멤버입니다.");
 		}
 		user.setAuthority(Authority.ROLE_USER);
-		loadNewUserProblemRecord(user);
+		problemFacade.loadUserProblemRecord(user);
 		historyService.addHistory(user, "plusMember", null);
 		return "스터디 멤버로 등록되었습니다.";
 	}
