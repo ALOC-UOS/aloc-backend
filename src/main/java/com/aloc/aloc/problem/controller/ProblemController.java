@@ -65,6 +65,7 @@ public class ProblemController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
+	@SecurityRequirement(name = "Refresh Token")
 	@PutMapping("/solved")
 	@Operation(summary = "문제 풀이 여부 확인", description = "해당 문제를 풀었음을 확인합니다.")
 	public CustomApiResponse<String> checkSolved(
@@ -74,6 +75,7 @@ public class ProblemController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
+	@SecurityRequirement(name = "Refresh Token")
 	@GetMapping("/weekly/status")
 	@Operation(summary = "이번주 Weekly 풀이 현황 조회", description = "이번주 Weekly 문제 풀이 현황을 조회합니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getWeeklyCompletionStatus(

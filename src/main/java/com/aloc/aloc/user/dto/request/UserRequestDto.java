@@ -2,6 +2,7 @@ package com.aloc.aloc.user.dto.request;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,6 +41,10 @@ public class UserRequestDto {
 	@Schema(description = "노션 초대 이메일", example = "notion@uos.ac.kr")
 	private String notionEmail;
 
+	@NotNull
+	@Schema(description = "HALF/FULL 코스", example = "HALF")
+	private Course course;
+
 	public User toEntity(String profileNumber, Integer rank, BCryptPasswordEncoder passwordEncoder) {
 		return User.builder()
 			.username(username)
@@ -51,6 +56,7 @@ public class UserRequestDto {
 			.discordId(discordId)
 			.rank(rank)
 			.notionEmail(notionEmail)
+			.course(course)
 			.build();
 	}
 }

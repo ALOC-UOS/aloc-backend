@@ -32,7 +32,7 @@ public class JwtProviderHandler extends SimpleUrlAuthenticationSuccessHandler {
 		String githubId = extractGithubId(authentication);
 		String accessToken = jwtService.createAccessToken(githubId);
 		String refreshToken = jwtService.createRefreshToken();
-
+		jwtService.updateRefreshToken(githubId, refreshToken);
 		jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 		userRepository.findByGithubId(githubId)
 			.ifPresentOrElse(

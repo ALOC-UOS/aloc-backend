@@ -50,6 +50,10 @@ class ProblemScraperServiceTest {
 	private ProblemRepository problemRepository;
 	@Mock
 	private ProblemTypeRepository problemTypeRepository;
+	@Mock
+	private TagRepository tagRepository;
+	@Mock
+	private ProblemTagRepository problemTagRepository;
 
 	@InjectMocks
 	private ProblemScrapingService problemScrapingService;

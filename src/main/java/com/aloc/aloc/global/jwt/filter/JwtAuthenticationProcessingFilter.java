@@ -33,7 +33,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 	private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
 	/**
-	 * 1. 리프레시 토큰이 오는 경우 -> 유효하면 AccessToken 재발급후, 필터 진행 X, 바로 튕기기
+	 * 1. 리프레시 토큰이 오는 경우 -> 유효하면 AccessToken 헤더에 재발급후, 필터 진행 X, 바로 튕기기, 200과 함께 리턴
 	 *
 	 * 2. 리프레시 토큰은 없고 AccessToken만 있는 경우 -> 유저정보 저장후 필터 계속 진행
 	 */
@@ -46,17 +46,18 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 			return;
 		}
 
+		// 원래는 refreshToken 안담아서 보냄. 재발급 필요할 때만 보내는 것이 맞음
 		String refreshToken = jwtService
 			.extractRefreshToken(request)
 			.filter(jwtService::isTokenValid)
 			.orElse(null);
-
-
+		// 리프레시 토큰이 있고 & 유효한 경우 -> AccessToken 재발급 후 필터 진행 X
 		if (refreshToken != null) {
 			checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
 			return;
 		}
 
+		// 리프레시 토큰이 없거나 유효하지 않은 경우 -> AccessToken 유효성 검사 후 필터 진행
 		checkAccessTokenAndAuthentication(request, response, filterChain);
 	}
 
@@ -72,8 +73,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
 		filterChain.doFilter(request, response);
 	}
-
-
 
 	private void saveAuthentication(User user) {
 		GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(

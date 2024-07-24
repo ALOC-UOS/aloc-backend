@@ -20,6 +20,7 @@ import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
@@ -58,7 +59,8 @@ public class ProblemFacadeTest {
 			"discord",
 			15,
 			"notion",
-			"11550"
+			"11550",
+			Course.FULL
 		);
 		user1.setId(1L);
 		user2 = new User(
@@ -70,7 +72,8 @@ public class ProblemFacadeTest {
 			"discord",
 			15,
 			"11551",
-			"notion"
+			"notion",
+			Course.FULL
 		);
 		user2.setId(2L);
 
@@ -122,13 +125,11 @@ public class ProblemFacadeTest {
 		Long problemId = 1L;
 		List<SolvedUserResponseDto> expectedUsers = solvedUsers;
 		when(problemSolvingService.getSolvedUserListByProblemId(problemId)).thenReturn(solvedProblems);
-		System.out.println(solvedProblems.size());
 
 		// problemMapper.mapToSolvedUserResponseDto() 모킹 추가
 		for (int i = 0; i < solvedProblems.size(); i++) {
 			when(problemMapper.mapToSolvedUserResponseDto(solvedProblems.get(i).getUser(), solvedProblems.get(i)))
 				.thenReturn(expectedUsers.get(i));
-			System.out.println(solvedProblems.get(i).getUser().getUsername());
 		}
 
 		// When

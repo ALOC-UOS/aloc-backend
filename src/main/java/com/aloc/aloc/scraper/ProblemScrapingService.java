@@ -153,7 +153,6 @@ public class ProblemScrapingService {
 			.filter(Objects::nonNull)
 			.limit(targetCount)
 			.collect(Collectors.toList());
-		System.out.println(savedProblems);
 	}
 
 	private List<String> extractProblemNumbers(Elements rows) {
