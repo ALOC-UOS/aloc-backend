@@ -39,8 +39,7 @@ public class UserFacade {
 	private Integer season;
 
 	public List<UserDetailResponseDto> getUsers() {
-		List<Authority> authorities = List.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
-		List<User> users = userRepository.findAllByAuthorityIn(authorities);
+		List<User> users = userService.getActiveUsers();
 		List<User> sortedUserList = userSortingService.sortUserList(users);
 		return sortedUserList.stream()
 			.map(this::mapToUserDetailResponseDto)
@@ -109,7 +108,6 @@ public class UserFacade {
 		}
 		user.setAuthority(Authority.ROLE_USER);
 		loadNewUserProblemRecord(user);
-		// TODO: User의 solvedCount 저장
 		historyService.addHistory(user, "plusMember", null);
 		return "스터디 멤버로 등록되었습니다.";
 	}

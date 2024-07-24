@@ -43,6 +43,9 @@ public class UserFacadeTest {
 	@Mock
 	private ColorService colorService;
 
+	@Mock
+	private UserService userService;
+
 	@InjectMocks
 	private UserFacade userFacade;
 
@@ -96,6 +99,7 @@ public class UserFacadeTest {
 		Color mockColor = Color.builder().id("White").color1("#FFFFFF").build();
 		when(colorService.getColorById(anyString())).thenReturn(mockColor);
 		when(problemService.getTotalProblemCount(any())).thenReturn(Arrays.asList(20, 30));
+		when(userService.getActiveUsers()).thenReturn(mockUsers);
 
 		// When
 		List<UserDetailResponseDto> result = userFacade.getUsers();
@@ -114,7 +118,6 @@ public class UserFacadeTest {
 		UserDetailResponseDto userDetailResponseDto2 = result.get(1);
 		assertEquals("user", userDetailResponseDto2.getUsername());
 
-		verify(userRepository, times(1)).findAllByAuthorityIn(authorities);
 		verify(userSortingService, times(1)).sortUserList(mockUsers);
 		verify(problemSolvingService, times(2)).getSolvedCountByUserId(anyLong());
 		verify(problemFacade, times(2)).getTodayProblemSolved(anyLong(), any());

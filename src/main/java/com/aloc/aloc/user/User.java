@@ -73,6 +73,9 @@ public class User extends AuditingTimeEntity {
 	@Column(length = 1000)
 	private String refreshToken;
 
+	@Column
+	private Integer solvedCount = 0;
+
 
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
@@ -84,6 +87,10 @@ public class User extends AuditingTimeEntity {
 
 	public void encodePassword(PasswordEncoder passwordEncoder) {
 		this.password = passwordEncoder.encode(password);
+	}
+
+	public void addSolvedCount() {
+		this.solvedCount++;
 	}
 
 	@Builder

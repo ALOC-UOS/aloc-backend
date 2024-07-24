@@ -70,6 +70,7 @@ public class ProblemSolvingService {
 		// 코인을 지급하고 사용자 정보를 저장합니다.
 		int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
 		user.addCoin(coinToAdd);
+		user.addSolvedCount();
 		userRepository.save(user);
 		userService.checkUserRank(user);
 
@@ -117,7 +118,9 @@ public class ProblemSolvingService {
 
 		if (solvedScrapingService.isProblemSolved(user.getBaekjoonId(), problem)) {
 			userProblem.setIsSolved(true);
+			user.addSolvedCount();
 		}
 		userProblemRepository.save(userProblem);
+		userRepository.save(user);
 	}
 }

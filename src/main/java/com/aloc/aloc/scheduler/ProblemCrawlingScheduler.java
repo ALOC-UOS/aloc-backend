@@ -1,7 +1,5 @@
 package com.aloc.aloc.scheduler;
 
-import java.io.IOException;
-
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +17,8 @@ public class ProblemCrawlingScheduler {
 	public void scheduleAddProblemsForThisWeek() {
 		try {
 			problemScraperService.addProblemsForThisWeek();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 }

@@ -43,8 +43,6 @@ public class ProblemFacade {
 			throw new IllegalArgumentException("오늘의 문제가 없습니다.");
 		}
 
-		// 문제를 풀었는지 확인합니다.
-		// TODO: 문제를 풀었는지 확인하는 로직을 구현합니다.
 		return problemSolvingService.checkAndUpdateProblemSolved(problem, user);
 	}
 

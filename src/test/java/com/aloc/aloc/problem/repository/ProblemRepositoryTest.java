@@ -12,9 +12,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.enums.Course;
@@ -72,12 +70,12 @@ public class ProblemRepositoryTest {
 	void existsByAlgorithmIdAndProblemType_Course_ShouldReturnTrue() {
 		// when
 		boolean existsFull =
-			problemRepository.existsByProblemIdAndProblemType_Course(1, Course.FULL);
+			problemRepository.notExistsByProblemIdAndCourseAndSeason(1, Course.FULL, null);
 		boolean existsHalf =
-			problemRepository.existsByProblemIdAndProblemType_Course(3, Course.HALF);
+			problemRepository.notExistsByProblemIdAndCourseAndSeason(3, Course.HALF, null);
 
-		assertTrue(existsFull);
-		assertTrue(existsHalf);
+		assertFalse(existsFull);
+		assertFalse(existsHalf);
 	}
 
 	@Test
@@ -85,10 +83,10 @@ public class ProblemRepositoryTest {
 	@DisplayName("문제 ID와 코스를 통해 문제가 존재하지 않는지 확인")
 	void existsByProblemIdAndProblemType_Course_ShouldReturnFalse() {
 		// when : 존재하지 않는 문제 ID로 확인
-		boolean exists = problemRepository.existsByProblemIdAndProblemType_Course(5, Course.FULL);
+		boolean exists = problemRepository.notExistsByProblemIdAndCourseAndSeason(5, Course.FULL, null);
 
 		// then
-		assertFalse(exists);
+		assertTrue(exists);
 	}
 
 	@Test

@@ -13,12 +13,13 @@ import lombok.Getter;
 @AllArgsConstructor
 // TODO: 나중에 백오피스로 관리할 수 있도록 분리하기
 public enum CourseRoutineTier {
-	HALF_WEEKLY(Course.HALF, Routine.WEEKLY, Arrays.asList(5, 6, 7, 8, 9)),
-	HALF_DAILY(Course.HALF, Routine.DAILY, Arrays.asList(7, 7, 7, 7, 8, 9, 9)),
-	FULL_WEEKLY(Course.FULL, Routine.WEEKLY, Arrays.asList(9, 10, 11, 12, 13)),
-	FULL_DAILY(Course.FULL, Routine.DAILY, Arrays.asList(11, 11, 11, 11, 12, 12, 12));
+	HALF_WEEKLY(Course.HALF, Routine.WEEKLY, Arrays.asList(5, 6, 7, 8, 9), 5),
+	HALF_DAILY(Course.HALF, Routine.DAILY, Arrays.asList(7, 8, 9), 7),
+	FULL_WEEKLY(Course.FULL, Routine.WEEKLY, Arrays.asList(9, 10, 11, 12, 13), 5),
+	FULL_DAILY(Course.FULL, Routine.DAILY, Arrays.asList(10, 11, 12), 7);
 
 	private final Course course;
 	private final Routine routine;
 	private final List<Integer> tierList;
+	private final Integer targetCount;
 }
