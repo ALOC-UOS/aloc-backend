@@ -25,6 +25,7 @@ public class ProblemService {
 	private final UserRepository userRepository;
 	private final ProblemRepository problemRepository;
 	private final ProblemTypeRepository problemTypeRepository;
+	private final ProblemSolvingService problemSolvingService;
 	private final ProblemMapper problemMapper;
 
 	@Value("${app.season}")
@@ -98,5 +99,13 @@ public class ProblemService {
 
 	public List<Problem> getVisibleProblemsBySeasonAndCourse(Course course) {
 		return problemRepository.findVisibleProblemsBySeasonAndCourse(currentSeason, course);
+	}
+
+	public void loadUserProblemRecord(User user) {
+		List<Problem> problems = getVisibleProblemsBySeasonAndCourse(user.getCourse());
+		ProblemResponseDto todayProblem = findTodayProblemByCourse(user.getCourse());
+		for (Problem problem : problems) {
+			problemSolvingService.updateUserAndSaveSolvedProblem(user, problem, todayProblem.getId());
+		}
 	}
 }

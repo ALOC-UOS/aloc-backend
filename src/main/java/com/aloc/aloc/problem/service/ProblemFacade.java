@@ -37,7 +37,7 @@ public class ProblemFacade {
 		// 오늘의 문제를 가져옵니다.
 
 		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
-		loadUserProblemRecord(user);
+		problemService.loadUserProblemRecord(user);
 
 		// 에러가 나지 않는다면 success를 리턴합니다.
 		return "success";
@@ -122,10 +122,12 @@ public class ProblemFacade {
 		return problemSolvingService.isProblemAlreadySolved(userId, todayProblem.getId());
 	}
 
-	public void loadUserProblemRecord(User user) {
-		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
-		for (Problem problem : problems) {
-			problemSolvingService.updateUserAndSaveSolvedProblem(user, problem);
-		}
+	// TODO: 수정
+	public List<Integer> getTotalProblemCount(Course course) {
+		// 해당 코스의 공개 된 문제 중 Weekly와 Daily 문제의 개수를 가져옵니다.
+		return problemService.getTotalProblemCount(course);
+//		Integer weeklyCount = problemRepository.countAllByCourseAndRoutine(currentSeason, course, Routine.WEEKLY);
+//		Integer dailyCount = problemRepository.countAllByCourseAndRoutine(currentSeason, course, Routine.DAILY);
+//		return List.of(weeklyCount, dailyCount);
 	}
 }

@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProblemSolvingService {
 	private final ProblemRepository problemRepository;
-	private final ProblemService problemService;
 	private final UserProblemRepository userProblemRepository;
 	private final SolvedScrapingService solvedScrapingService;
 	private final UserRepository userRepository;
@@ -38,12 +37,12 @@ public class ProblemSolvingService {
 		return userProblemRepository.existsByUserIdAndProblemIdAndIsSolvedIsTrue(userId, problemId);
 	}
 
-	void updateUserAndSaveSolvedProblem(User user, Problem problem) {
+	void updateUserAndSaveSolvedProblem(User user, Problem problem, Long todayProblemId) {
 		boolean isSolved = solvedScrapingService.isProblemSolved(user.getBaekjoonId(), problem);
 
 		if (isSolved) {
 			// 코인을 지급하고 사용자 정보를 저장합니다.
-			addCoinIfEligible(user, problem);
+			addCoinIfEligible(user, problem, todayProblemId);
 			user.addSolvedCount();
 			userService.checkUserRank(user);
 		}
@@ -53,19 +52,18 @@ public class ProblemSolvingService {
 		saveUserAndUserProblem(user, userProblem);
 	}
 
-	private void addCoinIfEligible(User user, Problem problem) {
-		if (isEligibleForCoin(user, problem)) {
+	private void addCoinIfEligible(User user, Problem problem, Long todayProblemId) {
+		if (isEligibleForCoin(user, problem, todayProblemId)) {
 			int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
 			user.addCoin(coinToAdd);
 		}
 	}
 
-	private boolean isEligibleForCoin(User user, Problem problem) {
+	private boolean isEligibleForCoin(User user, Problem problem, Long todayProblemId) {
 		if (problem.getProblemType().getRoutine() == Routine.WEEKLY) {
 			return true; // Weekly 문제는 항상 코인을 받음
 		} else if (problem.getProblemType().getRoutine() == Routine.DAILY) {
-			ProblemResponseDto todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
-			return problem.getId().equals(todayProblem.getId()); // 오늘의 문제인 경우에만 코인을 받음
+			return problem.getId().equals(todayProblemId); // 오늘의 문제인 경우에만 코인을 받음
 		}
 		return false; // 다른 경우에는 코인을 받지 않음
 	}
