@@ -33,17 +33,15 @@ public class ProblemFacade {
 	private Integer currentSeason;
 
 
-	public String checkSolved(String username) throws IOException {
+	public String checkSolved(String username) {
 		User user = problemService.findUser(username);
 		// 오늘의 문제를 가져옵니다.
-		ProblemResponseDto problem = problemService.findTodayProblemByCourse(user.getCourse());
 
-		// 오늘의 문제가 없으면 오류를 발생시킵니다.
-		if (problem == null) {
-			throw new IllegalArgumentException("오늘의 문제가 없습니다.");
-		}
+		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
+		loadUserProblemRecord(user);
 
-		return problemSolvingService.checkAndUpdateProblemSolved(problem, user);
+		// 에러가 나지 않는다면 success를 리턴합니다.
+		return "success";
 	}
 
 	public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
@@ -90,20 +88,18 @@ public class ProblemFacade {
 	) {
 		// 사용자 정보를 가져옵니다.
 		User user = problemService.findUser(githubId);
-		List<UserProblem> unsolvedProblems;
-		unsolvedProblems = problemSolvingService.getUserProblemList(user.getId(), season, false, routine);
+		List<UserProblem> unsolvedProblems
+			= problemSolvingService.getUserProblemList(user.getId(), season, false, routine);
 
-		return unsolvedProblems.stream()
-			.map(problemMapper::mapToProblemSolvedResponseDto)
-			.collect(Collectors.toList());
+		return problemMapper.mapSolvedProblemToDtoList(unsolvedProblems);
 	}
 
 	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId, Integer season, Routine routine) {
 		User user = problemService.findUser(githubId);
 
-		List<UserProblem> solvedProblems;
 		// 현재 시즌 동안 유저가 푼 문제 목록을 가져옵니다.
-		solvedProblems = problemSolvingService.getUserProblemList(user.getId(), season, true, routine);
+		List<UserProblem> solvedProblems
+			= problemSolvingService.getUserProblemList(user.getId(), season, true, routine);
 		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
 
@@ -125,5 +121,12 @@ public class ProblemFacade {
 		// 오늘의 문제를 풀었는지 확인합니다.
 		ProblemResponseDto todayProblem = problemService.findTodayProblemByCourse(course);
 		return problemSolvingService.isProblemAlreadySolved(userId, todayProblem.getId());
+	}
+
+	public void loadUserProblemRecord(User user) {
+		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
+		for (Problem problem : problems) {
+			problemSolvingService.updateUserAndSaveSolvedProblem(user, problem);
+		}
 	}
 }
