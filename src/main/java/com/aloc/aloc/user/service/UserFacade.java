@@ -2,7 +2,6 @@ package com.aloc.aloc.user.service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +17,6 @@ import com.aloc.aloc.problem.service.ProblemSolvingService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
 import com.aloc.aloc.user.enums.Authority;
-import com.aloc.aloc.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
