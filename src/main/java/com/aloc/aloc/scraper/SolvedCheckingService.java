@@ -17,8 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-// TODO: SolvedCheckingService
-public class SolvedScrapingService {
+public class SolvedCheckingService {
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String BASE_URL = "https://www.acmicpc.net/status?problem_id=%d&user_id=%s&language_id=-1&result_id=4";
 

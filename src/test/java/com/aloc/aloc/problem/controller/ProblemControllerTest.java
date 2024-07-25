@@ -32,6 +32,9 @@ public class ProblemControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
+	private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+
+	@MockBean
 	private ProblemService problemService;
 
 	@MockBean

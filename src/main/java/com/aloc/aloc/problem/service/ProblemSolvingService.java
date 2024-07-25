@@ -13,7 +13,7 @@ import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
-import com.aloc.aloc.scraper.SolvedScrapingService;
+import com.aloc.aloc.scraper.SolvedCheckingService;
 import com.aloc.aloc.user.User;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class ProblemSolvingService {
 	private final ProblemService problemService;
 	private final UserProblemService userProblemService;
 	private final ProblemMapper problemMapper;
-	private final SolvedScrapingService solvedScrapingService;
+	private final SolvedCheckingService solvedCheckingService;
 	private final CoinService coinService;
 
 	public List<UserProblem> getSolvedUserListByProblemId(Long problemId) {
@@ -65,7 +65,7 @@ public class ProblemSolvingService {
 	}
 
 	public boolean updateUserAndSaveSolvedProblem(User user, Problem problem, Long todayProblemId) {
-		boolean isSolved = solvedScrapingService.isProblemSolved(user.getBaekjoonId(), problem);
+		boolean isSolved = solvedCheckingService.isProblemSolved(user.getBaekjoonId(), problem);
 
 		if (isSolved) {
 			// 코인을 지급하고 사용자 정보를 저장합니다.

@@ -7,7 +7,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problemtag.repository.ProblemTagRepository;
 import com.aloc.aloc.problemtype.ProblemType;
@@ -50,6 +48,13 @@ class ProblemScraperServiceTest {
 	private ProblemTypeRepository problemTypeRepository;
 	@Mock
 	private ProblemService problemService;
+	// 삭제하면 안됨
+	@Mock
+	private TagRepository tagRepository;
+	@Mock
+	private ProblemTagRepository problemTagRepository;
+	@Mock
+	private UserService userService;
 
 	@InjectMocks
 	private ProblemScrapingService problemScrapingService;
