@@ -2,9 +2,11 @@ package com.aloc.aloc.algorithm.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.algorithm.dto.response.AlgorithmDto;
@@ -19,6 +21,9 @@ import lombok.RequiredArgsConstructor;
 public class AlgorithmService {
 
 	private final AlgorithmRepository algorithmRepository;
+
+	@Value("${app.season}")
+	private int currentSeason;
 
 	public List<AlgorithmResponseDto> getAlgorithms() {
 		List<Algorithm> algorithms = algorithmRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
@@ -53,4 +58,19 @@ public class AlgorithmService {
 	public Optional<Algorithm> getAlgorithmBySeason(int season) {
 		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(season);
 	}
+
+	public void saveAlgorithm(Algorithm algorithm) {
+		algorithmRepository.save(algorithm);
+	}
+
+	public Algorithm findWeeklyAlgorithm() {
+		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(currentSeason)
+			.orElseThrow(() -> new NoSuchElementException("해당 시즌의 공개되지 않은 알고리즘이 존재하지 않습니다."));
+	}
+
+	public Algorithm findDailyAlgorithm() {
+		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(currentSeason)
+			.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다."));
+	}
+
 }

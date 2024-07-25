@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.aloc.aloc.color.Color;
 import com.aloc.aloc.color.service.ColorService;
 import com.aloc.aloc.problem.service.ProblemFacade;
-import com.aloc.aloc.problem.service.ProblemSolvingService;
+import com.aloc.aloc.problem.service.UserProblemService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
 
@@ -16,12 +16,12 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class UserMapper {
-	private final ProblemSolvingService problemSolvingService;
+	private final UserProblemService userProblemService;
 	private final ProblemFacade problemFacade;
 	private final ColorService colorService;
 
 	UserDetailResponseDto mapToUserDetailResponseDto(User user) {
-		int solvedCount = problemSolvingService.getSolvedCountByUserId(user.getId());
+		int solvedCount = userProblemService.getSolvedCountByUserId(user.getId());
 		Integer thisWeekUnsolvedCount = getThisWeekUnsolvedCount(user);
 		ProblemCounts problemCounts = getProblemCounts(user);
 		Color userColor = colorService.getColorById(user.getProfileColor());

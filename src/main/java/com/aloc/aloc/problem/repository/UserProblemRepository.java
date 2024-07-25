@@ -12,7 +12,6 @@ import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.enums.Routine;
 
-// TODO: 메소드 확인하기
 @Repository
 public interface UserProblemRepository extends JpaRepository<UserProblem, Long> {
 
@@ -52,4 +51,12 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
 		+ "WHERE up.problem "
 		+ "IN :problems")
 	int countByProblemsIn(@Param("problems") List<Problem> problems);
+
+	@Query("SELECT COUNT(up) "
+		+ "FROM UserProblem up "
+		+ "WHERE up.user.id = :userId "
+		+ "AND up.season = :season "
+		+ "AND up.isSolved = :isSolved "
+		+ "AND up.problem.problemType.routine = :routine")
+	int countByUserIdAndSeasonAndIsSolved(Long userId, Integer season, boolean isSolved, Routine routine);
 }

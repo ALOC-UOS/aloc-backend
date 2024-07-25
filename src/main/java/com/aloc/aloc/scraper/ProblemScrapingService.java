@@ -25,11 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.enums.CourseRoutineTier;
-import com.aloc.aloc.algorithm.repository.AlgorithmRepository;
+import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
-import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.problem.repository.UserProblemRepository;
+import com.aloc.aloc.problem.service.ProblemService;
+import com.aloc.aloc.problem.service.UserProblemService;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.problemtag.repository.ProblemTagRepository;
 import com.aloc.aloc.problemtype.ProblemType;
@@ -60,17 +60,17 @@ public class ProblemScrapingService {
 
 	private final TagRepository tagRepository;
 	private final UserService userService;
-	private final UserProblemRepository userProblemRepository;
-	private final AlgorithmRepository algorithmRepository;
-	private final ProblemRepository problemRepository;
+	private final UserProblemService userProblemService;
+	private final AlgorithmService algorithmService;
+	private final ProblemService problemService;
 	private final ProblemTypeRepository problemTypeRepository;
 	private final ProblemTagRepository problemTagRepository;
 
 	@Transactional
 	public void addProblemsForThisWeek()
 		throws ExecutionException, InterruptedException {
-		Algorithm weeklyAlgorithm = findWeeklyAlgorithm(); // 1주에 5개
-		Algorithm dailyAlgorithm = findDailyAlgorithm(); // 1주에 7개
+		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 5개
+		Algorithm dailyAlgorithm = algorithmService.findDailyAlgorithm(); // 1주에 7개
 		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 			try {
 				addProblemsByType(weeklyAlgorithm, CourseRoutineTier.HALF_WEEKLY);
@@ -94,17 +94,7 @@ public class ProblemScrapingService {
 
 	private void updateWeeklyAlgorithmHidden(Algorithm weeklyAlgorithm) {
 		weeklyAlgorithm.setHiddenFalse();
-		algorithmRepository.save(weeklyAlgorithm);
-	}
-
-	public Algorithm findWeeklyAlgorithm() {
-		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(currentSeason)
-			.orElseThrow(() -> new NoSuchElementException("해당 시즌의 공개되지 않은 알고리즘이 존재하지 않습니다."));
-	}
-
-	public Algorithm findDailyAlgorithm() {
-		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(currentSeason)
-		.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다."));
+		algorithmService.saveAlgorithm(weeklyAlgorithm);
 	}
 
 	private void addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
@@ -139,7 +129,7 @@ public class ProblemScrapingService {
 
 		// 문제를 하나씩 확인하며 새로운 문제인지 확인합니다. 새로운 문제이면 저장합니다.
 		List<Integer> savedProblems = problemNumbers.stream()
-			.filter(problemNumber -> isNewProblem(problemNumber, problemType, currentSeason))
+			.filter(problemNumber -> problemService.isNewProblem(problemNumber, problemType, currentSeason))
 			.map(problemNumber -> {
 				try {
 					String problemUrl = getProblemUrl(problemNumber);
@@ -152,7 +142,8 @@ public class ProblemScrapingService {
 			})
 			.filter(Objects::nonNull)
 			.limit(targetCount)
-			.collect(Collectors.toList());
+			.toList();
+		// TODO: 디코에 저장된 문제 수를 로그로 남기는 기능 추가
 	}
 
 	private List<String> extractProblemNumbers(Elements rows) {
@@ -225,13 +216,7 @@ public class ProblemScrapingService {
 		return response.toString();
 	}
 
-	private boolean isNewProblem(String problemNumber, ProblemType problemType, Integer season) {
-		Integer problemId = Integer.parseInt(problemNumber);
-		return problemRepository.notExistsByProblemIdAndCourseAndSeason(
-			problemId, problemType.getCourse(), season);
-	}
-
-	private int parseAndSaveProblem(String jsonString, Algorithm algorithm, ProblemType problemType) {
+	public int parseAndSaveProblem(String jsonString, Algorithm algorithm, ProblemType problemType) {
 		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
 
 		String titleKo = extractTitleKo(jsonObject); // 한국어 제목 추출
@@ -269,9 +254,9 @@ public class ProblemScrapingService {
 	private void saveUserProblem(Long problemId) {
 		List<User> users = userService.getActiveUsers();
 		for (User user : users) {
-			userProblemRepository.save(UserProblem.builder()
+			userProblemService.saveUserProblem(UserProblem.builder()
 				.user(user)
-				.problem(problemRepository.getReferenceById(problemId))
+				.problem(problemService.findProblemById(problemId))
 				.isSolved(false)
 				.season(currentSeason)
 				.build());
@@ -303,7 +288,8 @@ public class ProblemScrapingService {
 			});
 	}
 
-	private Long saveProblem(String titleKo, int tier, int problemId, Algorithm algorithm,
+	@Transactional
+	public Long saveProblem(String titleKo, int tier, int problemId, Algorithm algorithm,
 		ProblemType problemType, List<Tag> tagList) {
 		Problem problem = Problem.builder()
 			.title(titleKo)
@@ -321,7 +307,7 @@ public class ProblemScrapingService {
 			problemTagRepository.save(problemTag);
 			problem.addProblemTag(problemTag);
 		}
-		Problem savedProblem = problemRepository.save(problem);
+		Problem savedProblem = problemService.saveProblem(problem);
 		return savedProblem.getId();
 	}
 }

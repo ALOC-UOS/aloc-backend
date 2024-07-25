@@ -22,10 +22,6 @@ public class SolvedScrapingService {
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String BASE_URL = "https://www.acmicpc.net/status?problem_id=%d&user_id=%s&language_id=-1&result_id=4";
 
-	public boolean isProblemSolvedToday(String baekjoonId, Long problemId) throws IOException {
-		return isSolvedToday(getRecentlySolvedDate(baekjoonId, problemId));
-	}
-
 	public boolean isProblemSolved(String baekjoonId, Problem problem) {
 		return isSolvedBefore(getRecentlySolvedDate(baekjoonId, problem.getId()),
 			LocalDate.from(problem.getUpdatedAt()));

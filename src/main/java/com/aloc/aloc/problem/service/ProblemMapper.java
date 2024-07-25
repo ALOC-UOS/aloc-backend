@@ -2,7 +2,6 @@ package com.aloc.aloc.problem.service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +29,7 @@ public class ProblemMapper {
 	@Value("${app.season}")
 	private Integer season;
 
-	ProblemResponseDto mapToProblemResponseDto(Problem problem) {
+	public ProblemResponseDto mapToProblemResponseDto(Problem problem) {
 		return ProblemResponseDto.builder()
 			.id(problem.getId())
 			.title(problem.getTitle())
@@ -66,20 +65,6 @@ public class ProblemMapper {
 			.rank(user.getRank())
 			.coin(user.getCoin())
 			.solvedAt(userProblem.getSolvedAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
-			.build();
-	}
-
-	// 안 푼 문제 + 푼 문제 모두 합쳐져 있음.
-	// TODO: 안쓰면 삭제
-	ProblemSolvedResponseDto mapToProblemSolvedResponseDto(
-		UserProblem solvedProblems
-	) {
-		Problem problem = solvedProblems.getProblem();
-		return ProblemSolvedResponseDto.builder()
-			.problemId(problem.getId())
-			.problemTitle(problem.getTitle())
-			.problemDifficulty(problem.getDifficulty())
-			.isSolved(solvedProblems.getIsSolved())
 			.build();
 	}
 

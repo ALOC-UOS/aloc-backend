@@ -1,15 +1,8 @@
 package com.aloc.aloc.problem.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -42,9 +35,6 @@ public class ProblemServiceTest {
 
 	@Mock
 	private ProblemRepository problemRepository;
-
-	@Mock
-	private ProblemSolvingService problemSolvingService;
 
 	private List<Problem> problems;
 	private List<ProblemResponseDto> problemResponseDtos;
@@ -118,64 +108,5 @@ public class ProblemServiceTest {
 		when(problemRepository.findById(problemId)).thenReturn(Optional.empty());
 		// Then
 		assertThrows(IllegalArgumentException.class, () -> problemService.checkProblemExist(problemId));
-	}
-
-	@Test
-	@DisplayName("유저 문제 기록 로드 성공 테스트")
-	void loadUserProblemRecord_WithProblems_UpdatesEachProblem() {
-		// Arrange
-		List<Problem> mockProblems = problems;
-		Problem todayProblem = problems.get(0);
-		ProblemResponseDto todayProblemDto = new ProblemResponseDto();
-		todayProblemDto.setId(todayProblem.getId());
-
-		doReturn(todayProblemDto).when(problemService).findTodayProblemByCourse(user1.getCourse());
-		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
-			.thenReturn(mockProblems);
-
-		// Act
-		problemService.loadUserProblemRecord(user1);
-
-		// Assert
-		verify(problemService).getVisibleProblemsBySeasonAndCourse(user1.getCourse());
-		for (Problem problem : mockProblems) {
-			verify(problemSolvingService).updateUserAndSaveSolvedProblem(user1, problem, 1L );
-		}
-	}
-
-	@Test
-	@DisplayName("유저 문제 기록 로드 성공 테스트 - 문제가 많은 경우")
-	void loadUserProblemRecord_WithManyProblems_HandlesLargeNumber() {
-		// Arrange
-		List<Problem> mockProblems = createManyMockProblems();
-
-		Problem todayProblem = problems.get(0);
-		ProblemResponseDto todayProblemDto = new ProblemResponseDto();
-		todayProblemDto.setId(todayProblem.getId());
-
-		doReturn(todayProblemDto).when(problemService).findTodayProblemByCourse(user1.getCourse());
-		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
-			.thenReturn(mockProblems);
-
-		// Act
-		problemService.loadUserProblemRecord(user1);
-
-		// Assert
-		verify(problemSolvingService, times(1000))
-			.updateUserAndSaveSolvedProblem(eq(user1), any(Problem.class), anyLong());
-	}
-
-	private Problem createMockProblem(Long id) {
-		Problem problem = new Problem();
-		problem.setId(id);
-		return problem;
-	}
-
-	private List<Problem> createManyMockProblems() {
-		List<Problem> problems = new ArrayList<>();
-		for (int i = 0; i < 1000; i++) {
-			problems.add(createMockProblem((long) i));
-		}
-		return problems;
 	}
 }

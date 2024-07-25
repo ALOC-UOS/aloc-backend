@@ -8,11 +8,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.UserProblem;
-import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.problem.repository.UserProblemRepository;
-import com.aloc.aloc.problemtype.enums.Routine;
-import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
+import com.aloc.aloc.problem.service.ProblemService;
+import com.aloc.aloc.problem.service.UserProblemService;
 import com.aloc.aloc.user.User;
 
 import lombok.AllArgsConstructor;
@@ -21,9 +18,8 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class UserSortingService {
-	private final UserProblemRepository userProblemRepository;
-	private final ProblemTypeRepository problemTypeRepository;
-	private final ProblemRepository problemRepository;
+	private final UserProblemService userProblemService;
+	private final ProblemService problemService;
 
 	public List<User> sortUserList(List<User> userList) {
 		return userList.stream()
@@ -35,31 +31,18 @@ public class UserSortingService {
 			.collect(Collectors.toList());
 	}
 
+	private LocalDateTime getLatestSolvedTime(User user) {
+		return userProblemService.getLatestSolvedTime(user.getId());
+	}
+
 	private boolean hasSolvedToday(User user) {
-		// 유저의 오늘의 문제 타입을 가져옵니다.
-		Long problemTypeId =
-			problemTypeRepository.findProblemTypeByCourseAndRoutine(user.getCourse(), Routine.DAILY)
-				.orElseThrow(() -> new IllegalArgumentException("오늘의 문제 타입이 없습니다."))
-				.getId();
-
-		// 오늘의 문제를 가져옵니다.
-		Problem todayProblem = problemRepository.findLatestPublicProblemByProblemTypeId(problemTypeId);
-
-		// 오늘의 문제 풀이 여부를 가져옵니다.
-		return userProblemRepository.findByUserIdAndProblemId(user.getId(), todayProblem.getId())
-			.map(UserProblem::getIsSolved)
-			.orElse(false);
+		Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
+		return userProblemService.isProblemAlreadySolved(user.getId(), todayProblem.getId());
 	}
 
 	private Pair<Integer, Integer> sortByRank(User user) {
 		int rank = user.getRank();
 		return new Pair<>(-rank / 10, rank % 10);
-	}
-
-	private LocalDateTime getLatestSolvedTime(User user) {
-		return userProblemRepository.findTopByUserIdOrderBySolvedAtDesc(user.getId())
-			.map(UserProblem::getSolvedAt)
-			.orElse(null);
 	}
 
 	private record Pair<T extends Comparable<T>, U extends Comparable<U>>(T first, U second) implements
