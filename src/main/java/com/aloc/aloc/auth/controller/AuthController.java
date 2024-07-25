@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aloc.aloc.auth.dto.RefreshTokenDto;
 import com.aloc.aloc.auth.dto.UserLoginRequestDto;
 import com.aloc.aloc.auth.service.AuthService;
 import com.aloc.aloc.user.dto.request.UserRequestDto;
@@ -59,5 +60,15 @@ public class AuthController {
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) {
 		authService.withdraw(user.getUsername());
+	}
+
+	@ApiResponse(
+		responseCode = "200",
+		description = "success"
+	)
+	@Operation(summary = "토큰 재발급", description = "refreshToken으로 accessToken을 재발급합니다.")
+	@PostMapping("/refresh")
+	public void refresh(@RequestBody @Valid RefreshTokenDto refreshToken) {
+		System.out.println("refresh" + refreshToken);
 	}
 }

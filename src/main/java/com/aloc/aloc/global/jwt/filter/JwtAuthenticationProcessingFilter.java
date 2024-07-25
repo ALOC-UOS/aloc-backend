@@ -1,7 +1,14 @@
 package com.aloc.aloc.global.jwt.filter;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +23,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.aloc.aloc.global.jwt.service.JwtService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.repository.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
@@ -33,32 +42,67 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 	private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
 	/**
-	 * 1. 리프레시 토큰이 오는 경우 -> 유효하면 AccessToken 헤더에 재발급후, 필터 진행 X, 바로 튕기기, 200과 함께 리턴
-	 *
+	 * 1. /refresh를 요청하는 경우 -> accessToken 재발급
 	 * 2. 리프레시 토큰은 없고 AccessToken만 있는 경우 -> 유저정보 저장후 필터 계속 진행
 	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException, java.io.IOException {
 		String noCheckUrl = "/api2/login";
+		String refreshTokenUrl = "/api2/refresh";
 		if (request.getRequestURI().equals(noCheckUrl)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
-
-		// 원래는 refreshToken 안담아서 보냄. 재발급 필요할 때만 보내는 것이 맞음
-		String refreshToken = jwtService
-			.extractRefreshToken(request)
-			.filter(jwtService::isTokenValid)
-			.orElse(null);
-		// 리프레시 토큰이 있고 & 유효한 경우 -> AccessToken 재발급 후 필터 진행 X
-		if (refreshToken != null) {
-			checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
+		String extractToken;
+		if (request.getRequestURI().equals(refreshTokenUrl)) {
+			try {
+				extractToken = extractTokenFromJsonBody(request);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			if (jwtService.isTokenValid(extractToken)) {
+				checkRefreshTokenAndReIssueAccessToken(response, extractToken);
+			} else {
+				response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			}
 			return;
 		}
 
-		// 리프레시 토큰이 없거나 유효하지 않은 경우 -> AccessToken 유효성 검사 후 필터 진행
+		// AccessToken 유효성 검사 후 필터 진행
 		checkAccessTokenAndAuthentication(request, response, filterChain);
+	}
+
+	private String extractTokenFromJsonBody(HttpServletRequest request)
+		throws Exception {
+		StringBuilder stringBuilder = new StringBuilder();
+		BufferedReader bufferedReader = null;
+		try {
+			InputStream inputStream = request.getInputStream();
+			if (inputStream != null) {
+				bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+				char[] charBuffer = new char[128];
+				int bytesRead;
+				while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+					stringBuilder.append(charBuffer, 0, bytesRead);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (bufferedReader != null) {
+				bufferedReader.close();
+			}
+		}
+
+		String body = stringBuilder.toString();
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = objectMapper.readTree(body);
+
+		// JSON에서 "refreshToken" 필드를 찾아 반환합니다.
+		// 실제 JSON 구조에 따라 이 부분을 조정해야 할 수 있습니다.
+		return jsonNode.get("refreshToken").asText();
 	}
 
 	private void checkAccessTokenAndAuthentication(
@@ -98,8 +142,26 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 	}
 
 	private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
-		userRepository.findByRefreshToken(refreshToken).ifPresent(
-			user -> jwtService.sendAccessToken(response, jwtService.createAccessToken(user.getGithubId()))
-		);
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		userRepository.findByRefreshToken(refreshToken)
+			.ifPresentOrElse(
+				user -> {
+					try {
+						String newAccessToken = jwtService.createAccessToken(user.getGithubId());
+
+						response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+						response.setStatus(HttpStatus.OK.value());
+
+						Map<String, String> tokenMap = new HashMap<>();
+						tokenMap.put("accessToken", newAccessToken);
+
+						response.getWriter().write(objectMapper.writeValueAsString(tokenMap));
+					} catch (Exception e) {
+						e.printStackTrace();
+						response.setStatus(HttpStatus.UNAUTHORIZED.value());
+					}
+				}, () -> response.setStatus(HttpStatus.UNAUTHORIZED.value())
+			);
 	}
 }

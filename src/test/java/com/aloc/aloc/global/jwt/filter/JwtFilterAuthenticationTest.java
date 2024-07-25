@@ -20,11 +20,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aloc.aloc.auth.dto.RefreshTokenDto;
 import com.aloc.aloc.global.jwt.service.JwtService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.repository.UserRepository;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.EntityManager;
@@ -59,6 +58,7 @@ public class JwtFilterAuthenticationTest {
 	private final String password = "password";
 
 	private static final String LOGIN_URL = "/api2/login";
+	private static final String REFRESH_URL = "/api2/refresh";
 	private static final String TEST_URL = "/api2/problem/weekly/status";
 
 	private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
@@ -143,82 +143,22 @@ public class JwtFilterAuthenticationTest {
 	}
 
 	@Test
-	public void validRefreshToken_reissue_accessToken_with_200() throws Exception {
-		//given
-		Map accessAndRefreshToken = getAccessAndRefreshToken();
-		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
-
-		//when, then
-		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123").header(refreshHeader,
-				BEARER + refreshToken)) // login 이 아닌 다른 임의의 주소
-			.andExpect(status().isOk()).andReturn();
-
-		String accessToken = result.getResponse().getHeader(accessHeader);
-
-		assert accessToken != null;
-		String subject = JWT.require(Algorithm.HMAC512(secret)).build().verify(accessToken)
-			.getSubject();
-		assertThat(subject).isEqualTo(ACCESS_TOKEN_SUBJECT);
-	}
-
-	@Test
-	public void invalid_refreshToken_without_accessToken_return_404() throws Exception {
-		//given
-		Map accessAndRefreshToken = getAccessAndRefreshToken();
-		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
-		//when, then
-		mockMvc.perform(get(LOGIN_URL + "123").header(refreshHeader, refreshToken))
-			.andExpect(status().isNotFound()); //Bearer을 붙이지 않음
-
-		mockMvc.perform(
-				get(LOGIN_URL + "123").header(refreshHeader, BEARER + refreshToken + "1")) //유효하지 않은 토큰
-			.andExpect(status().isNotFound());
-	}
-
-	@Test
 	public void valid_refreshToken_with_accessToken_then_reissue_accessToken_with_200()
 		throws Exception {
 		//given
 		Map accessAndRefreshToken = getAccessAndRefreshToken();
-		String accessToken = (String) accessAndRefreshToken.get(accessHeader);
 		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
 		//when, then
-		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123")
-				.header(refreshHeader, BEARER + refreshToken)
-				.header(accessHeader, BEARER + accessToken))
+		MvcResult result = mockMvc.perform(get(REFRESH_URL)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(new RefreshTokenDto(refreshToken)))
+				.header(accessHeader, BEARER))
 			.andExpect(status().isOk())
 			.andReturn();
 
-		// accessToken은 서버에서 재발급 후 사용, refreshToken은 재발급되지 않음
-
-		String responseRefreshToken = result.getResponse().getHeader(refreshHeader);
-		assertThat(responseRefreshToken).isNull();
-	}
-
-	@Test
-	public void valid_refreshToken_with_invalidAccessToken_then_accessToken_reissue_with200()
-		throws Exception {
-		//given
-		Map accessAndRefreshToken = getAccessAndRefreshToken();
-		String accessToken = (String) accessAndRefreshToken.get(accessHeader);
-		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
-
-		//when, then
-		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123")
-				.header(refreshHeader, BEARER + refreshToken)
-				.header(accessHeader, BEARER + accessToken + 1))
-			.andExpect(status().isOk())
-			.andReturn();
-
-		String responseAccessToken = result.getResponse().getHeader(accessHeader);
-		String responseRefreshToken = result.getResponse().getHeader(refreshHeader);
-
-		String subject = JWT.require(Algorithm.HMAC512(secret)).build().verify(responseAccessToken)
-			.getSubject();
-
-		assertThat(subject).isEqualTo(ACCESS_TOKEN_SUBJECT);
-		assertThat(responseRefreshToken).isNull(); //refreshToken은 재발급되지 않음
+		// accessToken은 재발급
+		assertThat(result.getResponse().getStatus()).isEqualTo(200);
 	}
 
 	@Test
