@@ -1,10 +1,7 @@
 package com.aloc.aloc.problem.service;
 
-
-
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 import org.springframework.stereotype.Service;
 
@@ -84,6 +81,13 @@ public class ProblemFacade implements UserProblemRecordLoader {
 				userService.checkUserRank(user);
 				userService.saveUser(user);
 			}
+		}
+	}
+
+	public void updateAllUserProblem() {
+		List<User> activeUsers = userService.getActiveUsers();
+		for (User user : activeUsers) {
+			problemSolvingService.addUserProblemRecord(user);
 		}
 	}
 }

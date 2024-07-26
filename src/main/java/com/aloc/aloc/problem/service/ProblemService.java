@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ProblemService {
 	private final ProblemRepository problemRepository;
 	private final ProblemTypeRepository problemTypeRepository;
@@ -124,8 +123,13 @@ public class ProblemService {
 			problemIdInt, problemType.getCourse(), season);
 	}
 
+	@Transactional
 	public Problem saveProblem(Problem problem) {
 		problemRepository.save(problem);
 		return problem;
+	}
+
+	public List<Problem> getHiddenProblemsBySeasonAndCourse(Course course) {
+		return problemRepository.findHiddenProblemsBySeasonAndCourse(currentSeason, course);
 	}
 }

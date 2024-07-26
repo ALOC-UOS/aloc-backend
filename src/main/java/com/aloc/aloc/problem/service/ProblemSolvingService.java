@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
@@ -26,6 +27,9 @@ public class ProblemSolvingService {
 	private final ProblemMapper problemMapper;
 	private final SolvedCheckingService solvedCheckingService;
 	private final CoinService coinService;
+
+	@Value("${app.season}")
+	private Integer currentSeason;
 
 	public List<UserProblem> getSolvedUserListByProblemId(Long problemId) {
 		problemService.checkProblemExist(problemId);
@@ -95,5 +99,16 @@ public class ProblemSolvingService {
 
 		// List에 결과를 담아 반환
 		return Arrays.asList(Math.toIntExact(solvedCount), totalProblems, unsolvedCount);
+	}
+
+	public void addUserProblemRecord(User user) {
+		List<Problem> problems = problemService.getHiddenProblemsBySeasonAndCourse(user.getCourse());
+		for (Problem problem : problems) {
+			userProblemService.saveUserProblem(UserProblem.builder()
+				.user(user)
+				.problem(problemService.findProblemById(problem.getId()))
+				.season(currentSeason)
+				.build());
+		}
 	}
 }

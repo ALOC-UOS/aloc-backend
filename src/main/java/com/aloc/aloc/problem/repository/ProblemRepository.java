@@ -66,5 +66,14 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 	);
 
 	List<Problem> findAllByAlgorithm(Algorithm algorithm);
+
+
+	@Query("SELECT p FROM Problem p "
+		+ "WHERE p.algorithm.season = :season "
+		+ "AND p.problemType.course = :course "
+		+ "AND p.hidden = true ")
+	List<Problem> findHiddenProblemsBySeasonAndCourse(
+		@Param("season") Integer currentSeason,
+		@Param("course") Course course);
 }
 
