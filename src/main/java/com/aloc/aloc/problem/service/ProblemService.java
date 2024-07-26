@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.service.AlgorithmService;
@@ -78,9 +77,6 @@ public class ProblemService {
 		return todayProblem;
 	}
 
-
-
-	@Transactional
 	public void updateProblemHiddenFalse(Routine routine) {
 		List<Problem> problems = problemRepository.findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(routine);
 		if (routine.equals(Routine.DAILY)) {
@@ -119,7 +115,6 @@ public class ProblemService {
 			problemIdInt, problemType.getCourse(), season);
 	}
 
-	@Transactional
 	public Problem saveProblem(Problem problem) {
 		problemRepository.save(problem);
 		return problem;

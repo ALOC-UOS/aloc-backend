@@ -15,16 +15,18 @@ import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 import com.aloc.aloc.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class ProblemFacade implements UserProblemRecordLoader {
 	private final ProblemService problemService;
 	private final UserService userService;
 	private final ProblemMapper problemMapper;
 	private final ProblemSolvingService problemSolvingService;
 
-	@Transactional(rollbackFor = Exception.class)
 	public String checkSolved(String username) {
 		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
 		User user = userService.findUser(username);
@@ -87,11 +89,11 @@ public class ProblemFacade implements UserProblemRecordLoader {
 				}
 			}
 		} catch (Exception e) {
+			log.error("문제 풀이 정보를 업데이트하는 중 오류가 발생했습니다.", e);
 			throw new RuntimeException("문제 풀이 정보를 업데이트하는 중 오류가 발생했습니다.");
 		}
 	}
 
-	@Transactional
 	public void updateAllUserProblem() {
 		List<User> activeUsers = userService.getActiveUsers();
 		for (User user : activeUsers) {
