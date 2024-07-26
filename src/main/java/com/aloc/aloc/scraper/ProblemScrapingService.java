@@ -29,17 +29,13 @@ import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.enums.CourseRoutineTier;
 import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.service.ProblemService;
-import com.aloc.aloc.problem.service.UserProblemService;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.problemtag.repository.ProblemTagRepository;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
 import com.aloc.aloc.tag.Tag;
 import com.aloc.aloc.tag.repository.TagRepository;
-import com.aloc.aloc.user.User;
-import com.aloc.aloc.user.service.UserService;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -61,8 +57,6 @@ public class ProblemScrapingService {
 	private int currentSeason;
 
 	private final TagRepository tagRepository;
-	private final UserService userService;
-	private final UserProblemService userProblemService;
 	private final AlgorithmService algorithmService;
 	private final ProblemService problemService;
 	private final ProblemTypeRepository problemTypeRepository;
@@ -122,7 +116,8 @@ public class ProblemScrapingService {
 		algorithmService.saveAlgorithm(weeklyAlgorithm);
 	}
 
-	private List<Integer> addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
+	@Transactional
+	public List<Integer> addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
 		throws IOException {
 		ProblemType problemType = problemTypeRepository
 			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine())
@@ -143,7 +138,8 @@ public class ProblemScrapingService {
 			algorithmId);
 	}
 
-	private List<Integer> crawlAndAddProblems(String url, ProblemType problemType, Algorithm algorithm, int targetCount)
+	@Transactional
+	public List<Integer> crawlAndAddProblems(String url, ProblemType problemType, Algorithm algorithm, int targetCount)
 		throws IOException {
 		Document document = Jsoup.connect(url).get();
 		Elements rows = document.select("tbody tr");
@@ -240,6 +236,7 @@ public class ProblemScrapingService {
 		return response.toString();
 	}
 
+	@Transactional
 	public int parseAndSaveProblem(String jsonString, Algorithm algorithm, ProblemType problemType) {
 		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
 
@@ -251,11 +248,7 @@ public class ProblemScrapingService {
 		int tier = jsonObject.get("level").getAsInt();
 
 		List<Tag> tagList = extractTags(jsonObject);
-		Long createdProblemId = saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList);
-		if (createdProblemId != null) {
-			saveUserProblem(createdProblemId);
-			return 1;
-		}
+		saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList);
 		return 0;
 	}
 
@@ -273,18 +266,6 @@ public class ProblemScrapingService {
 		}
 		// 한국어 제목을 찾지 못한 경우, null을 반환합니다.
 		return null;
-	}
-
-	private void saveUserProblem(Long problemId) {
-		List<User> users = userService.getActiveUsers();
-		for (User user : users) {
-			userProblemService.saveUserProblem(UserProblem.builder()
-				.user(user)
-				.problem(problemService.findProblemById(problemId))
-				.isSolved(false)
-				.season(currentSeason)
-				.build());
-		}
 	}
 
 	private List<Tag> extractTags(JsonObject jsonObject) {
@@ -313,7 +294,7 @@ public class ProblemScrapingService {
 	}
 
 	@Transactional
-	public Long saveProblem(String titleKo, int tier, int problemId, Algorithm algorithm,
+	public void saveProblem(String titleKo, int tier, int problemId, Algorithm algorithm,
 		ProblemType problemType, List<Tag> tagList) {
 		Problem problem = Problem.builder()
 			.title(titleKo)
@@ -323,6 +304,7 @@ public class ProblemScrapingService {
 			.problemType(problemType)
 			.build();
 
+		problemService.saveProblem(problem);
 		for (Tag tag : tagList) {
 			ProblemTag problemTag = ProblemTag.builder()
 				.problem(problem)
@@ -331,7 +313,5 @@ public class ProblemScrapingService {
 			problemTagRepository.save(problemTag);
 			problem.addProblemTag(problemTag);
 		}
-		Problem savedProblem = problemService.saveProblem(problem);
-		return savedProblem.getId();
 	}
 }
