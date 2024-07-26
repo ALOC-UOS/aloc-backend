@@ -63,6 +63,15 @@ public class ProblemController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
+	@PostMapping("/today/solved")
+	@Operation(summary = "오늘 문제 풀이 여부 확인", description = "오늘의 문제를 풀었음을 확인합니다.")
+	public CustomApiResponse<String> checkTodaySolved(
+		@Parameter(hidden = true) @AuthenticationPrincipal User user
+	) {
+		return CustomApiResponse.onSuccess(problemFacade.checkTodaySolved(user.getUsername()));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
 	@PostMapping("/solved")
 	@Operation(summary = "문제 풀이 여부 확인", description = "해당 문제를 풀었음을 확인합니다.")
 	public CustomApiResponse<String> checkSolved(

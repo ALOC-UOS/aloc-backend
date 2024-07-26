@@ -68,7 +68,7 @@ public class ProblemSolvingService {
 		return userProblemService.isProblemSolvedToday(userId, todayProblem.getId());
 	}
 
-	public boolean updateUserAndSaveSolvedProblem(User user, Problem problem, Long todayProblemId) {
+	public boolean updateUserAndSaveSolvedProblem(User user, Problem problem) {
 		boolean isAlreadySolved = userProblemService.isProblemAlreadySolved(user.getId(), problem.getId());
 		if (isAlreadySolved) {
 			return false; // 이미 푼 문제라면 false 반환
@@ -78,7 +78,24 @@ public class ProblemSolvingService {
 		if (isSolved) {
 			// 코인을 지급하고 사용자 정보를 저장합니다.
 			System.out.println("문제를 풀었어요" + problem.getId() + " " + user.getGithubId());
-			coinService.addCoinIfEligible(user, problem, todayProblemId);
+			coinService.addCoinIfEligible(user, problem);
+			userProblem.setIsSolved(true);
+		}
+		userProblemService.saveUserProblem(userProblem);
+		return isSolved;
+	}
+
+	public boolean updateTodaySolvedProblem(User user, Problem todayProblem) {
+		boolean isAlreadySolved = userProblemService.isProblemAlreadySolved(user.getId(), todayProblem.getId());
+		if (isAlreadySolved) {
+			return false; // 이미 푼 문제라면 false 반환
+		}
+		boolean isSolved = solvedCheckingService.isProblemSolved(user.getBaekjoonId(), todayProblem);
+		UserProblem userProblem = userProblemService.getOrCreateUserProblem(user, todayProblem, isSolved);
+		if (isSolved) {
+			// 코인을 지급하고 사용자 정보를 저장합니다.
+			System.out.println("오늘의 문제를 풀었어요: " + user.getGithubId());
+			coinService.addCoinEligibleForTodayProblem(user, todayProblem);
 			userProblem.setIsSolved(true);
 		}
 		userProblemService.saveUserProblem(userProblem);

@@ -34,6 +34,13 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		return "success";
 	}
 
+	public String checkTodaySolved(String username) {
+		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
+		User user = userService.findUser(username);
+		loadUserTodayProblemRecord(user);
+		return "success";
+	}
+
 	public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
 		problemService.checkProblemExist(problemId);
 		return problemSolvingService.getSolvedUserListByProblemId(problemId)
@@ -76,11 +83,10 @@ public class ProblemFacade implements UserProblemRecordLoader {
 	@Override
 	public void loadUserProblemRecord(User user) {
 		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
-		Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
 		try {
 			for (Problem problem : problems) {
 				boolean isSolved =
-					problemSolvingService.updateUserAndSaveSolvedProblem(user, problem, todayProblem.getId());
+					problemSolvingService.updateUserAndSaveSolvedProblem(user, problem);
 				if (isSolved) {
 					System.out.println("문제를 풀었어요" + problem.getId() + " " + user.getGithubId());
 					user.addSolvedCount();
@@ -91,6 +97,17 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		} catch (Exception e) {
 			log.error("문제 풀이 정보를 업데이트하는 중 오류가 발생했습니다.", e);
 			throw new RuntimeException("문제 풀이 정보를 업데이트하는 중 오류가 발생했습니다.");
+		}
+	}
+
+	public void loadUserTodayProblemRecord(User user) {
+		Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
+		boolean isSolved = problemSolvingService.updateTodaySolvedProblem(user, todayProblem);
+		if (isSolved) {
+			System.out.println("오늘의 문제를 풀었어요" + user.getGithubId());
+			user.addSolvedCount();
+			userService.checkUserRank(user);
+			userService.saveUser(user);
 		}
 	}
 

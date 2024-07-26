@@ -69,20 +69,25 @@ public class CoinService {
 		};
 	}
 
-	void addCoinIfEligible(User user, Problem problem, Long todayProblemId) {
-		if (isEligibleForCoin(problem, todayProblemId)) {
+	void addCoinIfEligible(User user, Problem problem) {
+		if (isEligibleForCoin(problem)) {
 			int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
 			user.addCoin(coinToAdd);
 		}
 	}
 
-	private boolean isEligibleForCoin(Problem problem, Long todayProblemId) {
-		if (problem.getProblemType().getRoutine() == Routine.WEEKLY) {
-			return true; // Weekly 문제는 항상 코인을 받음
-		} else if (problem.getProblemType().getRoutine() == Routine.DAILY) {
-			return problem.getId().equals(todayProblemId); // 오늘의 문제인 경우에만 코인을 받음
+
+	void addCoinEligibleForTodayProblem(User user, Problem problem) {
+		// 오늘의 문제가 Daily 문제인 경우 코인을 지급합니다.
+		if (problem.getProblemType().getRoutine() == Routine.DAILY) {
+			int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
+			user.addCoin(coinToAdd);
 		}
-		return false; // 다른 경우에는 코인을 받지 않음
+	}
+
+	private boolean isEligibleForCoin(Problem problem) {
+		return problem.getProblemType().getRoutine() == Routine.WEEKLY;
+		// Weekly 문제는 항상 코인을 받음
 	}
 
 	private int calculateCoinToAdd(Problem problem, Course course) {

@@ -202,7 +202,6 @@ public class ProblemFacadeTest {
 		ProblemResponseDto todayProblemDto = new ProblemResponseDto();
 		todayProblemDto.setId(todayProblem.getId());
 
-		doReturn(todayProblem).when(problemService).findTodayProblemByCourse(user1.getCourse());
 		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
 			.thenReturn(mockProblems);
 
@@ -212,7 +211,7 @@ public class ProblemFacadeTest {
 		// Assert
 		verify(problemService).getVisibleProblemsBySeasonAndCourse(user1.getCourse());
 		for (Problem problem : mockProblems) {
-			verify(problemSolvingService).updateUserAndSaveSolvedProblem(user1, problem, 1L );
+			verify(problemSolvingService).updateUserAndSaveSolvedProblem(user1, problem);
 		}
 	}
 
@@ -226,7 +225,6 @@ public class ProblemFacadeTest {
 		ProblemResponseDto todayProblemDto = new ProblemResponseDto();
 		todayProblemDto.setId(todayProblem.getId());
 
-		doReturn(todayProblem).when(problemService).findTodayProblemByCourse(user1.getCourse());
 		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
 			.thenReturn(mockProblems);
 
@@ -235,7 +233,7 @@ public class ProblemFacadeTest {
 
 		// Assert
 		verify(problemSolvingService, times(1000))
-			.updateUserAndSaveSolvedProblem(eq(user1), any(Problem.class), anyLong());
+			.updateUserAndSaveSolvedProblem(eq(user1), any(Problem.class));
 	}
 
 	private Problem createMockProblem(Long id) {
