@@ -7,7 +7,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -67,22 +69,29 @@ public class ProblemScrapingService {
 	private final ProblemTagRepository problemTagRepository;
 
 	@Transactional
-	public void addProblemsForThisWeek()
+	public String addProblemsForThisWeek()
 		throws ExecutionException, InterruptedException {
 		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 5개
 		Algorithm dailyAlgorithm = algorithmService.findDailyAlgorithm(); // 1주에 7개
+
+		Map<CourseRoutineTier, List<Integer>> crawledProblems = new HashMap<>();
+
 		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 			try {
-				addProblemsByType(weeklyAlgorithm, CourseRoutineTier.HALF_WEEKLY);
+				crawledProblems.put(CourseRoutineTier.HALF_WEEKLY,
+					addProblemsByType(weeklyAlgorithm, CourseRoutineTier.HALF_WEEKLY));
 				TimeUnit.SECONDS.sleep(5); // 5초 대기
 
-				addProblemsByType(weeklyAlgorithm, CourseRoutineTier.FULL_WEEKLY);
+				crawledProblems.put(CourseRoutineTier.FULL_WEEKLY,
+					addProblemsByType(weeklyAlgorithm, CourseRoutineTier.FULL_WEEKLY));
 				TimeUnit.SECONDS.sleep(5); // 5초 대기
 
-				addProblemsByType(dailyAlgorithm, CourseRoutineTier.HALF_DAILY);
+				crawledProblems.put(CourseRoutineTier.HALF_DAILY,
+					addProblemsByType(dailyAlgorithm, CourseRoutineTier.HALF_DAILY));
 				TimeUnit.SECONDS.sleep(5); // 5초 대기
 
-				addProblemsByType(dailyAlgorithm, CourseRoutineTier.FULL_DAILY);
+				crawledProblems.put(CourseRoutineTier.FULL_DAILY,
+					addProblemsByType(dailyAlgorithm, CourseRoutineTier.FULL_DAILY));
 
 			} catch (Exception e) {
 				throw new RuntimeException("Error in addProblemsForThisWeek", e);
@@ -90,6 +99,22 @@ public class ProblemScrapingService {
 		});
 		future.get();
 		updateWeeklyAlgorithmHidden(weeklyAlgorithm);
+
+		return getCrawlingResultMessage(crawledProblems);
+	}
+
+	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Integer>> crawledProblems) {
+		StringBuilder message = new StringBuilder();
+
+		for (Map.Entry<CourseRoutineTier, List<Integer>> entry : crawledProblems.entrySet()) {
+			CourseRoutineTier tier = entry.getKey();
+			List<Integer> problems = entry.getValue();
+			message.append(tier).append("\n")
+				.append("크롤링 성공 문제수 : ").append(problems.size()).append("\n")
+				.append("문제 번호: ").append(problems.stream().map(String::valueOf).collect(Collectors.joining(", ")))
+				.append("\n\n");
+		}
+		return message.toString();
 	}
 
 	private void updateWeeklyAlgorithmHidden(Algorithm weeklyAlgorithm) {
@@ -97,14 +122,14 @@ public class ProblemScrapingService {
 		algorithmService.saveAlgorithm(weeklyAlgorithm);
 	}
 
-	private void addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
+	private List<Integer> addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
 		throws IOException {
 		ProblemType problemType = problemTypeRepository
 			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine())
 			.orElseThrow(() -> new NoSuchElementException("해당 문제 타입이 존재하지 않습니다."));
 
 		String url = getProblemUrl(courseRoutineTier, algorithm.getAlgorithmId());
-		crawlAndAddProblems(url, problemType, algorithm, courseRoutineTier.getTargetCount());
+		return crawlAndAddProblems(url, problemType, algorithm, courseRoutineTier.getTargetCount());
 	}
 
 	private String getProblemUrl(CourseRoutineTier courseRoutineTier, int algorithmId) {
@@ -118,7 +143,7 @@ public class ProblemScrapingService {
 			algorithmId);
 	}
 
-	private void crawlAndAddProblems(String url, ProblemType problemType, Algorithm algorithm, int targetCount)
+	private List<Integer> crawlAndAddProblems(String url, ProblemType problemType, Algorithm algorithm, int targetCount)
 		throws IOException {
 		Document document = Jsoup.connect(url).get();
 		Elements rows = document.select("tbody tr");
@@ -128,7 +153,7 @@ public class ProblemScrapingService {
 		Collections.shuffle(problemNumbers);
 
 		// 문제를 하나씩 확인하며 새로운 문제인지 확인합니다. 새로운 문제이면 저장합니다.
-		List<Integer> savedProblems = problemNumbers.stream()
+		return problemNumbers.stream()
 			.filter(problemNumber -> problemService.isNewProblem(problemNumber, problemType, currentSeason))
 			.map(problemNumber -> {
 				try {
@@ -143,7 +168,6 @@ public class ProblemScrapingService {
 			.filter(Objects::nonNull)
 			.limit(targetCount)
 			.toList();
-		// TODO: 디코에 저장된 문제 수를 로그로 남기는 기능 추가
 	}
 
 	private List<String> extractProblemNumbers(Elements rows) {
