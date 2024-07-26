@@ -93,7 +93,6 @@ public class ProblemScrapingService {
 		});
 		future.get();
 		updateWeeklyAlgorithmHidden(weeklyAlgorithm);
-
 		return getCrawlingResultMessage(crawledProblems);
 	}
 
@@ -103,9 +102,9 @@ public class ProblemScrapingService {
 		for (Map.Entry<CourseRoutineTier, List<Integer>> entry : crawledProblems.entrySet()) {
 			CourseRoutineTier tier = entry.getKey();
 			List<Integer> problems = entry.getValue();
-			message.append(tier).append("\n")
-				.append("크롤링 성공 문제수 : ").append(problems.size()).append("\n")
-				.append("문제 번호: ").append(problems.stream().map(String::valueOf).collect(Collectors.joining(", ")))
+			message.append("[").append(tier).append("]").append("\n")
+				.append("✅ 크롤링 성공 문제수: ").append(problems.size()).append("개\n")
+				.append("🔢 문제 번호: ").append(problems.stream().map(String::valueOf).collect(Collectors.joining(", ")))
 				.append("\n\n");
 		}
 		return message.toString();
@@ -156,7 +155,7 @@ public class ProblemScrapingService {
 					String problemUrl = getProblemUrl(problemNumber);
 					String jsonString = fetchJsonFromUrl(problemUrl);
 					return parseAndSaveProblem(jsonString, algorithm, problemType);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					System.err.println("Error fetching problem " + problemNumber + ": " + e.getMessage());
 					return null;
 				}
@@ -242,14 +241,13 @@ public class ProblemScrapingService {
 
 		String titleKo = extractTitleKo(jsonObject); // 한국어 제목 추출
 		if (titleKo == null) {
-			return 0;
+			throw new IllegalArgumentException("Korean title not found in JSON: " + jsonString);
 		}
 		int problemId = jsonObject.get("problemId").getAsInt();
 		int tier = jsonObject.get("level").getAsInt();
-
 		List<Tag> tagList = extractTags(jsonObject);
 		saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList);
-		return 0;
+		return problemId;
 	}
 
 	private String extractTitleKo(JsonObject jsonObject) {

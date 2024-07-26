@@ -65,7 +65,7 @@ public class ProblemSolvingService {
 
 	public Boolean getTodayProblemSolved(Long userId, Course course) {
 		Problem todayProblem = problemService.findTodayProblemByCourse(course);
-		return userProblemService.isProblemAlreadySolved(userId, todayProblem.getId());
+		return userProblemService.isProblemSolvedToday(userId, todayProblem.getId());
 	}
 
 	public boolean updateUserAndSaveSolvedProblem(User user, Problem problem, Long todayProblemId) {
