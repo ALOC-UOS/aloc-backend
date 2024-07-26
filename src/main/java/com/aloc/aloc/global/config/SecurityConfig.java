@@ -138,7 +138,8 @@ public class SecurityConfig {
 		corsConfiguration.setAllowedOriginPatterns(Arrays.asList(
 			"http://localhost:3000",
 			"https://*.iflab.run",
-			"https://iflab.run"
+			"https://iflab.run",
+			"https://aloc-client.vercel.app"
 		));
 		corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
 		corsConfiguration.setAllowedHeaders(List.of("*"));
