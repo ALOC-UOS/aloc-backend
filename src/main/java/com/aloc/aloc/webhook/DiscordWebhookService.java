@@ -20,7 +20,6 @@ public class DiscordWebhookService {
 	public void sendNotification(String message) {
 		Map<String, String> request = new HashMap<>();
 		request.put("content", message);
-
 		restTemplate.postForObject(discordWebhookUrl, request, String.class);
 	}
 }
