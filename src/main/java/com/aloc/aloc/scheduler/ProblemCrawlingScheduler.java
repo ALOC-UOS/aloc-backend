@@ -3,8 +3,8 @@ package com.aloc.aloc.scheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.aloc.aloc.webhook.DiscordWebhookService;
 import com.aloc.aloc.scraper.ProblemScrapingService;
+import com.aloc.aloc.webhook.DiscordWebhookService;
 
 import lombok.RequiredArgsConstructor;
 
