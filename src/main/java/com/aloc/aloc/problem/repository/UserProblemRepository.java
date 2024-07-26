@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,4 +60,6 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
 		+ "AND up.isSolved = :isSolved "
 		+ "AND up.problem.problemType.routine = :routine")
 	int countByUserIdAndSeasonAndIsSolved(Long userId, Integer season, boolean isSolved, Routine routine);
+
+	Boolean existsByUserIdAndProblemIdAndSolvedAtAfter(Long userId, Long id, LocalDateTime localDateTime);
 }

@@ -61,4 +61,10 @@ public class UserProblemService {
 		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
 			userId, season, isSolved, routine);
 	}
+
+	public Boolean isProblemSolvedToday(Long userId, Long id) {
+		return userProblemRepository.existsByUserIdAndProblemIdAndSolvedAtAfter(
+			userId, id, LocalDateTime.now().minusDays(1)
+		);
+	}
 }
