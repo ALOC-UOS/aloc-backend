@@ -69,14 +69,15 @@ public class ProblemSolvingService {
 	}
 
 	public boolean updateUserAndSaveSolvedProblem(User user, Problem problem, Long todayProblemId) {
+		boolean isAlreadySolved = userProblemService.isProblemAlreadySolved(user.getId(), problem.getId());
+		if (isAlreadySolved) {
+			return false; // 이미 푼 문제라면 false 반환
+		}
 		boolean isSolved = solvedCheckingService.isProblemSolved(user.getBaekjoonId(), problem);
-
 		if (isSolved) {
 			// 코인을 지급하고 사용자 정보를 저장합니다.
 			coinService.addCoinIfEligible(user, problem, todayProblemId);
 		}
-
-		// 해결 정보가 있으면 업데이트하고 없으면 새로 생성합니다.
 		UserProblem userProblem = userProblemService.getOrCreateUserProblem(user, problem, isSolved);
 		saveUserProblem(userProblem);
 		return isSolved;
