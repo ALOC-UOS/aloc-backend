@@ -74,14 +74,18 @@ public class ProblemFacade implements UserProblemRecordLoader {
 	public void loadUserProblemRecord(User user) {
 		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
 		Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
-		for (Problem problem : problems) {
-			boolean problemSolved =
-				problemSolvingService.updateUserAndSaveSolvedProblem(user, problem, todayProblem.getId());
-			if (problemSolved) {
-				user.addSolvedCount();
-				userService.checkUserRank(user);
-				userService.saveUser(user);
+		try {
+			for (Problem problem : problems) {
+				boolean problemSolved =
+					problemSolvingService.updateUserAndSaveSolvedProblem(user, problem, todayProblem.getId());
+				if (problemSolved) {
+					user.addSolvedCount();
+					userService.checkUserRank(user);
+					userService.saveUser(user);
+				}
 			}
+		} catch (Exception e) {
+			throw new RuntimeException("문제 풀이 정보를 업데이트하는 중 오류가 발생했습니다.");
 		}
 	}
 

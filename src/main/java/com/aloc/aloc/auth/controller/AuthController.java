@@ -49,7 +49,6 @@ public class AuthController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@SecurityRequirement(name = "Refresh Token")
 	@DeleteMapping("/withdraw")
 	@ApiResponse(
 		responseCode = "200",
