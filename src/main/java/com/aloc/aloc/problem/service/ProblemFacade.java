@@ -67,8 +67,8 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		return problemSolvingService.getTodayProblemSolved(userId, course);
 	}
 
-	public List<Integer> getTotalProblemCount(Course course) {
-		// 해당 코스의 공개 된 문제 중 Weekly와 Daily 문제의 개수를 가져옵니다.
+	public Integer getTotalProblemCountByCourse(Course course) {
+		// 해당 코스의 공개 된 모든 문제 수를 가져옵니다.
 		return problemService.getTotalProblemCount(course);
 	}
 

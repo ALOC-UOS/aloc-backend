@@ -1,9 +1,7 @@
 package com.aloc.aloc.user.dto.response;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.enums.Authority;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,19 +13,20 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponseDto {
-
 	private String username;
 	private String githubId;
 	private String baekjoonId;
 	private String profileColor;
 	private String studentId;
 	private String profileNumber;
+	private Authority authority;
 	private Integer rank;
 	private Integer coin;
 
 	public static UserResponseDto of(User user) {
 		return UserResponseDto.builder()
 			.username(user.getUsername())
+			.authority(user.getAuthority())
 			.githubId(user.getGithubId())
 			.baekjoonId(user.getBaekjoonId())
 			.profileColor(user.getProfileColor())
@@ -36,9 +35,5 @@ public class UserResponseDto {
 			.rank(user.getRank())
 			.coin(user.getCoin())
 			.build();
-	}
-
-	public static List<UserResponseDto> listOf(List<User> users) {
-		return users.stream().map(UserResponseDto::of).collect(Collectors.toList());
 	}
 }

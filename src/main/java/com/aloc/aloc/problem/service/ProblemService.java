@@ -96,13 +96,9 @@ public class ProblemService {
 		}
 	}
 
-	public List<Integer> getTotalProblemCount(Course course) {
-		// 해당 코스의 공개 된 문제 중 Weekly와 Daily 문제의 개수를 가져옵니다.
-		Integer weeklyCount = problemRepository.countAllByCourseAndRoutine(currentSeason, course,
-			Routine.WEEKLY);
-		Integer dailyCount = problemRepository.countAllByCourseAndRoutine(currentSeason, course,
-			Routine.DAILY);
-		return List.of(weeklyCount, dailyCount);
+	public Integer getTotalProblemCount(Course course) {
+		// 해당 코스의 공개 된 모든 문제 수를 가져옵니다.
+		return problemRepository.countAllByCourse(currentSeason, course);
 	}
 
 	public List<Problem> getVisibleProblemsBySeasonAndCourse(Course course) {

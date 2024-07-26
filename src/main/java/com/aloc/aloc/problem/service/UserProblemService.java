@@ -61,10 +61,4 @@ public class UserProblemService {
 		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
 			userId, season, isSolved, routine);
 	}
-
-	// TODO: user.solvedCount로 변경
-	// 이번 시즌 동안 해결한 Daily 문제 수를 가져옵니다.
-	public int getSolvedCountByUserId(Long userId) {
-		return userProblemRepository.countByUserIdAndSeasonAndIsSolved(userId, currentSeason, true, Routine.DAILY);
-	}
 }
