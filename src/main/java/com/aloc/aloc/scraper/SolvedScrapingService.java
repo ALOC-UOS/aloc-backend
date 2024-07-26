@@ -26,7 +26,7 @@ public class SolvedScrapingService {
 		return isSolvedToday(getRecentlySolvedDate(baekjoonId, problemId));
 	}
 
-	public boolean isProblemSolved(String baekjoonId, Problem problem) throws IOException {
+	public boolean isProblemSolved(String baekjoonId, Problem problem) {
 		return isSolvedBefore(getRecentlySolvedDate(baekjoonId, problem.getId()),
 			LocalDate.from(problem.getUpdatedAt()));
 	}
@@ -39,7 +39,7 @@ public class SolvedScrapingService {
 		return solvedDate != null && solvedDate.isEqual(LocalDate.now());
 	}
 
-	private LocalDate getRecentlySolvedDate(String baekjoonId, Long problemId) throws IOException {
+	private LocalDate getRecentlySolvedDate(String baekjoonId, Long problemId) {
 		return parseRecentlySolvedDate(fetchPageContent(buildBaekjoonUrl(baekjoonId, problemId)));
 	}
 
@@ -47,8 +47,12 @@ public class SolvedScrapingService {
 		return String.format(BASE_URL, problemId, baekjoonId);
 	}
 
-	private String fetchPageContent(String url) throws IllegalArgumentException, IOException {
-		return Jsoup.connect(url).get().html();
+	private String fetchPageContent(String url) {
+		try {
+			return Jsoup.connect(url).get().html();
+		} catch (IOException e) {
+			throw new RuntimeException("백준에서 문제 풀이 현황을 가져오는 중 오류가 발생했습니다.");
+		}
 	}
 
 	private LocalDate parseRecentlySolvedDate(String pageContent) {
@@ -59,7 +63,8 @@ public class SolvedScrapingService {
 		if (tbody != null && tbody.select("tr").first() != null) {
 			Elements tdList = tbody.select("tr").first().select("td");
 			String recentlySolvedDateStr = tdList.last().select("a").attr("title");
-			return LocalDate.parse(recentlySolvedDateStr, FORMATTER);
+			String datePart = recentlySolvedDateStr.substring(0, 10); // "2024-07-20" 추출
+			return LocalDate.parse(datePart, FORMATTER);
 		}
 		return null;
 	}

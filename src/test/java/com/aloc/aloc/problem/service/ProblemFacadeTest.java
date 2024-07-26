@@ -1,9 +1,15 @@
 package com.aloc.aloc.problem.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
@@ -27,6 +34,7 @@ import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
 @ExtendWith(MockitoExtension.class)
 public class ProblemFacadeTest {
+	@Spy
 	@InjectMocks
 	private ProblemFacade problemFacade;
 
@@ -170,4 +178,65 @@ public class ProblemFacadeTest {
 		verify(problemService).findUser(user1.getGithubId()); // 추가된 부분
 	}
 
+	@Test
+	@DisplayName("유저가 푼 문제 목록 조회 실패 테스트")
+	void checkSolved_LoadUserProblemRecordThrowsException_PropagatesException() {
+		// Arrange
+		String username = "testUser";
+		when(problemService.findUser(username)).thenReturn(user1);
+		doThrow(new RuntimeException("Error loading problem record")).when(problemFacade).loadUserProblemRecord(user1);
+
+		// Act & Assert
+		assertThrows(RuntimeException.class, () -> problemFacade.checkSolved(username));
+		verify(problemService).findUser(username);
+		verify(problemFacade).loadUserProblemRecord(user1);
+	}
+
+	@Test
+	@DisplayName("유저 문제 기록 로드 성공 테스트")
+	void loadUserProblemRecord_WithProblems_UpdatesEachProblem() {
+		// Arrange
+		List<Problem> mockProblems = problems;
+		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
+			.thenReturn(mockProblems);
+
+		// Act
+		problemFacade.loadUserProblemRecord(user1);
+
+		// Assert
+		verify(problemService).getVisibleProblemsBySeasonAndCourse(user1.getCourse());
+		for (Problem problem : mockProblems) {
+			verify(problemSolvingService).updateUserAndSaveSolvedProblem(user1, problem);
+		}
+	}
+
+	@Test
+	@DisplayName("유저 문제 기록 로드 성공 테스트 - 문제가 많은 경우")
+	void loadUserProblemRecord_WithManyProblems_HandlesLargeNumber() {
+		// Arrange
+		List<Problem> mockProblems = createManyMockProblems(1000);
+		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
+			.thenReturn(mockProblems);
+
+		// Act
+		problemFacade.loadUserProblemRecord(user1);
+
+		// Assert
+		verify(problemService).getVisibleProblemsBySeasonAndCourse(user1.getCourse());
+		verify(problemSolvingService, times(1000)).updateUserAndSaveSolvedProblem(eq(user1), any(Problem.class));
+	}
+
+	private Problem createMockProblem(Long id) {
+		Problem problem = new Problem();
+		problem.setId(id);
+		return problem;
+	}
+
+	private List<Problem> createManyMockProblems(int count) {
+		List<Problem> problems = new ArrayList<>();
+		for (int i = 0; i < count; i++) {
+			problems.add(createMockProblem((long) i));
+		}
+		return problems;
+	}
 }
