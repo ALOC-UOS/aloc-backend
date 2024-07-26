@@ -1,5 +1,7 @@
 package com.aloc.aloc.global.apipayload;
 
+import java.nio.file.AccessDeniedException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -38,6 +40,16 @@ public class GlobalExceptionHandler {
 			ErrorStatus._INTERNAL_SERVER_ERROR.getCode(),
 			ex.getMessage(),
 			ErrorStatus._INTERNAL_SERVER_ERROR.getMessage()
+		);
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public CustomApiResponse<String> handleAccessException(AccessDeniedException ex) {
+		return CustomApiResponse.onFailure(
+			ErrorStatus._FORBIDDEN.getCode(),
+			ex.getMessage(),
+			ErrorStatus._FORBIDDEN.getMessage()
 		);
 	}
 }

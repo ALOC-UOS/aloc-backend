@@ -14,6 +14,7 @@ public class ProblemCrawlingScheduler {
 	private final ProblemScrapingService problemScraperService;
 
 	@Scheduled(cron = "0 0 0 * * MON")
+	// 매주 월요일에 문제를 크롤링해옵니다.
 	public void scheduleAddProblemsForThisWeek() {
 		try {
 			problemScraperService.addProblemsForThisWeek();

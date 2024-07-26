@@ -1,18 +1,22 @@
 package com.aloc.aloc.user.service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.aloc.aloc.alcorequest.AlocRequest;
+import com.aloc.aloc.alcorequest.repository.AlocRequestRepository;
 import com.aloc.aloc.history.service.HistoryService;
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.BaekjoonRankScrapingService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.enums.Authority;
 import com.aloc.aloc.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final HistoryService historyService;
 	private final BaekjoonRankScrapingService baekjoonRankScrapingService;
+	private final AlocRequestRepository alocRequestRepository;
 
 	public void checkAdmin(String githubId) {
 		Optional<User> userOptional = userRepository.findByGithubId(githubId);
@@ -38,6 +43,21 @@ public class UserService {
 		if (!user.getRank().equals(rank)) {
 			updateUserRank(user, rank);
 		}
+	}
+
+	public String changeCourse(String githubId) throws AccessDeniedException {
+		User user = userRepository.findByGithubId(githubId)
+			.orElseThrow(() -> new NoSuchElementException("존재하지 않은 사용자입니다."));
+		if (user.getCourse().equals(Course.FULL)) {
+			throw new AccessDeniedException("FULL 코스에서 HALF 코스로의 변경은 불가합니다. 담당자에게 문의하세요.");
+		}
+
+		AlocRequest request = AlocRequest.builder()
+			.user(user)
+			.requestType("changeCourse")
+			.build();
+		alocRequestRepository.save(request);
+		return "다음 주차부터 FULL 코스로 변경됩니다.";
 	}
 
 	private void updateUserRank(User user, Integer rank) {

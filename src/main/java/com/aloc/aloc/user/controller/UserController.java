@@ -1,5 +1,6 @@
 package com.aloc.aloc.user.controller;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -7,6 +8,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +16,7 @@ import com.aloc.aloc.global.apipayload.CustomApiResponse;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
 import com.aloc.aloc.user.service.UserFacade;
 import com.aloc.aloc.user.service.UserRegistrationService;
+import com.aloc.aloc.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api2")
 @Tag(name = "User API", description = "User API 입니다.")
 public class UserController {
-
+	private final UserService userService;
 	private final UserFacade userFacade;
 	private final UserRegistrationService userRegistrationService;
 
@@ -52,5 +55,13 @@ public class UserController {
 		@Parameter(description = "깃허브 ID", required = true) @PathVariable("githubId") String githubId
 	) {
 		return CustomApiResponse.onSuccess(userRegistrationService.addUser(user.getUsername(), githubId));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@SecurityRequirement(name = "Refresh Token")
+	@PutMapping("/user/course")
+	public CustomApiResponse<String> changeCourse(
+		@Parameter(hidden = true) @AuthenticationPrincipal User user) throws AccessDeniedException {
+		return CustomApiResponse.onSuccess(userService.changeCourse(user.getUsername()));
 	}
 }
