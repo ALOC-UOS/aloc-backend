@@ -22,8 +22,11 @@ public class SolvedCheckingService {
 	private static final String BASE_URL = "https://www.acmicpc.net/status?problem_id=%d&user_id=%s&language_id=-1&result_id=4";
 
 	public boolean isProblemSolved(String baekjoonId, Problem problem) {
-		return isSolvedBefore(getRecentlySolvedDate(baekjoonId, problem.getId()),
-			LocalDate.from(problem.getUpdatedAt()));
+		LocalDate recentlySolvedDate = getRecentlySolvedDate(baekjoonId, problem.getId());
+		if (recentlySolvedDate == null) {
+			return false; // 최근에 푼 날짜가 없으면 문제를 풀지 않은 것으로 간주
+		}
+		return isSolvedBefore(recentlySolvedDate, LocalDate.from(problem.getUpdatedAt()));
 	}
 
 	private boolean isSolvedBefore(LocalDate solvedDate, LocalDate openedDate) {

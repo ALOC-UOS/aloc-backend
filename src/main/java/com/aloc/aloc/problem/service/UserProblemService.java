@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
@@ -33,9 +34,9 @@ public class UserProblemService {
 			.orElse(null);
 	}
 
+	@Transactional
 	public UserProblem getOrCreateUserProblem(User user, Problem problem, boolean isSolved) {
 		// 해결 정보가 있으면 업데이트하고 없으면 새로 생성합니다.
-		System.out.println("user.getId() : " + user.getId() + "problem.getId() : " + problem.getId());
 		return userProblemRepository.findByUserIdAndProblemId(
 				user.getId(), problem.getId())
 			.orElse(
@@ -60,5 +61,11 @@ public class UserProblemService {
 	public List<UserProblem> getUserProblemList(Long userId, Integer season, Boolean isSolved, Routine routine) {
 		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
 			userId, season, isSolved, routine);
+	}
+
+	public Boolean isProblemSolvedToday(Long userId, Long id) {
+		return userProblemRepository.existsByUserIdAndProblemIdAndSolvedAtAfter(
+			userId, id, LocalDateTime.now().minusDays(1)
+		);
 	}
 }

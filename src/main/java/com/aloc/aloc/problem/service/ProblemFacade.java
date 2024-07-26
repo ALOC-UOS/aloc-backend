@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
@@ -84,6 +85,7 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		}
 	}
 
+	@Transactional
 	public void updateAllUserProblem() {
 		List<User> activeUsers = userService.getActiveUsers();
 		for (User user : activeUsers) {
