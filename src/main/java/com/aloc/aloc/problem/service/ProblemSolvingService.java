@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
@@ -79,12 +80,12 @@ public class ProblemSolvingService {
 			coinService.addCoinIfEligible(user, problem, todayProblemId);
 		}
 		UserProblem userProblem = userProblemService.getOrCreateUserProblem(user, problem, isSolved);
+		userProblem.setIsSolved(isSolved);
 		saveUserProblem(userProblem);
 		return isSolved;
 	}
 
 	private void saveUserProblem(UserProblem userProblem) {
-		userProblem.setIsSolved(true);
 		userProblemService.saveUserProblem(userProblem);
 	}
 
@@ -102,6 +103,7 @@ public class ProblemSolvingService {
 		return Arrays.asList(Math.toIntExact(solvedCount), totalProblems, unsolvedCount);
 	}
 
+	@Transactional
 	public void addUserProblemRecord(User user) {
 		List<Problem> problems = problemService.getHiddenProblemsBySeasonAndCourse(user.getCourse());
 		for (Problem problem : problems) {
