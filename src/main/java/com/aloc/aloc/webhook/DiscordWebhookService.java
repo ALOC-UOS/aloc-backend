@@ -1,4 +1,4 @@
-package com.aloc.aloc.notification;
+package com.aloc.aloc.webhook;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class DiscordNotificationService {
+public class DiscordWebhookService {
 	private final RestTemplate restTemplate;
 
 	@Value("${discord.webhook.url}")
