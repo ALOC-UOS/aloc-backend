@@ -3,7 +3,9 @@ package com.aloc.aloc.problem.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,7 +32,7 @@ import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
-
+import com.aloc.aloc.user.service.UserService;
 
 @ExtendWith(MockitoExtension.class)
 public class ProblemFacadeTest {
@@ -42,18 +44,19 @@ public class ProblemFacadeTest {
 	private ProblemService problemService;
 
 	@Mock
+	private UserService userService;
+
+	@Mock
 	private ProblemSolvingService problemSolvingService;
 
 	@Mock
 	private ProblemMapper problemMapper;
 
-	private List<Problem> problems;
-	private List<ProblemResponseDto> problemResponseDtos;
 	private List<UserProblem> user1SolvedProblems;
+	private List<Problem> problems;
 	private List<SolvedUserResponseDto> solvedUsers;
 	private List<UserProblem> solvedProblems;
 	private User user1;
-	private User user2;
 
 	@BeforeEach
 	void setUp() {
@@ -71,7 +74,7 @@ public class ProblemFacadeTest {
 			Course.FULL
 		);
 		user1.setId(1L);
-		user2 = new User(
+		User user2 = new User(
 			"user2",
 			"baekjoon2",
 			"github2",
@@ -97,7 +100,7 @@ public class ProblemFacadeTest {
 		problems = Arrays.asList(problem1, problem2);
 
 		// Set up ProblemResponseDtos
-		problemResponseDtos = Arrays.asList(
+		List<ProblemResponseDto> problemResponseDtos = Arrays.asList(
 			ProblemResponseDto.builder().id(1L).title("Problem 1").build(),
 			ProblemResponseDto.builder().id(2L).title("Problem 2").build()
 		);
@@ -151,10 +154,8 @@ public class ProblemFacadeTest {
 	@DisplayName("유저가 푼 문제 목록 조회 성공 테스트")
 	void getSolvedProblemListByUser_shouldReturnListOfSolvedProblem() {
 		// Given=
-		when(problemService.findUser(user1.getGithubId())).thenReturn(user1); // 추가된 부분
-		when(problemSolvingService.getUserProblemList(user1.getId(), 2, true, null))
-			.thenReturn(user1SolvedProblems); // 추가된 부분
-		when(problemMapper.mapSolvedProblemToDtoList(user1SolvedProblems)).thenReturn(
+		when(userService.findUser(user1.getGithubId())).thenReturn(user1); // 추가된 부분
+		when(problemSolvingService.getSolvedProblemListByUser(user1, 2, null)).thenReturn(
 			Arrays.asList(
 				ProblemSolvedResponseDto.builder()
 					.problemId(1L)
@@ -175,7 +176,7 @@ public class ProblemFacadeTest {
 
 		// Then
 		assertEquals(2, result.size());
-		verify(problemService).findUser(user1.getGithubId()); // 추가된 부분
+		verify(userService).findUser(user1.getGithubId()); // 추가된 부분
 	}
 
 	@Test
@@ -183,12 +184,12 @@ public class ProblemFacadeTest {
 	void checkSolved_LoadUserProblemRecordThrowsException_PropagatesException() {
 		// Arrange
 		String username = "testUser";
-		when(problemService.findUser(username)).thenReturn(user1);
+		when(userService.findUser(username)).thenReturn(user1);
 		doThrow(new RuntimeException("Error loading problem record")).when(problemFacade).loadUserProblemRecord(user1);
 
 		// Act & Assert
 		assertThrows(RuntimeException.class, () -> problemFacade.checkSolved(username));
-		verify(problemService).findUser(username);
+		verify(userService).findUser(username);
 		verify(problemFacade).loadUserProblemRecord(user1);
 	}
 
@@ -197,6 +198,11 @@ public class ProblemFacadeTest {
 	void loadUserProblemRecord_WithProblems_UpdatesEachProblem() {
 		// Arrange
 		List<Problem> mockProblems = problems;
+		Problem todayProblem = problems.get(0);
+		ProblemResponseDto todayProblemDto = new ProblemResponseDto();
+		todayProblemDto.setId(todayProblem.getId());
+
+		doReturn(todayProblem).when(problemService).findTodayProblemByCourse(user1.getCourse());
 		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
 			.thenReturn(mockProblems);
 
@@ -206,7 +212,7 @@ public class ProblemFacadeTest {
 		// Assert
 		verify(problemService).getVisibleProblemsBySeasonAndCourse(user1.getCourse());
 		for (Problem problem : mockProblems) {
-			verify(problemSolvingService).updateUserAndSaveSolvedProblem(user1, problem);
+			verify(problemSolvingService).updateUserAndSaveSolvedProblem(user1, problem, 1L );
 		}
 	}
 
@@ -214,7 +220,13 @@ public class ProblemFacadeTest {
 	@DisplayName("유저 문제 기록 로드 성공 테스트 - 문제가 많은 경우")
 	void loadUserProblemRecord_WithManyProblems_HandlesLargeNumber() {
 		// Arrange
-		List<Problem> mockProblems = createManyMockProblems(1000);
+		List<Problem> mockProblems = createManyMockProblems();
+
+		Problem todayProblem = problems.get(0);
+		ProblemResponseDto todayProblemDto = new ProblemResponseDto();
+		todayProblemDto.setId(todayProblem.getId());
+
+		doReturn(todayProblem).when(problemService).findTodayProblemByCourse(user1.getCourse());
 		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
 			.thenReturn(mockProblems);
 
@@ -222,8 +234,8 @@ public class ProblemFacadeTest {
 		problemFacade.loadUserProblemRecord(user1);
 
 		// Assert
-		verify(problemService).getVisibleProblemsBySeasonAndCourse(user1.getCourse());
-		verify(problemSolvingService, times(1000)).updateUserAndSaveSolvedProblem(eq(user1), any(Problem.class));
+		verify(problemSolvingService, times(1000))
+			.updateUserAndSaveSolvedProblem(eq(user1), any(Problem.class), anyLong());
 	}
 
 	private Problem createMockProblem(Long id) {
@@ -232,9 +244,9 @@ public class ProblemFacadeTest {
 		return problem;
 	}
 
-	private List<Problem> createManyMockProblems(int count) {
+	private List<Problem> createManyMockProblems() {
 		List<Problem> problems = new ArrayList<>();
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < 1000; i++) {
 			problems.add(createMockProblem((long) i));
 		}
 		return problems;

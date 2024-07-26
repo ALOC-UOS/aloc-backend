@@ -11,6 +11,8 @@ import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtype.enums.Course;
+import com.aloc.aloc.problemtype.enums.Routine;
+import com.aloc.aloc.user.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -65,5 +67,27 @@ public class CoinService {
 			case FULL -> COINS_FOR_FULL;
 			case HALF -> COINS_FOR_HALF;
 		};
+	}
+
+	void addCoinIfEligible(User user, Problem problem, Long todayProblemId) {
+		if (isEligibleForCoin(problem, todayProblemId)) {
+			int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
+			user.addCoin(coinToAdd);
+		}
+	}
+
+	private boolean isEligibleForCoin(Problem problem, Long todayProblemId) {
+		if (problem.getProblemType().getRoutine() == Routine.WEEKLY) {
+			return true; // Weekly 문제는 항상 코인을 받음
+		} else if (problem.getProblemType().getRoutine() == Routine.DAILY) {
+			return problem.getId().equals(todayProblemId); // 오늘의 문제인 경우에만 코인을 받음
+		}
+		return false; // 다른 경우에는 코인을 받지 않음
+	}
+
+	private int calculateCoinToAdd(Problem problem, Course course) {
+		return problem.getProblemType().getRoutine().equals(Routine.DAILY)
+			? calculateCoinToAddForDaily(problem.getId())
+			: calculateCoinToAddForWeekly(problem.getAlgorithm(), course);
 	}
 }

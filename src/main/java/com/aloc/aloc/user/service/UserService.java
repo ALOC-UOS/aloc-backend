@@ -50,4 +50,13 @@ public class UserService {
 		List<Authority> authorities = List.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
 		return userRepository.findAllByAuthorityIn(authorities);
 	}
+
+	public User findUser(String githubId) {
+		return userRepository.findByGithubId(githubId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
+	}
+
+	public void saveUser(User user) {
+		userRepository.save(user);
+	}
 }

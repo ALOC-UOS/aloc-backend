@@ -1,6 +1,5 @@
 package com.aloc.aloc.user.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
 import com.aloc.aloc.user.service.UserFacade;
-import com.aloc.aloc.user.service.UserService;
+import com.aloc.aloc.user.service.UserRegistrationService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserFacade userFacade;
+	private final UserRegistrationService userRegistrationService;
 
 	@GetMapping("/users")
 	@Operation(summary = "유저 목록 조회", description = "전체 유저 목록을 조회합니다.")
@@ -50,7 +50,7 @@ public class UserController {
 	public CustomApiResponse<String> addUser(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user,
 		@Parameter(description = "깃허브 ID", required = true) @PathVariable("githubId") String githubId
-	) throws IOException {
-		return CustomApiResponse.onSuccess(userFacade.addUser(user.getUsername(), githubId));
+	) {
+		return CustomApiResponse.onSuccess(userRegistrationService.addUser(user.getUsername(), githubId));
 	}
 }

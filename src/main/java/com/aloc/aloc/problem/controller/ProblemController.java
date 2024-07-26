@@ -61,7 +61,7 @@ public class ProblemController {
 	public CustomApiResponse<ProblemResponseDto> getTodayProblem(
 		@Parameter(description = "코스", required = true) @PathVariable() Course course
 	) {
-		return CustomApiResponse.onSuccess(problemService.findTodayProblemByCourse(course));
+		return CustomApiResponse.onSuccess(problemService.getTodayProblemDto(course));
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
@@ -70,7 +70,7 @@ public class ProblemController {
 	@Operation(summary = "문제 풀이 여부 확인", description = "해당 문제를 풀었음을 확인합니다.")
 	public CustomApiResponse<String> checkSolved(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
-	) throws IOException {
+	) {
 		return CustomApiResponse.onSuccess(problemFacade.checkSolved(user.getUsername()));
 	}
 

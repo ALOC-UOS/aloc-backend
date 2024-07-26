@@ -1,116 +1,99 @@
 package com.aloc.aloc.problem.service;
 
-import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
-import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
+import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
-import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
-import com.aloc.aloc.scraper.SolvedScrapingService;
+import com.aloc.aloc.scraper.SolvedCheckingService;
 import com.aloc.aloc.user.User;
-import com.aloc.aloc.user.repository.UserRepository;
-import com.aloc.aloc.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ProblemSolvingService {
-	private final ProblemRepository problemRepository;
 	private final ProblemService problemService;
-	private final UserProblemRepository userProblemRepository;
-	private final SolvedScrapingService solvedScrapingService;
-	private final UserRepository userRepository;
-	private final UserService userService;
+	private final UserProblemService userProblemService;
+	private final ProblemMapper problemMapper;
+	private final SolvedCheckingService solvedCheckingService;
 	private final CoinService coinService;
 
-	@Value("${app.season}")
-	private Integer currentSeason;
+	public List<UserProblem> getSolvedUserListByProblemId(Long problemId) {
+		problemService.checkProblemExist(problemId);
 
-	boolean isProblemAlreadySolved(Long userId, Long problemId) {
-		// 사용자가 이미 푼 문제인지 확인합니다.
-		return userProblemRepository.existsByUserIdAndProblemIdAndIsSolvedIsTrue(userId, problemId);
+		// 문제를 푼 사용자 목록을 가져옵니다.
+		return userProblemService.getSolvedUserListByProblemId(problemId);
 	}
 
-	void updateUserAndSaveSolvedProblem(User user, Problem problem) {
-		boolean isSolved = solvedScrapingService.isProblemSolved(user.getBaekjoonId(), problem);
+	public List<ProblemSolvedResponseDto> getWeeklyCompletionStatus(User user) {
+		List<Problem> thisWeekProblems = problemService.getThisWeekProblems(user);
+
+		// 문제 풀이 현황을 리턴합니다.
+		return thisWeekProblems.stream()
+			.map(problem -> {
+				boolean isSolved = userProblemService.isProblemAlreadySolved(user.getId(), problem.getId());
+				return problemMapper.mapToProblemSolvedResponseDto(problem, isSolved);
+			})
+			.collect(Collectors.toList());
+	}
+
+	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(User user, Integer season, Routine routine) {
+		List<UserProblem> unsolvedProblems
+			= userProblemService.getUserProblemList(user.getId(), season, false, routine);
+
+		return problemMapper.mapSolvedProblemToDtoList(unsolvedProblems);
+	}
+
+	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(User user, Integer season, Routine routine) {
+		List<UserProblem> solvedProblems
+			= userProblemService.getUserProblemList(user.getId(), season, true, routine);
+		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
+	}
+
+	public Boolean getTodayProblemSolved(Long userId, Course course) {
+		Problem todayProblem = problemService.findTodayProblemByCourse(course);
+		return userProblemService.isProblemAlreadySolved(userId, todayProblem.getId());
+	}
+
+	public boolean updateUserAndSaveSolvedProblem(User user, Problem problem, Long todayProblemId) {
+		boolean isSolved = solvedCheckingService.isProblemSolved(user.getBaekjoonId(), problem);
 
 		if (isSolved) {
 			// 코인을 지급하고 사용자 정보를 저장합니다.
-			addCoinIfEligible(user, problem);
-			user.addSolvedCount();
-			userService.checkUserRank(user);
+			coinService.addCoinIfEligible(user, problem, todayProblemId);
 		}
 
 		// 해결 정보가 있으면 업데이트하고 없으면 새로 생성합니다.
-		UserProblem userProblem = getOrCreateUserProblem(user, problem, isSolved);
-		saveUserAndUserProblem(user, userProblem);
+		UserProblem userProblem = userProblemService.getOrCreateUserProblem(user, problem, isSolved);
+		saveUserProblem(userProblem);
+		return isSolved;
 	}
 
-	private void addCoinIfEligible(User user, Problem problem) {
-		if (isEligibleForCoin(user, problem)) {
-			int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
-			user.addCoin(coinToAdd);
-		}
-	}
-
-	private boolean isEligibleForCoin(User user, Problem problem) {
-		if (problem.getProblemType().getRoutine() == Routine.WEEKLY) {
-			return true; // Weekly 문제는 항상 코인을 받음
-		} else if (problem.getProblemType().getRoutine() == Routine.DAILY) {
-			ProblemResponseDto todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
-			return problem.getId().equals(todayProblem.getId()); // 오늘의 문제인 경우에만 코인을 받음
-		}
-		return false; // 다른 경우에는 코인을 받지 않음
-	}
-
-	private int calculateCoinToAdd(Problem problem, Course course) {
-		return problem.getProblemType().getRoutine().equals(Routine.DAILY)
-			? coinService.calculateCoinToAddForDaily(problem.getId())
-			: coinService.calculateCoinToAddForWeekly(problem.getAlgorithm(), course);
-	}
-
-	public UserProblem getOrCreateUserProblem(User user, Problem problem, boolean isSolved) {
-		// 해결 정보가 있으면 업데이트하고 없으면 새로 생성합니다.
-		System.out.println("user.getId() : " + user.getId() + "problem.getId() : " + problem.getId());
-		return userProblemRepository.findByUserIdAndProblemId(
-			user.getId(), problem.getId())
-			.orElse(
-				UserProblem.builder()
-					.user(user)
-					.problem(problemRepository.getReferenceById(problem.getId()))
-					.isSolved(isSolved)
-					.season(currentSeason)
-					.build()
-			);
-	}
-
-	private void saveUserAndUserProblem(User user, UserProblem userProblem) {
+	private void saveUserProblem(UserProblem userProblem) {
 		userProblem.setIsSolved(true);
-		userProblemRepository.save(userProblem);
-		userRepository.save(user);
+		userProblemService.saveUserProblem(userProblem);
 	}
 
-	public List<UserProblem> getSolvedUserListByProblemId(Long problemId) {
-		return userProblemRepository.findAllByProblemIdAndIsSolvedIsTrue(problemId);
-	}
+	public List<Integer> getThisWeekSolvedCount(User user) {
+		// 이번 주차 문제를 가져옵니다.
+		List<Problem> thisWeekProblems = problemService.getThisWeekProblems(user);
+		// 이번 주차 문제 중 푼 문제 수, 문제 수, 안 푼 문제 수를 가져옵니다.
+		long solvedCount = thisWeekProblems.stream()
+			.filter(problem -> userProblemService.isProblemAlreadySolved(user.getId(), problem.getId()))
+			.count();
+		int totalProblems = thisWeekProblems.size();
+		int unsolvedCount = totalProblems - Math.toIntExact(solvedCount);
 
-
-	// 시즌, 풀이 여부, 루틴에 따라 유저의 문제 목록을 가져옵니다.
-	public List<UserProblem> getUserProblemList(Long userId, Integer season, Boolean isSolved, Routine routine) {
-		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
-			userId, season, isSolved, routine);
-	}
-
-	// TODO: user.solvedCount로 변경
-	// 이번 시즌 동안 해결한 Daily 문제 수를 가져옵니다.
-	public int getSolvedCountByUserId(Long userId) {
-		return getUserProblemList(userId, currentSeason, true, Routine.DAILY).size();
+		// List에 결과를 담아 반환
+		return Arrays.asList(Math.toIntExact(solvedCount), totalProblems, unsolvedCount);
 	}
 }

@@ -13,17 +13,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
+import com.aloc.aloc.problemtype.ProblemType;
+import com.aloc.aloc.problemtype.enums.Course;
+import com.aloc.aloc.problemtype.enums.Routine;
+import com.aloc.aloc.user.User;
 
 @ExtendWith(MockitoExtension.class)
 public class ProblemServiceTest {
 
 	@InjectMocks
+	@Spy
 	private ProblemService problemService;
 
 	@Mock
@@ -31,9 +38,49 @@ public class ProblemServiceTest {
 
 	private List<Problem> problems;
 	private List<ProblemResponseDto> problemResponseDtos;
+	private ProblemType problemType;
+	private User user1;
+	private User user2;
+
 
 	@BeforeEach
-	void setUp() {
+	void init() {
+		ReflectionTestUtils.setField(problemService, "currentSeason", 1);
+
+		user1 = new User(
+			"user1",
+			"baekjoon1",
+			"github1",
+			"20210001",
+			"password",
+			"discord",
+			15,
+			"notion",
+			"11550",
+			Course.FULL
+		);
+		user1.setId(1L);
+		user2 = new User(
+			"user2",
+			"baekjoon2",
+			"github2",
+			"20210002",
+			"password",
+			"discord",
+			15,
+			"11551",
+			"notion",
+			Course.FULL
+		);
+		user2.setId(2L);
+
+		problemType = ProblemType.builder()
+			.course(Course.FULL)
+			.routine(Routine.DAILY)
+			.build();
+		problemType.setId(1L);
+
+
 		// Set up Algorithms
 		Algorithm algorithm1 = new Algorithm(1, 1, "Algorithm 1", 2, null);
 		Algorithm algorithm2 = new Algorithm(2, 2, "Algorithm 2", 2, null);

@@ -7,7 +7,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +26,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
-import com.aloc.aloc.algorithm.repository.AlgorithmRepository;
+import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.problem.entity.Problem;
-import com.aloc.aloc.problem.repository.ProblemRepository;
-import com.aloc.aloc.problem.repository.UserProblemRepository;
+import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problemtag.repository.ProblemTagRepository;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
@@ -45,15 +43,18 @@ import com.aloc.aloc.user.service.UserService;
 @Transactional
 class ProblemScraperServiceTest {
 	@Mock
-	private AlgorithmRepository algorithmRepository;
-	@Mock
-	private ProblemRepository problemRepository;
+	private AlgorithmService algorithmService;
 	@Mock
 	private ProblemTypeRepository problemTypeRepository;
+	@Mock
+	private ProblemService problemService;
+	// 삭제하면 안됨
 	@Mock
 	private TagRepository tagRepository;
 	@Mock
 	private ProblemTagRepository problemTagRepository;
+	@Mock
+	private UserService userService;
 
 	@InjectMocks
 	private ProblemScrapingService problemScrapingService;
@@ -119,30 +120,40 @@ class ProblemScraperServiceTest {
 
 	@Test
 	@DisplayName("이번주 문제 추가 성공")
-	void addProblemForThisWeekSuccess() throws IOException, ExecutionException, InterruptedException {
+	void addProblemForThisWeekSuccess() throws ExecutionException, InterruptedException {
 		// given
 		// 시즌2 시작 주차를 기준 알고리즘 반환하도록 구성
 		Algorithm weeklyAlgorithm = algorithms.get(5);
 		Algorithm dailyAlgorithm = algorithms.get(0);
 		ProblemType problemType = new ProblemType();
 
-		when(algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(anyInt()))
-			.thenReturn(Optional.of(weeklyAlgorithm));
-		when(algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(anyInt()))
-			.thenReturn(Optional.of(dailyAlgorithm));
+		Problem savedProblem = Problem.builder()
+			.problemId(123)
+			.title("문제")
+			.algorithm(weeklyAlgorithm)
+			.problemType(problemType)
+			.difficulty(3)
+			.build();
+
+		savedProblem.setId(1L);
+
+		when(algorithmService.findWeeklyAlgorithm())
+			.thenReturn(weeklyAlgorithm);
+		when(algorithmService.findDailyAlgorithm())
+			.thenReturn(dailyAlgorithm);
 		when(problemTypeRepository.findByCourseAndRoutine(any(), any()))
 			.thenReturn(Optional.of(problemType));
-		when(problemRepository.notExistsByProblemIdAndCourseAndSeason(anyInt(), any(), anyInt()))
+		when(problemService.isNewProblem(any(), any(), anyInt()))
 			.thenReturn(true);
-		when(problemRepository.save(any(Problem.class))
-		).thenAnswer(invocation -> invocation.getArgument(0)); // 모의 객체, 인자의 첫번째 값 리턴.
+		when(problemService.saveProblem(any(Problem.class))
+		).thenReturn(savedProblem);
 
 		// when
 		problemScrapingService.addProblemsForThisWeek();
 
 		// then
-		verify(problemRepository, times(24)).save(any(Problem.class)); // 4 types * 6 problems each
-		verify(algorithmRepository, times(1)).save(weeklyAlgorithm);
+		verify(problemService, times(24)).saveProblem(any(Problem.class)); // 4 types * 6 problems each
+		verify(algorithmService, times(1)).saveAlgorithm(weeklyAlgorithm);
 
 		ArgumentCaptor<Problem> problemCaptor = ArgumentCaptor.forClass(Problem.class);
 

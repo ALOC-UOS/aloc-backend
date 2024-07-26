@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,20 +28,21 @@ import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 
 @WebMvcTest(ProblemController.class)
 public class ProblemControllerTest {
-	@MockBean
-	private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-
 	@Autowired
 	private MockMvc mockMvc;
+
+	@MockBean
+	private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
 	@MockBean
 	private ProblemService problemService;
 
 	@MockBean
 	private ProblemFacade problemFacade;
+
 	@Test
 	@WithMockUser
-	@Tag("해당 문제를 푼 사용자 목록을 조회합니다.")
+	@DisplayName("해당 문제를 푼 사용자 목록을 조회합니다.")
 	void getSolvedUserList_shouldReturnListOfSolvedUsers() throws Exception {
 		// Given
 		Long problemId = 1L;
@@ -65,11 +66,14 @@ public class ProblemControllerTest {
 
 	@Test
 	@WithMockUser
-	@Tag("FULL 코스의 오늘의 문제를 조회합니다.")
+	@DisplayName("FULL 코스의 오늘의 문제를 조회합니다.")
 	void getTodayProblem_withFullCourse_shouldReturnTodayProblem() throws Exception {
 		// Given
-		ProblemResponseDto todayProblem = new ProblemResponseDto(1L, "Today's Problem", null, 3, 100);
-		when(problemService.findTodayProblemByCourse(Course.FULL)).thenReturn(todayProblem);
+		when(problemService.getTodayProblemDto(Course.FULL)).thenReturn(ProblemResponseDto.builder()
+			.id(1L)
+			.title("Today's Problem")
+			.difficulty(3)
+			.build());
 
 		// When & Then
 		mockMvc.perform(get("/api2/problem/today/{course}", Course.FULL)
@@ -81,20 +85,22 @@ public class ProblemControllerTest {
 			.andExpect(jsonPath("$.result.id").value(1))
 			.andExpect(jsonPath("$.result.title").value("Today's Problem"))
 			.andExpect(jsonPath("$.result.tags").isEmpty())
-			.andExpect(jsonPath("$.result.difficulty").value(3))
-			.andExpect(jsonPath("$.result.solvingCount").value(100));
+			.andExpect(jsonPath("$.result.difficulty").value(3));
 
 		// 메소드 호출 확인
-		verify(problemService).findTodayProblemByCourse(Course.FULL);
+		verify(problemService).getTodayProblemDto(Course.FULL);
 	}
 
 	@Test
 	@WithMockUser
-	@Tag("HALF 코스의 오늘의 문제를 조회합니다.")
+	@DisplayName("HALF 코스의 오늘의 문제를 조회합니다.")
 	void getTodayProblem_withHalfCourse_shouldReturnTodayProblem() throws Exception {
 		// Given
-		ProblemResponseDto todayProblem = new ProblemResponseDto(1L, "Today's Problem", null, 3, 100);
-		when(problemService.findTodayProblemByCourse(Course.HALF)).thenReturn(todayProblem);
+		when(problemService.getTodayProblemDto(Course.HALF)).thenReturn(ProblemResponseDto.builder()
+			.id(1L)
+			.title("Today's Problem")
+			.difficulty(3)
+			.build());
 
 		// When & Then
 		mockMvc.perform(get("/api2/problem/today/{course}", Course.HALF)
@@ -106,20 +112,19 @@ public class ProblemControllerTest {
 			.andExpect(jsonPath("$.result.id").value(1))
 			.andExpect(jsonPath("$.result.title").value("Today's Problem"))
 			.andExpect(jsonPath("$.result.tags").isEmpty())
-			.andExpect(jsonPath("$.result.difficulty").value(3))
-			.andExpect(jsonPath("$.result.solvingCount").value(100));
+			.andExpect(jsonPath("$.result.difficulty").value(3));
 
 		// 메소드 호출 확인
-		verify(problemService).findTodayProblemByCourse(Course.HALF);
+		verify(problemService).getTodayProblemDto(Course.HALF);
 	}
 
 	@Test
 	@WithMockUser
-	@Tag("FULL 코스의 오늘의 문제가 없을 때 오류를 반환합니다.")
+	@DisplayName("FULL 코스의 오늘의 문제가 없을 때 오류를 반환합니다.")
 	void getTodayProblem_withFullCourse_NotFound_shouldReturnException() throws Exception {
 		// Given
 		Course course = Course.FULL;
-		when(problemService.findTodayProblemByCourse(course))
+		when(problemService.getTodayProblemDto(course))
 			.thenThrow(new IllegalArgumentException("오늘의 문제가 없습니다."));
 
 		// When & Then
@@ -132,16 +137,16 @@ public class ProblemControllerTest {
 			.andExpect(jsonPath("$.result").value("잘못된 요청입니다."));
 
 
-		verify(problemService).findTodayProblemByCourse(course);
+		verify(problemService).getTodayProblemDto(course);
 	}
 
 	@Test
 	@WithMockUser
-	@Tag("HALF 코스의 오늘의 문제가 없을 때 오류를 반환합니다.")
+	@DisplayName("HALF 코스의 오늘의 문제가 없을 때 오류를 반환합니다.")
 	void getTodayProblem_withHalfCourse_NotFound_shouldReturnException() throws Exception {
 		// Given
 		Course course = Course.HALF;
-		when(problemService.findTodayProblemByCourse(course))
+		when(problemService.getTodayProblemDto(course))
 			.thenThrow(new IllegalArgumentException("오늘의 문제가 없습니다."));
 
 		// When & Then
@@ -154,12 +159,12 @@ public class ProblemControllerTest {
 			.andExpect(jsonPath("$.result").value("잘못된 요청입니다."));
 
 
-		verify(problemService).findTodayProblemByCourse(course);
+		verify(problemService).getTodayProblemDto(course);
 	}
 
 	@Test
 	@WithMockUser
-	@Tag("잘못된 코스로 오늘의 문제를 조회할 때 오류를 반환합니다.")
+	@DisplayName("잘못된 코스로 오늘의 문제를 조회할 때 오류를 반환합니다.")
 	void getTodayProblem_withInvalidCourse_shouldReturnBadRequest() throws Exception {
 		// Given
 		String course = "Invalid";
@@ -174,7 +179,7 @@ public class ProblemControllerTest {
 
 	@Test
 	@WithMockUser
-	@Tag("알고리즘 Id와 시즌으로 공개된 문제 불러오기")
+	@DisplayName("알고리즘 Id와 시즌으로 공개된 문제 불러오기")
 	void getProblemsByAlgorithmIdAndSeason() throws Exception {
 		// given
 		int season = 1;
