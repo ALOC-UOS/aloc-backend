@@ -34,7 +34,6 @@ public class UserProblemService {
 			.orElse(null);
 	}
 
-	@Transactional
 	public UserProblem getOrCreateUserProblem(User user, Problem problem, boolean isSolved) {
 		// 해결 정보가 있으면 업데이트하고 없으면 새로 생성합니다.
 		return userProblemRepository.findByUserIdAndProblemId(

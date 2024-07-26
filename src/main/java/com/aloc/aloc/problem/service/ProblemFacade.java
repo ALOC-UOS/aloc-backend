@@ -24,6 +24,7 @@ public class ProblemFacade implements UserProblemRecordLoader {
 	private final ProblemMapper problemMapper;
 	private final ProblemSolvingService problemSolvingService;
 
+	@Transactional(rollbackFor = Exception.class)
 	public String checkSolved(String username) {
 		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
 		User user = userService.findUser(username);
@@ -71,15 +72,15 @@ public class ProblemFacade implements UserProblemRecordLoader {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class)
 	public void loadUserProblemRecord(User user) {
 		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
 		Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
 		try {
 			for (Problem problem : problems) {
-				boolean problemSolved =
+				boolean isSolved =
 					problemSolvingService.updateUserAndSaveSolvedProblem(user, problem, todayProblem.getId());
-				if (problemSolved) {
+				if (isSolved) {
+					System.out.println("문제를 풀었어요" + problem.getId() + " " + user.getGithubId());
 					user.addSolvedCount();
 					userService.checkUserRank(user);
 					userService.saveUser(user);

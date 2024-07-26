@@ -76,18 +76,15 @@ public class ProblemSolvingService {
 			return false; // 이미 푼 문제라면 false 반환
 		}
 		boolean isSolved = solvedCheckingService.isProblemSolved(user.getBaekjoonId(), problem);
+		UserProblem userProblem = userProblemService.getOrCreateUserProblem(user, problem, isSolved);
 		if (isSolved) {
 			// 코인을 지급하고 사용자 정보를 저장합니다.
+			System.out.println("문제를 풀었어요" + problem.getId() + " " + user.getGithubId());
 			coinService.addCoinIfEligible(user, problem, todayProblemId);
+			userProblem.setIsSolved(true);
 		}
-		UserProblem userProblem = userProblemService.getOrCreateUserProblem(user, problem, isSolved);
-		userProblem.setIsSolved(isSolved);
-		saveUserProblem(userProblem);
-		return isSolved;
-	}
-
-	private void saveUserProblem(UserProblem userProblem) {
 		userProblemService.saveUserProblem(userProblem);
+		return isSolved;
 	}
 
 	public List<Integer> getThisWeekSolvedCount(User user) {
