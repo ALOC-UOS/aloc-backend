@@ -12,7 +12,6 @@ import lombok.experimental.SuperBuilder;
 public class UserDetailResponseDto extends UserResponseDto {
 	private final Integer solvedCount;
 	private final Integer unsolvedCount;
-	private final Integer thisWeekUnsolvedCount;
 	private final Boolean todaySolved;
 	private final String colorCategory;
 	private final String color1;
@@ -24,9 +23,7 @@ public class UserDetailResponseDto extends UserResponseDto {
 	private final LocalDateTime createdAt;
 
 	public static UserDetailResponseDto of(User user,
-		Integer solvedCount,
 		Integer unsolvedCount,
-		Integer thisWeekUnsolvedCount,
 		Boolean todaySolved,
 		String colorCategory,
 		String color1,
@@ -44,9 +41,8 @@ public class UserDetailResponseDto extends UserResponseDto {
 			.profileNumber(user.getProfileNumber())
 			.rank(user.getRank())
 			.coin(user.getCoin())
-			.solvedCount(solvedCount)
+			.solvedCount(user.getSolvedCount())
 			.unsolvedCount(unsolvedCount)
-			.thisWeekUnsolvedCount(thisWeekUnsolvedCount)
 			.todaySolved(todaySolved)
 			.colorCategory(colorCategory)
 			.color1(color1)
