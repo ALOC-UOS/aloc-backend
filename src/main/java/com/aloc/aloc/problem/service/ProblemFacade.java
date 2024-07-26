@@ -71,6 +71,7 @@ public class ProblemFacade implements UserProblemRecordLoader {
 	}
 
 	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public void loadUserProblemRecord(User user) {
 		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
 		Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());

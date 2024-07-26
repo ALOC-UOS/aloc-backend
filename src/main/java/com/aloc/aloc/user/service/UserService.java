@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.alcorequest.AlocRequest;
 import com.aloc.aloc.alcorequest.repository.AlocRequestRepository;
@@ -38,6 +39,7 @@ public class UserService {
 		}
 	}
 
+	@Transactional
 	public void checkUserRank(User user) {
 		Integer rank = baekjoonRankScrapingService.extractBaekjoonRank(user.getBaekjoonId());
 		if (!user.getRank().equals(rank)) {
@@ -60,7 +62,8 @@ public class UserService {
 		return "다음 주차부터 FULL 코스로 변경됩니다.";
 	}
 
-	private void updateUserRank(User user, Integer rank) {
+	@Transactional
+	public void updateUserRank(User user, Integer rank) {
 		user.setRank(rank);
 		userRepository.save(user);
 		historyService.addHistory(user, "changeRank", rank);

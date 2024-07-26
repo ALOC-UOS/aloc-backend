@@ -69,6 +69,7 @@ public class ProblemSolvingService {
 		return userProblemService.isProblemSolvedToday(userId, todayProblem.getId());
 	}
 
+	@Transactional
 	public boolean updateUserAndSaveSolvedProblem(User user, Problem problem, Long todayProblemId) {
 		boolean isAlreadySolved = userProblemService.isProblemAlreadySolved(user.getId(), problem.getId());
 		if (isAlreadySolved) {
