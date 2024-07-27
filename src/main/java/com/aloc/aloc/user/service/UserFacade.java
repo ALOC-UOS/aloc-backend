@@ -28,4 +28,9 @@ public class UserFacade {
 			.map(userMapper::mapToUserDetailResponseDto)
 			.collect(Collectors.toList());
 	}
+
+	public UserDetailResponseDto getUser(String githubId) {
+		User user = userService.findUser(githubId);
+		return userMapper.mapToUserDetailResponseDto(user);
+	}
 }

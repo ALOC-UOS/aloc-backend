@@ -43,6 +43,15 @@ public class UserController {
 
 	@SecurityRequirement(name = "JWT Auth")
 	@SecurityRequirement(name = "Refresh Token")
+	@GetMapping("/user")
+	@Operation(summary = "유저 정보 조회", description = "유저의 개인 정보 목록을 조회합니다.")
+	public CustomApiResponse<UserDetailResponseDto> getUser(
+		@Parameter(hidden = true) @AuthenticationPrincipal User user) {
+		return CustomApiResponse.onSuccess(userFacade.getUser(user.getUsername()));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@SecurityRequirement(name = "Refresh Token")
 	@PostMapping("/authorize/{githubId}")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "스터디 멤버로 등록되었습니다."),
