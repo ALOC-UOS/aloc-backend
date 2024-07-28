@@ -94,8 +94,8 @@ public class ProblemServiceTest {
 
 		// Set up ProblemResponseDtos
 		problemResponseDtos = Arrays.asList(
-			ProblemResponseDto.builder().id(1).title("Problem 1").build(),
-			ProblemResponseDto.builder().id(2).title("Problem 2").build()
+			ProblemResponseDto.builder().problemId(1).title("Problem 1").build(),
+			ProblemResponseDto.builder().problemId(2).title("Problem 2").build()
 		);
 	}
 

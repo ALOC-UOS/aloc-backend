@@ -99,8 +99,8 @@ public class ProblemFacadeTest {
 
 		// Set up ProblemResponseDtos
 		List<ProblemResponseDto> problemResponseDtos = Arrays.asList(
-			ProblemResponseDto.builder().id(1).title("Problem 1").build(),
-			ProblemResponseDto.builder().id(2).title("Problem 2").build()
+			ProblemResponseDto.builder().problemId(1).title("Problem 1").build(),
+			ProblemResponseDto.builder().problemId(2).title("Problem 2").build()
 		);
 
 		// Set up SolvedUserResponseDtos
@@ -198,7 +198,7 @@ public class ProblemFacadeTest {
 		List<Problem> mockProblems = problems;
 		Problem todayProblem = problems.get(0);
 		ProblemResponseDto todayProblemDto = new ProblemResponseDto();
-		todayProblemDto.setId(todayProblem.getProblemId());
+		todayProblemDto.setProblemId(todayProblem.getProblemId());
 
 		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
 			.thenReturn(mockProblems);
@@ -221,7 +221,7 @@ public class ProblemFacadeTest {
 
 		Problem todayProblem = problems.get(0);
 		ProblemResponseDto todayProblemDto = new ProblemResponseDto();
-		todayProblemDto.setId(todayProblem.getProblemId());
+		todayProblemDto.setProblemId(todayProblem.getProblemId());
 
 		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
 			.thenReturn(mockProblems);

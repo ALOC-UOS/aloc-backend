@@ -31,7 +31,8 @@ public class ProblemMapper {
 
 	public ProblemResponseDto mapToProblemResponseDto(Problem problem) {
 		return ProblemResponseDto.builder()
-			.id(problem.getProblemId())
+			.id(problem.getId())
+			.problemId(problem.getProblemId())
 			.title(problem.getTitle())
 			.tags(mapToTagSimpleDtoList(problem.getProblemTagList()))
 			.difficulty(problem.getDifficulty())
