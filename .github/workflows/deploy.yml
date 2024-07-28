@@ -67,7 +67,7 @@ jobs:
             docker stop aloc-spring || true
             docker rm aloc-spring || true
             docker run -d --name aloc-spring \
-              -e TZ=Asia/Seoul
+              -e TZ=Asia/Seoul \
                --network my_network \
                --ip 172.18.0.2 \
                -p 8080:8080 \
