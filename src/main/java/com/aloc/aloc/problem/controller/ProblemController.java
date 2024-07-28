@@ -79,8 +79,8 @@ public class ProblemController {
 		return CustomApiResponse.onSuccess(problemService.getTodayProblemDto(course));
 	}
 
-	@SecurityRequirement(name = "JWT Auth")
 	@PostMapping("/today-problem/solved")
+	@SecurityRequirement(name = "JWT Auth")
 	@Operation(summary = "오늘 문제 풀이 상태 업데이트", description = "오늘의 문제를 풀었음을 확인합니다.")
 	@ApiResponse(
 		responseCode = "200",
@@ -93,8 +93,8 @@ public class ProblemController {
 		return CustomApiResponse.onSuccess(problemFacade.checkTodaySolved(user.getUsername()));
 	}
 
-	@SecurityRequirement(name = "JWT Auth")
 	@PostMapping("/problems/solved")
+	@SecurityRequirement(name = "JWT Auth")
 	@Operation(summary = "지나간 문제 풀이 여부 확인", description = "이미 지나간 문제들을 풀었음을 확인합니다.")
 	@ApiResponse(
 		responseCode = "200",
@@ -107,8 +107,8 @@ public class ProblemController {
 		return CustomApiResponse.onSuccess(problemFacade.checkSolved(user.getUsername()));
 	}
 
-	@SecurityRequirement(name = "JWT Auth")
 	@GetMapping("/weekly-problems")
+	@SecurityRequirement(name = "JWT Auth")
 	@Operation(summary = "이번주 Weekly 문제 조회 (5개)", description = "이번주 Weekly 문제를 조회합니다.")
 	@ApiResponse(
 		responseCode = "200",
