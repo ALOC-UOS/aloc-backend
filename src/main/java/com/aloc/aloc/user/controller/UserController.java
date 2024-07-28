@@ -46,18 +46,16 @@ public class UserController {
 		return CustomApiResponse.onSuccess(userFacade.getUsers());
 	}
 
-	@SecurityRequirement(name = "JWT Auth")
-	@SecurityRequirement(name = "Refresh Token")
 	@GetMapping("/user")
+	@SecurityRequirement(name = "JWT Auth")
 	@Operation(summary = "유저 정보 조회", description = "유저의 개인 정보 목록을 조회합니다.")
 	public CustomApiResponse<UserDetailResponseDto> getUser(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user) {
 		return CustomApiResponse.onSuccess(userFacade.getUser(user.getUsername()));
 	}
 
-	@SecurityRequirement(name = "JWT Auth")
-	@SecurityRequirement(name = "Refresh Token")
 	@PostMapping("/authorize/{githubId}")
+	@SecurityRequirement(name = "JWT Auth")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "스터디 멤버로 등록되었습니다."),
 		@ApiResponse(responseCode = "400", description = "해당 깃허브 아이디로 가입된 사용자가 없습니다."),
@@ -71,9 +69,8 @@ public class UserController {
 		return CustomApiResponse.onSuccess(userRegistrationService.addUser(user.getUsername(), githubId));
 	}
 
-	@SecurityRequirement(name = "JWT Auth")
-	@SecurityRequirement(name = "Refresh Token")
 	@PutMapping("/user/course")
+	@SecurityRequirement(name = "JWT Auth")
 	public CustomApiResponse<String> changeCourse(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user) throws AccessDeniedException {
 		return CustomApiResponse.onSuccess(userService.changeCourse(user.getUsername()));
