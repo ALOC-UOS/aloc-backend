@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProblemResponseDto {
-	private Long id;
+	private Integer id;
 	private String title;
 	private List<TagSimpleDto> tags;
 	private Integer difficulty;
