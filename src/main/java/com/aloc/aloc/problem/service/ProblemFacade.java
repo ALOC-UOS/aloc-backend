@@ -66,11 +66,6 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		return problemSolvingService.getSolvedProblemListByUser(user, season, routine);
 	}
 
-	public List<Integer> getThisWeekSolvedCount(User user) {
-		return problemSolvingService.getThisWeekSolvedCount(user);
-
-	}
-
 	public Boolean getTodayProblemSolved(Long userId, Course course) {
 		return problemSolvingService.getTodayProblemSolved(userId, course);
 	}

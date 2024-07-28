@@ -117,16 +117,6 @@ public class ProblemService {
 		return problemRepository.findVisibleProblemsBySeasonAndCourse(currentSeason, course);
 	}
 
-	// 이번 주차 문제 (Weekly + Daily) 가져오는 공통 메소드
-	List<Problem> getThisWeekProblem(User user) {
-		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
-			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
-		// TODO: Weekly도 같이 가져오도록 수정하기
-		return getVisibleDailyProblemsByAlgorithmId(
-			currentSeason, thisWeekAlgorithm.getAlgorithmId(), user.getCourse()
-		);
-	}
-
 	public boolean isNewProblem(String problemId, ProblemType problemType, Integer season) {
 		Integer problemIdInt = Integer.parseInt(problemId);
 		return problemRepository.notExistsByProblemIdAndCourseAndSeason(
