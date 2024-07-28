@@ -42,7 +42,24 @@ public class ProblemService {
 		return problemRepository.findVisibleProblemsByAlgorithmAndCourse(season, algorithmId, problemType.getId());
 	}
 
-	public List<ProblemResponseDto> getVisibleProblemsDtoByAlgorithmId(int season, int algorithmId, Course course) {
+	List<Problem> getWeeklyProblem(User user) {
+		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
+			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
+		System.out.println("thisWeekAlgorithm = " + thisWeekAlgorithm);
+		ProblemType problemType = problemTypeRepository
+			.findProblemTypeByCourseAndRoutine(user.getCourse(), Routine.WEEKLY)
+			.orElseThrow(() -> new IllegalArgumentException("해당 코스의 주간 문제 타입이 없습니다."));
+		System.out.println("problemType = " + problemType.getId());
+		return problemRepository.findVisibleProblemsByAlgorithmAndCourse(
+			currentSeason,
+			thisWeekAlgorithm.getAlgorithmId(),
+			problemType.getId()
+		);
+	}
+
+	public List<ProblemResponseDto> getVisibleDailyProblemsDtoByAlgorithmId(
+		int season, int algorithmId, Course course
+	) {
 		List<Problem> problems = getVisibleDailyProblemsByAlgorithmId(season, algorithmId, course);
 		return problems.stream()
 			.map(problemMapper::mapToProblemResponseDto)
@@ -98,15 +115,6 @@ public class ProblemService {
 
 	public List<Problem> getVisibleProblemsBySeasonAndCourse(Course course) {
 		return problemRepository.findVisibleProblemsBySeasonAndCourse(currentSeason, course);
-	}
-
-	// 이번 주차 문제 가져오는 공통 메소드
-	List<Problem> getThisWeekProblems(User user) {
-		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
-			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
-		return getVisibleDailyProblemsByAlgorithmId(
-			currentSeason, thisWeekAlgorithm.getAlgorithmId(), user.getCourse()
-		);
 	}
 
 	public boolean isNewProblem(String problemId, ProblemType problemType, Integer season) {

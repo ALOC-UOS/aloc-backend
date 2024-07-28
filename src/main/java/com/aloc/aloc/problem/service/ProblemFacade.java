@@ -49,9 +49,9 @@ public class ProblemFacade implements UserProblemRecordLoader {
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getWeeklyCompletionStatus(String username) {
+	public List<ProblemSolvedResponseDto> getWeeklyProblem(String username) {
 		User user = userService.findUser(username);
-		return problemSolvingService.getWeeklyCompletionStatus(user);
+		return problemSolvingService.getWeeklyProblem(user);
 	}
 
 	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(
@@ -64,11 +64,6 @@ public class ProblemFacade implements UserProblemRecordLoader {
 	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId, Integer season, Routine routine) {
 		User user = userService.findUser(githubId);
 		return problemSolvingService.getSolvedProblemListByUser(user, season, routine);
-	}
-
-	public List<Integer> getThisWeekSolvedCount(User user) {
-		return problemSolvingService.getThisWeekSolvedCount(user);
-
 	}
 
 	public Boolean getTodayProblemSolved(Long userId, Course course) {

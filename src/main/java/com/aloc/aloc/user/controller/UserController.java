@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
+import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
+import com.aloc.aloc.problem.service.ProblemFacade;
+import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
 import com.aloc.aloc.user.service.UserFacade;
 import com.aloc.aloc.user.service.UserRegistrationService;
@@ -33,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final UserService userService;
 	private final UserFacade userFacade;
+	private final ProblemFacade problemFacade;
 	private final UserRegistrationService userRegistrationService;
 
 	@GetMapping("/users")
@@ -72,5 +77,24 @@ public class UserController {
 	public CustomApiResponse<String> changeCourse(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user) throws AccessDeniedException {
 		return CustomApiResponse.onSuccess(userService.changeCourse(user.getUsername()));
+	}
+
+	@GetMapping("/user/{githubId}/unsolved-problems")
+	@Operation(summary = "유저의 풀지 않은 문제 조회", description = "유저가 풀지 않은 문제를 조회합니다. 시즌이 null이면 모든 시즌을 조회합니다.")
+	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUnsolvedProblemList(
+		@Parameter(required = true) @PathVariable() String githubId,
+		@Parameter(description = "루틴", required = true) @RequestParam Routine routine,
+		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season) {
+		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId, season, routine));
+	}
+
+	@GetMapping("/user/{githubId}/solved-problems")
+	@Operation(summary = "유저의 이미 푼 문제 조회", description = "유저가 푼 문제를 조회합니다. 시즌이 null이면 모든 시즌을 조회합니다.")
+	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUserSolvedProblemList(
+		@Parameter(description = "유저 깃허브 아이디", required = true) @PathVariable() String githubId,
+		@Parameter(description = "루틴", required = true) @RequestParam Routine routine,
+		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season
+	) {
+		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId, season, routine));
 	}
 }
