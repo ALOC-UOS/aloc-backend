@@ -3,9 +3,7 @@ package com.aloc.aloc.problem.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -101,8 +99,8 @@ public class ProblemFacadeTest {
 
 		// Set up ProblemResponseDtos
 		List<ProblemResponseDto> problemResponseDtos = Arrays.asList(
-			ProblemResponseDto.builder().id(1L).title("Problem 1").build(),
-			ProblemResponseDto.builder().id(2L).title("Problem 2").build()
+			ProblemResponseDto.builder().id(1).title("Problem 1").build(),
+			ProblemResponseDto.builder().id(2).title("Problem 2").build()
 		);
 
 		// Set up SolvedUserResponseDtos
@@ -200,7 +198,7 @@ public class ProblemFacadeTest {
 		List<Problem> mockProblems = problems;
 		Problem todayProblem = problems.get(0);
 		ProblemResponseDto todayProblemDto = new ProblemResponseDto();
-		todayProblemDto.setId(todayProblem.getId());
+		todayProblemDto.setId(todayProblem.getProblemId());
 
 		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
 			.thenReturn(mockProblems);
@@ -223,7 +221,7 @@ public class ProblemFacadeTest {
 
 		Problem todayProblem = problems.get(0);
 		ProblemResponseDto todayProblemDto = new ProblemResponseDto();
-		todayProblemDto.setId(todayProblem.getId());
+		todayProblemDto.setId(todayProblem.getProblemId());
 
 		when(problemService.getVisibleProblemsBySeasonAndCourse(user1.getCourse()))
 			.thenReturn(mockProblems);
