@@ -18,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProblemResponseDto {
 	@Schema(description = "문제 ID", example = "1080")
-	private Long id;
+	private Integer id;
 	@Schema(description = "문제 제목", example = "A와 B ")
 	private String title;
 	@Schema(description = "문제 태그")
