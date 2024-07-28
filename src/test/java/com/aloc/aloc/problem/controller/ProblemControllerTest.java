@@ -70,7 +70,7 @@ public class ProblemControllerTest {
 	void getTodayProblem_withFullCourse_shouldReturnTodayProblem() throws Exception {
 		// Given
 		when(problemService.getTodayProblemDto(Course.FULL)).thenReturn(ProblemResponseDto.builder()
-			.id(1L)
+			.id(1)
 			.title("Today's Problem")
 			.difficulty(3)
 			.build());
@@ -97,7 +97,7 @@ public class ProblemControllerTest {
 	void getTodayProblem_withHalfCourse_shouldReturnTodayProblem() throws Exception {
 		// Given
 		when(problemService.getTodayProblemDto(Course.HALF)).thenReturn(ProblemResponseDto.builder()
-			.id(1L)
+			.id(1)
 			.title("Today's Problem")
 			.difficulty(3)
 			.build());
@@ -186,8 +186,8 @@ public class ProblemControllerTest {
 		int algorithmId = 1;
 
 		List<ProblemResponseDto> problems = Arrays.asList(
-			new ProblemResponseDto(1L, "Problem 1", null, 3, 100),
-			new ProblemResponseDto(2L, "Problem 2", null, 4, 50)
+			new ProblemResponseDto(1, "Problem 1", null, 3, 100),
+			new ProblemResponseDto(2, "Problem 2", null, 4, 50)
 		);
 		when(problemService.getVisibleProblemsDtoByAlgorithmId(season, algorithmId, Course.FULL)).thenReturn(problems);
 
