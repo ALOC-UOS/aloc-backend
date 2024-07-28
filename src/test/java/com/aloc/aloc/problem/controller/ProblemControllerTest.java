@@ -53,7 +53,7 @@ public class ProblemControllerTest {
 		when(problemFacade.getSolvedUserListByProblemId(problemId)).thenReturn(solvedUsers);
 
 		// When & Then
-		mockMvc.perform(get("/api2/problem/solved-user/{problemId}", problemId)
+		mockMvc.perform(get("/api2/problem/{problemId}/solved-users", problemId)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
@@ -76,7 +76,7 @@ public class ProblemControllerTest {
 			.build());
 
 		// When & Then
-		mockMvc.perform(get("/api2/problem/today/{course}", Course.FULL)
+		mockMvc.perform(get("/api2/today-problem?course={course}", Course.FULL)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
@@ -103,7 +103,7 @@ public class ProblemControllerTest {
 			.build());
 
 		// When & Then
-		mockMvc.perform(get("/api2/problem/today/{course}", Course.HALF)
+		mockMvc.perform(get("/api2/today-problem?course={course}", Course.HALF)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
@@ -128,7 +128,7 @@ public class ProblemControllerTest {
 			.thenThrow(new IllegalArgumentException("오늘의 문제가 없습니다."));
 
 		// When & Then
-		mockMvc.perform(get("/api2/problem/today/{course}", course)
+		mockMvc.perform(get("/api2/today-problem?course={course}", course)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.isSuccess").value(false))
@@ -150,7 +150,7 @@ public class ProblemControllerTest {
 			.thenThrow(new IllegalArgumentException("오늘의 문제가 없습니다."));
 
 		// When & Then
-		mockMvc.perform(get("/api2/problem/today/{course}", course)
+		mockMvc.perform(get("/api2/today-problem?course={course}", course)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.isSuccess").value(false))
@@ -170,7 +170,7 @@ public class ProblemControllerTest {
 		String course = "Invalid";
 
 		// When & Then
-		mockMvc.perform(get("/api2/problem/today/{course}", course)
+		mockMvc.perform(get("/api2/today-problem?course={course}", course)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.isSuccess").value(false))
@@ -194,7 +194,7 @@ public class ProblemControllerTest {
 		).thenReturn(problems);
 
 		// when & then
-		mockMvc.perform(get("/api2/problem/season/{season}/algorithmId/{algorithmId}/course/FULL", season, algorithmId)
+		mockMvc.perform(get("/api2/problems?season={season}&algorithmId={algorithmId}&course=FULL", season, algorithmId)
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.isSuccess").value(true))
