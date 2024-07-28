@@ -35,14 +35,14 @@ public class ProblemController {
 	private final ProblemFacade problemFacade;
 
 	@GetMapping("/season/{season}/algorithmId/{algorithmId}/course/{course}")
-	@Operation(summary = "알고리즘 Id와 시즌으로 문제 목록 조회",
+	@Operation(summary = "알고리즘 Id와 시즌으로 문제 목록 조회 (Daily)",
 		description = "특정 시즌과 알고리즘의 공개된 문제 목록을 최근 순으로 정렬하여 조회합니다. (Daily)")
 	public CustomApiResponse<List<ProblemResponseDto>> getProblemsByAlgorithmIdAndSeason(
 		@Parameter(description = "시즌", required = true) @PathVariable int season,
 		@Parameter(description = "코스", required = true) @PathVariable() Course course,
 		@Parameter(description = "알고리즘 ID", required = true) @PathVariable int algorithmId) {
 		return CustomApiResponse.onSuccess(
-			problemService.getVisibleProblemsDtoByAlgorithmId(season, algorithmId, course)
+			problemService.getVisibleDailyProblemsDtoByAlgorithmId(season, algorithmId, course)
 		);
 	}
 
@@ -81,12 +81,12 @@ public class ProblemController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@GetMapping("/weekly/status")
-	@Operation(summary = "이번주 Weekly 풀이 현황 조회", description = "이번주 Weekly 문제 풀이 현황을 조회합니다.")
+	@GetMapping("/weekly")
+	@Operation(summary = "이번주 Weekly 문제 조회 (5개)", description = "이번주 Weekly 문제를 조회합니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getWeeklyCompletionStatus(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) {
-		return CustomApiResponse.onSuccess(problemFacade.getWeeklyCompletionStatus(user.getUsername()));
+		return CustomApiResponse.onSuccess(problemFacade.getWeeklyProblem(user.getUsername()));
 	}
 
 	@GetMapping("/unsolved/user/{githubId}/routine/{routine}")

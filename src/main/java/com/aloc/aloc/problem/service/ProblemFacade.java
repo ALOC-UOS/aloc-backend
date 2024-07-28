@@ -49,9 +49,9 @@ public class ProblemFacade implements UserProblemRecordLoader {
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getWeeklyCompletionStatus(String username) {
+	public List<ProblemSolvedResponseDto> getWeeklyProblem(String username) {
 		User user = userService.findUser(username);
-		return problemSolvingService.getWeeklyCompletionStatus(user);
+		return problemSolvingService.getWeeklyProblem(user);
 	}
 
 	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(

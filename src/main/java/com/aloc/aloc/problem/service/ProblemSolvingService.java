@@ -38,10 +38,10 @@ public class ProblemSolvingService {
 		return userProblemService.getSolvedUserListByProblemId(problemId);
 	}
 
-	public List<ProblemSolvedResponseDto> getWeeklyCompletionStatus(User user) {
-		List<Problem> thisWeekProblems = problemService.getThisWeekProblems(user);
+	public List<ProblemSolvedResponseDto> getWeeklyProblem(User user) {
+		List<Problem> thisWeekProblems = problemService.getWeeklyProblem(user);
 
-		// 문제 풀이 현황을 리턴합니다.
+		// 이번주 weekly 문제를 풀이 현황과 함께 리턴합니다.
 		return thisWeekProblems.stream()
 			.map(problem -> {
 				boolean isSolved = userProblemService.isProblemAlreadySolved(user.getId(), problem.getId());
@@ -104,7 +104,7 @@ public class ProblemSolvingService {
 
 	public List<Integer> getThisWeekSolvedCount(User user) {
 		// 이번 주차 문제를 가져옵니다.
-		List<Problem> thisWeekProblems = problemService.getThisWeekProblems(user);
+		List<Problem> thisWeekProblems = problemService.getThisWeekProblem(user);
 		// 이번 주차 문제 중 푼 문제 수, 문제 수, 안 푼 문제 수를 가져옵니다.
 		long solvedCount = thisWeekProblems.stream()
 			.filter(problem -> userProblemService.isProblemAlreadySolved(user.getId(), problem.getId()))
