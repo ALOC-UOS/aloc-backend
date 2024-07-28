@@ -7,7 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -68,7 +68,7 @@ public class ProblemScrapingService {
 		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 5개
 		Algorithm dailyAlgorithm = algorithmService.findDailyAlgorithm(); // 1주에 7개
 
-		Map<CourseRoutineTier, List<Integer>> crawledProblems = new HashMap<>();
+		Map<CourseRoutineTier, List<Integer>> crawledProblems = new LinkedHashMap<>();
 
 		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 			try {
