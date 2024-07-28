@@ -93,18 +93,21 @@ public class ProblemScrapingService {
 		});
 		future.get();
 		updateWeeklyAlgorithmHidden(weeklyAlgorithm);
-		return getCrawlingResultMessage(crawledProblems);
+		return getCrawlingResultMessage(crawledProblems, weeklyAlgorithm, dailyAlgorithm);
 	}
 
-	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Integer>> crawledProblems) {
+	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Integer>> crawledProblems,
+		Algorithm weeklyAlgorithm, Algorithm dailyAlgorithm) {
 		StringBuilder message = new StringBuilder();
-
+		message.append("[ ").append(weeklyAlgorithm.getWeek()).append("주차 크롤링 결과 ]\n\n")
+			.append("weekly 알고리즘 : ").append(weeklyAlgorithm.getName()).append("\n")
+			.append("daily 알고리즘 : ").append(dailyAlgorithm.getName()).append("\n\n");
 		for (Map.Entry<CourseRoutineTier, List<Integer>> entry : crawledProblems.entrySet()) {
 			CourseRoutineTier tier = entry.getKey();
 			List<Integer> problems = entry.getValue();
 			message.append("[").append(tier).append("]").append("\n")
-				.append("✅ 크롤링 성공 문제수: ").append(problems.size()).append("개\n")
-				.append("🔢 문제 번호: ").append(problems.stream().map(String::valueOf).collect(Collectors.joining(", ")))
+				.append("✅  크롤링 성공 문제수: ").append(problems.size()).append("개\n")
+				.append("🔢  문제 번호: ").append(problems.stream().map(String::valueOf).collect(Collectors.joining(", ")))
 				.append("\n\n");
 		}
 		return message.toString();
