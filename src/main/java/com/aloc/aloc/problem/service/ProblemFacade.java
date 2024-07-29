@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aloc.aloc.problem.dto.request.ProblemRequestDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.enums.Course;
@@ -111,5 +112,21 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		for (User user : activeUsers) {
 			problemSolvingService.addUserProblemRecord(user);
 		}
+	}
+
+	public String addUserProblem(String githubId, Long problemId) {
+		User user = userService.findUser(githubId);
+		Problem problem = problemService.findProblemById(problemId);
+		problemSolvingService.addUserProblem(user, problem);
+		return "success";
+	}
+
+	public String addProblemAndUserProblem(ProblemRequestDto problemRequestDto) {
+		Problem problem = problemService.addProblem(problemRequestDto);
+		List<User> activeUsers = userService.getActiveUsers();
+		for (User user : activeUsers) {
+			problemSolvingService.addUserProblem(user, problem);
+		}
+		return "success";
 	}
 }

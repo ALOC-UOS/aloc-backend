@@ -12,4 +12,5 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 
 	Optional<Tag> findByKoreanNameAndEnglishName(String koreanName, String englishName);
 
+	Optional<Tag> findByKoreanName(String tagName);
 }
