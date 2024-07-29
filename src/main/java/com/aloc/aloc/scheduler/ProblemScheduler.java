@@ -22,7 +22,7 @@ public class ProblemScheduler {
 		updateDailyProblemHidden();
 	}
 
-	@Scheduled(cron = "0 0 0 * * *")
+	@Scheduled(cron = "0 0/1 * * * *")
 	public void updateDailyProblemHidden() {
 		problemService.updateProblemHiddenFalse(Routine.DAILY);
 	}
