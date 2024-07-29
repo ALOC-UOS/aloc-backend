@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.aloc.aloc.algorithm.dto.response.AlgorithmDto;
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.entity.AlgorithmPrimaryKey;
 
@@ -21,4 +22,9 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, AlgorithmP
 	List<Algorithm> findAllByHiddenIsFalseOrderByCreatedAtDesc();
 
 	List<Algorithm> findAllBySeasonAndHiddenFalseOrderByCreatedAtDesc(int season);
+
+	@Query("SELECT a FROM Algorithm a WHERE a.name = :algorithmName AND a.season = :season")
+	Optional<Algorithm> findAlgorithmByNameAndSeason(
+		@Param("algorithmName") String algorithmName,
+		@Param("season") Integer season);
 }
