@@ -15,7 +15,8 @@ public class ProblemCrawlingScheduler {
 	private final ProblemScrapingService problemScraperService;
 	private final DiscordWebhookService discordWebhookService;
 
-	@Scheduled(cron = "0 0 0 * * MON")
+//	@Scheduled(cron = "0 0 0 * * MON")
+	@Scheduled(cron = "0 0/5 * * * *")
 	// 매주 월요일에 문제를 크롤링해옵니다.
 	public void scheduleAddProblemsForThisWeek() {
 		try {

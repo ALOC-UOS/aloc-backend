@@ -22,12 +22,14 @@ public class ProblemScheduler {
 		updateDailyProblemHidden();
 	}
 
-	@Scheduled(cron = "0 0 0 * * WED-SAT")
+	@Scheduled(cron = "0 0 0 * * *")
 	public void updateDailyProblemHidden() {
 		problemService.updateProblemHiddenFalse(Routine.DAILY);
 	}
 
-	@Scheduled(cron = "0 0 0 * * TUE")
+//	@Scheduled(cron = "0 0 0 * * TUE")
+	// 3분마다
+	@Scheduled(cron = "0 0/6 * * * *")
 	// 코스 변경 요청을 처리한 후, user problem을 할당합니다.
 	public void updateAllUserProblem() {
 		alocRequestScheduler.resolveCourseChangeRequest();
