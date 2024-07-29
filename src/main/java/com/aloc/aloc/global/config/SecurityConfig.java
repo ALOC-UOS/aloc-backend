@@ -59,10 +59,14 @@ public class SecurityConfig {
 				.requestMatchers(
 					"/purchase",
 					"/api2/authorize/*",
-					"/api2/problem/solved",
+					"/api2/weekly-problems",
+					"/api2/today-problem/solved",
+					"/api2/problems/solved",
+					"/api2/user",
+					"/api2/authorize/**",
+					"/api2//user/course",
 					"/api2/withdraw",
-					"/api2/color/change",
-					"/api2/problem/weekly/status"
+					"/api2/color/change"
 				).authenticated()
 				.anyRequest().permitAll())
 			.exceptionHandling(exceptionConfig -> exceptionConfig
