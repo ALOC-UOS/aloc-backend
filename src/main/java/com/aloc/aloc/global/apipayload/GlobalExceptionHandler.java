@@ -1,6 +1,7 @@
 package com.aloc.aloc.global.apipayload;
 
 import java.nio.file.AccessDeniedException;
+import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,6 +51,16 @@ public class GlobalExceptionHandler {
 			ErrorStatus._FORBIDDEN.getCode(),
 			ex.getMessage(),
 			ErrorStatus._FORBIDDEN.getMessage()
+		);
+	}
+
+	@ExceptionHandler(NoSuchElementException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public CustomApiResponse<String> handleNoSuchElementException(NoSuchElementException ex) {
+		return CustomApiResponse.onFailure(
+			ErrorStatus._BAD_REQUEST.getCode(),
+			ex.getMessage(),
+			ErrorStatus._BAD_REQUEST.getMessage()
 		);
 	}
 }
