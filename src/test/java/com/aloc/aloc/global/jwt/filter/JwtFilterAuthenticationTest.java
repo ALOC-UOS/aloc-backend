@@ -59,7 +59,7 @@ public class JwtFilterAuthenticationTest {
 
 	private static final String LOGIN_URL = "/api2/login";
 	private static final String REFRESH_URL = "/api2/refresh";
-	private static final String TEST_URL = "/api2/problem/weekly/status";
+	private static final String TEST_URL = "/api2/weekly-problems";
 
 	private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
 	private static final String BEARER = "Bearer ";

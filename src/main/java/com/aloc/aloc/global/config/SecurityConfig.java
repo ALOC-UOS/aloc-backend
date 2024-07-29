@@ -64,7 +64,7 @@ public class SecurityConfig {
 					"/api2/problems/solved",
 					"/api2/user",
 					"/api2/authorize/**",
-					"/api2//user/course",
+					"/api2/user/course",
 					"/api2/withdraw",
 					"/api2/color/change"
 				).authenticated()
