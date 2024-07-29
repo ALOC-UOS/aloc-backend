@@ -73,4 +73,8 @@ public class AlgorithmService {
 			.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다."));
 	}
 
+	public Algorithm getAlgorithmByName(String algorithmName) {
+		return algorithmRepository.findAlgorithmByNameAndSeason(algorithmName, currentSeason)
+			.orElseThrow(() -> new NoSuchElementException("해당 알고리즘이 존재하지 않습니다."));
+	}
 }
