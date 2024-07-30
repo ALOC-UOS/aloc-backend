@@ -99,6 +99,10 @@ public class UserController {
 
 	@SecurityRequirement(name = "JWT Auth")
 	@PostMapping("/user/password")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "유저의 패스워드가 일치합니다."),
+		@ApiResponse(responseCode = "400", description = "일치하지 않는 패스워드입니다.")
+	})
 	@Operation(summary = "유저의 비밀번호 일치 여부 확인", description = "request의 비밀번호와 db의 유저 비밀번호와 일치하는지 확인합니다.")
 	public CustomApiResponse<String> checkUserPassword(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user,
