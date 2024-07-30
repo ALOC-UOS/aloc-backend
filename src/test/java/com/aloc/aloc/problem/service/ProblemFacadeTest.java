@@ -156,13 +156,15 @@ public class ProblemFacadeTest {
 		when(problemSolvingService.getSolvedProblemListByUser(user1, 2, null)).thenReturn(
 			Arrays.asList(
 				ProblemSolvedResponseDto.builder()
-					.problemId(1L)
+					.id(1L)
+					.problemId(222)
 					.problemTitle("Problem 1")
 					.isSolved(true)
 					.problemDifficulty(3)
 					.build(),
 				ProblemSolvedResponseDto.builder()
-					.problemId(2L)
+					.id(2L)
+					.problemId(2224)
 					.problemTitle("Problem 2")
 					.isSolved(true)
 					.problemDifficulty(4)
