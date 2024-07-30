@@ -54,6 +54,12 @@ public class UserService {
 	public String changeCourse(String githubId) throws AccessDeniedException {
 		User user = userRepository.findByGithubId(githubId)
 			.orElseThrow(() -> new NoSuchElementException("존재하지 않은 사용자입니다."));
+
+		if (user.getAuthority().equals(Authority.ROLE_GUEST)) {
+			changeCourseForGuest(user);
+			return "guest 유저의 코스 변경이 완료되었습니다.";
+		}
+
 		if (user.getCourse().equals(Course.FULL)) {
 			throw new AccessDeniedException("FULL 코스에서 HALF 코스로의 변경은 불가합니다. 담당자에게 문의하세요.");
 		}
@@ -64,6 +70,11 @@ public class UserService {
 			.build();
 		alocRequestRepository.save(request);
 		return "다음 주차부터 FULL 코스로 변경됩니다.";
+	}
+
+	private void changeCourseForGuest(User user) {
+		user.setCourse(user.getCourse().equals(Course.FULL) ? Course.HALF : Course.FULL);
+		saveUser(user);
 	}
 
 	@Transactional
