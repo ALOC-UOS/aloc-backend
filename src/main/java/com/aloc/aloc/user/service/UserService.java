@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import com.aloc.aloc.history.service.HistoryService;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.BaekjoonRankScrapingService;
 import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.dto.request.UserPasswordDto;
 import com.aloc.aloc.user.enums.Authority;
 import com.aloc.aloc.user.repository.UserRepository;
 
@@ -27,6 +29,7 @@ public class UserService {
 	private final HistoryService historyService;
 	private final BaekjoonRankScrapingService baekjoonRankScrapingService;
 	private final AlocRequestRepository alocRequestRepository;
+	private final BCryptPasswordEncoder passwordEncoder;
 
 	public void checkAdmin(String githubId) {
 		Optional<User> userOptional = userRepository.findByGithubId(githubId);
@@ -81,5 +84,23 @@ public class UserService {
 
 	public void saveUser(User user) {
 		userRepository.save(user);
+	}
+
+	public String checkUserPassword(String githubId, UserPasswordDto userPasswordDto) {
+		User user = findUser(githubId);
+		if (user.matchPassword(passwordEncoder, userPasswordDto.getPassword())) {
+			return "유저의 비밀번호가 일치합니다.";
+		} else {
+			throw new IllegalArgumentException("일치하지 않는 패스워드입니다.");
+		}
+	}
+
+	@Transactional
+	public String updateUserPassword(String githubId, UserPasswordDto userPasswordDto) {
+		User user = findUser(githubId);
+		user.setPassword(userPasswordDto.getPassword());
+		user.encodePassword(passwordEncoder);
+		saveUser(user);
+		return "유저 비밀번호 변경을 성공하였습니다.";
 	}
 }

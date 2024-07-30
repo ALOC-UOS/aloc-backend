@@ -6,9 +6,11 @@ import java.util.List;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,11 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.service.ProblemFacade;
-import com.aloc.aloc.problemtype.enums.Routine;
+import com.aloc.aloc.user.dto.request.UserPasswordDto;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
 import com.aloc.aloc.user.service.UserFacade;
 import com.aloc.aloc.user.service.UserRegistrationService;
 import com.aloc.aloc.user.service.UserService;
+
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,6 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -71,6 +75,7 @@ public class UserController {
 
 	@PutMapping("/user/course")
 	@SecurityRequirement(name = "JWT Auth")
+	@Operation(summary = "코스 변경 요청", description = "하프 코스에서 풀 코스로의 변경을 요청합니다.")
 	public CustomApiResponse<String> changeCourse(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user) throws AccessDeniedException {
 		return CustomApiResponse.onSuccess(userService.changeCourse(user.getUsername()));
@@ -91,5 +96,31 @@ public class UserController {
 		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season
 	) {
 		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId, season));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@PostMapping("/user/check-password")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "유저의 패스워드가 일치합니다."),
+		@ApiResponse(responseCode = "400", description = "일치하지 않는 패스워드입니다.")
+	})
+	@Operation(summary = "유저의 비밀번호 일치 여부 확인", description = "request의 비밀번호와 db의 유저 비밀번호와 일치하는지 확인합니다.")
+	public CustomApiResponse<String> checkUserPassword(
+		@Parameter(hidden = true) @AuthenticationPrincipal User user,
+		@RequestBody @Valid UserPasswordDto userPasswordDto) {
+		return CustomApiResponse.onSuccess(userService.checkUserPassword(user.getUsername(), userPasswordDto));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@PatchMapping("/user/reset-password")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "비밀번호가 변경되었습니다."),
+		@ApiResponse(responseCode = "500", description = "비밀번호 변경을 실패했습니다.")
+	})
+	@Operation(summary = "유저 비밀번호 변경", description = "유저의 비밀번호를 변경합니다.")
+	public CustomApiResponse<String> changeUserPassword(
+		@Parameter(hidden = true) @AuthenticationPrincipal User user,
+		@RequestBody @Valid UserPasswordDto userPasswordDto) {
+		return CustomApiResponse.onSuccess(userService.updateUserPassword(user.getUsername(), userPasswordDto));
 	}
 }
