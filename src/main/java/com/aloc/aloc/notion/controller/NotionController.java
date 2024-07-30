@@ -1,6 +1,5 @@
 package com.aloc.aloc.notion.controller;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +9,7 @@ import com.aloc.aloc.notion.dto.response.StudyScheduleResponse;
 import com.aloc.aloc.notion.service.NotionService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
