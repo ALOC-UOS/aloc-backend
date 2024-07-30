@@ -19,12 +19,19 @@ public class UserDetailResponseDto extends UserResponseDto {
 	private final Boolean todaySolved;
 	@Schema(description = "색상 분류", example = "special")
 	private final String colorCategory;
+	@Schema(description = "색상 코드 1", example = "#FFB800")
 	private final String color1;
+	@Schema(description = "색상 코드 2", example = "#FF69F0")
 	private final String color2;
+	@Schema(description = "색상 코드 3", example = "#408CFF")
 	private final String color3;
+	@Schema(description = "색상 코드 4", example = "null")
 	private final String color4;
+	@Schema(description = "색상 코드 5", example = "null")
 	private final String color5;
+	@Schema(description = "그라데이션 기울기", example = "135")
 	private final Integer degree;
+	@Schema(description = "유저 생성 일자", example = "2024-03-03 23:20:04.000000")
 	private final LocalDateTime createdAt;
 
 	public static UserDetailResponseDto of(User user,
