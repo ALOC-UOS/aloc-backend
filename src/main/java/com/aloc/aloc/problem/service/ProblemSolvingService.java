@@ -50,16 +50,16 @@ public class ProblemSolvingService {
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(User user, Integer season, Routine routine) {
+	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(User user, Integer season) {
 		List<UserProblem> unsolvedProblems
-			= userProblemService.getUserProblemList(user.getId(), season, false, routine);
+			= userProblemService.getUserProblemList(user.getId(), season, false);
 
 		return problemMapper.mapSolvedProblemToDtoList(unsolvedProblems);
 	}
 
-	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(User user, Integer season, Routine routine) {
+	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(User user, Integer season) {
 		List<UserProblem> solvedProblems
-			= userProblemService.getUserProblemList(user.getId(), season, true, routine);
+			= userProblemService.getUserProblemList(user.getId(), season, true);
 		return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
 	}
 
