@@ -88,7 +88,7 @@ public class UserService {
 
 	public String checkUserPassword(String githubId, UserPasswordDto userPasswordDto) {
 		User user = findUser(githubId);
-		if (passwordEncoder.matches(userPasswordDto.getPassword(), user.getPassword())) {
+		if (user.matchPassword(passwordEncoder, userPasswordDto.getPassword())) {
 			return "유저의 비밀번호가 일치합니다.";
 		} else {
 			throw new IllegalArgumentException("일치하지 않는 패스워드입니다.");
@@ -98,7 +98,8 @@ public class UserService {
 	@Transactional
 	public String updateUserPassword(String githubId, UserPasswordDto userPasswordDto) {
 		User user = findUser(githubId);
-		user.setPassword(passwordEncoder.encode(userPasswordDto.getPassword()));
+		user.setPassword(userPasswordDto.getPassword());
+		user.encodePassword(passwordEncoder);
 		saveUser(user);
 		return "유저 비밀번호 변경을 성공하였습니다.";
 	}
