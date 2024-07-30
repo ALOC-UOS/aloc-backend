@@ -3,14 +3,15 @@ package com.aloc.aloc.notion.service;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Locale;
+import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.notion.dto.response.StudyScheduleResponseDto;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,10 +21,13 @@ public class NotionService {
 	private final NotionClient notionClient;
 	private static final String STUDY_SCHEDULE = "study-schedule";
 	public StudyScheduleResponseDto getStudySchedule() {
-		String response = notionClient.queryDatabaseByName(STUDY_SCHEDULE);
-		JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-		JsonArray results = jsonObject.getAsJsonArray("results");
-		JsonObject lastRow = results.get(0).getAsJsonObject(); // 가장 최근에 생성된 것을 불러옴
+		JsonArray results = notionClient.queryDatabaseByName(STUDY_SCHEDULE);
+
+		JsonObject lastRow = StreamSupport.stream(results.spliterator(), false)
+				.map(JsonObject.class::cast)
+				.max(Comparator.comparing(jsonObject -> jsonObject.get("created_time").getAsString()))
+				.orElseThrow(() -> new IllegalStateException("No data found in Notion database"));
+
 		JsonObject properties = lastRow.getAsJsonObject("properties");
 
 		String date = properties.getAsJsonObject("모임일자").get("date")
