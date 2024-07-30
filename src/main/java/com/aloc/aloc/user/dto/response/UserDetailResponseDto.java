@@ -1,10 +1,10 @@
 package com.aloc.aloc.user.dto.response;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
 import com.aloc.aloc.user.User;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
