@@ -37,6 +37,7 @@ public class ProblemFacade implements UserProblemRecordLoader {
 	public String checkTodaySolved(String username) {
 		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
 		User user = userService.findUser(username);
+		userService.isActiveUser(user);
 		loadUserTodayProblemRecord(user);
 		return "success";
 	}
