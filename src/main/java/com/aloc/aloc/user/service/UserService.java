@@ -1,6 +1,5 @@
 package com.aloc.aloc.user.service;
 
-import com.aloc.aloc.user.dto.request.UserPasswordDto;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,6 +14,7 @@ import com.aloc.aloc.history.service.HistoryService;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.BaekjoonRankScrapingService;
 import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.dto.request.UserPasswordDto;
 import com.aloc.aloc.user.enums.Authority;
 import com.aloc.aloc.user.repository.UserRepository;
 
@@ -85,6 +85,11 @@ public class UserService {
 	}
 
 	public String checkUserPassword(String githubId, UserPasswordDto userPasswordDto) {
-
+		User user = findUser(githubId);
+		if (user.getPassword().equals(userPasswordDto.getPassword())) {
+			return "유저의 패스워드가 일치합니다.";
+		} else {
+			throw new IllegalArgumentException("일치하지 않는 패스워드입니다.");
+		}
 	}
 }
