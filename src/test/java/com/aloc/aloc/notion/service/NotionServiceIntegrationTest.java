@@ -24,6 +24,5 @@ public class NotionServiceIntegrationTest {
 		assertTrue(response.getWeek() > 0);
 		assertNotNull(response.getDate());
 		assertNotNull(response.getLocation());
-		System.out.println(response);
 	}
 }

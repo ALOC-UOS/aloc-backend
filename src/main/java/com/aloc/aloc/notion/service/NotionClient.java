@@ -17,15 +17,26 @@ import lombok.RequiredArgsConstructor;
 public class NotionClient {
 	private final NotionProperty notionProperty;
 	private final RestTemplate restTemplate;
+	private static final String NOTION_DATABASE_URL =  "https://api.notion.com/v1/databases/%s/query";
+
 	private String queryDatabase(String databaseId) {
+		HttpHeaders headers = initHeader();
+		HttpEntity<String> entity = new HttpEntity<>("{}", headers);
+
+		String url = buildNotionDatabaseUrl(databaseId);
+		return restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
+	}
+
+	private HttpHeaders initHeader() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(notionProperty.getToken());
 		headers.set("Notion-Version", "2022-06-28");
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> entity = new HttpEntity<>("{}", headers);
+		return  headers;
+	}
 
-		String url = "https://api.notion.com/v1/databases/" + databaseId + "/query";
-		return restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
+	private String buildNotionDatabaseUrl(String databaseId) {
+		return String.format(NOTION_DATABASE_URL, databaseId);
 	}
 
 	public String queryDatabaseByName(String databaseName) {
