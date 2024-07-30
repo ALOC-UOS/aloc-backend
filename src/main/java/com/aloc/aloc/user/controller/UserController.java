@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -98,7 +99,7 @@ public class UserController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@PostMapping("/user/password")
+	@PostMapping("/user/check-password")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "유저의 패스워드가 일치합니다."),
 		@ApiResponse(responseCode = "400", description = "일치하지 않는 패스워드입니다.")
@@ -111,7 +112,7 @@ public class UserController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@PostMapping("/user/new-password")
+	@PatchMapping("/user/reset-password")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "비밀번호가 변경되었습니다."),
 		@ApiResponse(responseCode = "500", description = "비밀번호 변경을 실패했습니다.")
