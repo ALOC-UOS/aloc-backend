@@ -93,12 +93,15 @@ public class ProblemService {
 	}
 
 	public void updateProblemHiddenFalse(Routine routine) {
-		List<Problem> problems = problemRepository.findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(routine);
 		if (routine.equals(Routine.DAILY)) {
-			Problem problem = problems.get(0);
-			problem.setHidden(false);
-			problemRepository.save(problem);
+			Problem halfTodayProblem = problemRepository.findFirstHiddenProblemByCourseAndRoutine(Course.HALF, routine);
+			Problem fullTodayProblem = problemRepository.findFirstHiddenProblemByCourseAndRoutine(Course.FULL, routine);
+			halfTodayProblem.setHidden(false);
+			fullTodayProblem.setHidden(false);
+			problemRepository.save(halfTodayProblem);
+			problemRepository.save(fullTodayProblem);
 		} else {
+			List<Problem> problems = problemRepository.findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(routine);
 			for (Problem problem : problems) {
 				problem.setHidden(false);
 			}

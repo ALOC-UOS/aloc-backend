@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 public class ProblemScheduler {
 	private final ProblemFacade problemFacade;
 	private final ProblemService problemService;
-	private final AlocRequestScheduler alocRequestScheduler;
 
 	// weekly 문제를 공개합니다.
 	public void updateAllWeeklyProblemHidden() {
@@ -23,7 +22,7 @@ public class ProblemScheduler {
 	}
 
 	// 수요일 부터 일요일까지 매일 daily 문제를 공개합니다.
-	@Scheduled(cron = "0 0 0 * * WED-SUN")
+	@Scheduled(cron = "0 0 0 * * WED,THU,FRI,SAT,SUN,MON")
 	public void updateDailyProblemHidden() {
 		problemService.updateProblemHiddenFalse(Routine.DAILY);
 	}
@@ -31,7 +30,6 @@ public class ProblemScheduler {
 	@Scheduled(cron = "0 0 0 * * TUE")
 	// 코스 변경 요청을 처리한 후, user problem을 할당합니다.
 	public void updateAllUserProblem() {
-		alocRequestScheduler.resolveCourseChangeRequest();
 		problemFacade.updateAllUserProblem();
 		updateAllWeeklyProblemHidden();
 	}
