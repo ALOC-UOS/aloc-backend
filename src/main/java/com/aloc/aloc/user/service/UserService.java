@@ -1,5 +1,6 @@
 package com.aloc.aloc.user.service;
 
+import com.aloc.aloc.user.dto.request.UserPasswordDto;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -81,5 +82,9 @@ public class UserService {
 
 	public void saveUser(User user) {
 		userRepository.save(user);
+	}
+
+	public String checkUserPassword(String githubId, UserPasswordDto userPasswordDto) {
+
 	}
 }
