@@ -80,18 +80,16 @@ public class UserController {
 	@Operation(summary = "유저의 풀지 않은 문제 조회", description = "유저가 풀지 않은 문제를 조회합니다. 시즌이 null이면 모든 시즌을 조회합니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUnsolvedProblemList(
 		@Parameter(required = true) @PathVariable() String githubId,
-		@Parameter(description = "루틴", required = true) @RequestParam Routine routine,
 		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season) {
-		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId, season, routine));
+		return CustomApiResponse.onSuccess(problemFacade.getUnsolvedProblemListByUser(githubId, season));
 	}
 
 	@GetMapping("/user/{githubId}/solved-problems")
 	@Operation(summary = "유저의 이미 푼 문제 조회", description = "유저가 푼 문제를 조회합니다. 시즌이 null이면 모든 시즌을 조회합니다.")
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getUserSolvedProblemList(
 		@Parameter(description = "유저 깃허브 아이디", required = true) @PathVariable() String githubId,
-		@Parameter(description = "루틴", required = true) @RequestParam Routine routine,
 		@Parameter(description = "조회할 시즌 (선택, 기본값: 모든 시즌)") @RequestParam(required = false) Integer season
 	) {
-		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId, season, routine));
+		return CustomApiResponse.onSuccess(problemFacade.getSolvedProblemListByUser(githubId, season));
 	}
 }

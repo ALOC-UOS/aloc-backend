@@ -153,7 +153,7 @@ public class ProblemFacadeTest {
 	void getSolvedProblemListByUser_shouldReturnListOfSolvedProblem() {
 		// Given=
 		when(userService.findUser(user1.getGithubId())).thenReturn(user1); // 추가된 부분
-		when(problemSolvingService.getSolvedProblemListByUser(user1, 2, null)).thenReturn(
+		when(problemSolvingService.getSolvedProblemListByUser(user1, 2)).thenReturn(
 			Arrays.asList(
 				ProblemSolvedResponseDto.builder()
 					.id(1L)
@@ -172,7 +172,7 @@ public class ProblemFacadeTest {
 			));
 
 		// When
-		List<ProblemSolvedResponseDto> result = problemFacade.getSolvedProblemListByUser(user1.getGithubId(), 2, null);
+		List<ProblemSolvedResponseDto> result = problemFacade.getSolvedProblemListByUser(user1.getGithubId(), 2);
 
 		// Then
 		assertEquals(2, result.size());
