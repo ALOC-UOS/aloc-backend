@@ -1,5 +1,6 @@
 package com.aloc.aloc.notion.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Notion API", description = "Notion API 입니다.")
 @RequestMapping("/api2/notion")
 public class NotionController {
 	private final NotionService notionService;
