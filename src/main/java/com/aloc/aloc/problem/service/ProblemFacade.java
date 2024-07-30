@@ -80,6 +80,7 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
 		try {
 			for (Problem problem : problems) {
+				System.out.println(problem.getProblemId());
 				boolean isSolved =
 					problemSolvingService.updateUserAndSaveSolvedProblem(user, problem);
 				if (isSolved) {

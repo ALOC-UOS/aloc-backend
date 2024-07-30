@@ -43,16 +43,14 @@ public class ProblemService {
 	}
 
 	List<Problem> getWeeklyProblem(User user) {
-		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
-			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
-		System.out.println("thisWeekAlgorithm = " + thisWeekAlgorithm);
+		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm();
 		ProblemType problemType = problemTypeRepository
 			.findProblemTypeByCourseAndRoutine(user.getCourse(), Routine.WEEKLY)
 			.orElseThrow(() -> new IllegalArgumentException("해당 코스의 주간 문제 타입이 없습니다."));
 		System.out.println("problemType = " + problemType.getId());
 		return problemRepository.findVisibleProblemsByAlgorithmAndCourse(
 			currentSeason,
-			thisWeekAlgorithm.getAlgorithmId(),
+			weeklyAlgorithm.getAlgorithmId(),
 			problemType.getId()
 		);
 	}
