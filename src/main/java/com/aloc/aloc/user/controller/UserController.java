@@ -109,4 +109,17 @@ public class UserController {
 		@RequestBody @Valid UserPasswordDto userPasswordDto) {
 		return CustomApiResponse.onSuccess(userService.checkUserPassword(user.getUsername(), userPasswordDto));
 	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@PostMapping("/user/new-password")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "비밀번호가 변경되었습니다."),
+		@ApiResponse(responseCode = "500", description = "비밀번호 변경을 실패했습니다.")
+	})
+	@Operation(summary = "유저 비밀번호 변경", description = "유저의 비밀번호를 변경합니다.")
+	public CustomApiResponse<String> changeUserPassword(
+		@Parameter(hidden = true) @AuthenticationPrincipal User user,
+		@RequestBody @Valid UserPasswordDto userPasswordDto) {
+		return CustomApiResponse.onSuccess(userService.updateUserPassword(user.getUsername(), userPasswordDto));
+	}
 }
