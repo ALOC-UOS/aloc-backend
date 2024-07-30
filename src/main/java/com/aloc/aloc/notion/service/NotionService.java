@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Service;
 
-import com.aloc.aloc.notion.dto.response.StudyScheduleResponse;
+import com.aloc.aloc.notion.dto.response.StudyScheduleResponseDto;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class NotionService {
 	private final NotionClient notionClient;
 	private static final String STUDY_SCHEDULE = "study-schedule";
-	public StudyScheduleResponse getStudySchedule() {
+	public StudyScheduleResponseDto getStudySchedule() {
 		String response = notionClient.queryDatabaseByName(STUDY_SCHEDULE);
 		JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
 		JsonArray results = jsonObject.getAsJsonArray("results");
@@ -33,7 +33,7 @@ public class NotionService {
 		String weekStr = properties.getAsJsonObject("주차").get("title")
 			.getAsJsonArray().get(0).getAsJsonObject().get("text").getAsJsonObject().get("content").getAsString();
 
-		return StudyScheduleResponse.builder()
+		return StudyScheduleResponseDto.builder()
 			.week(extractWeekNumber(weekStr))
 			.date(formatDateTime(date))
 			.location(location)

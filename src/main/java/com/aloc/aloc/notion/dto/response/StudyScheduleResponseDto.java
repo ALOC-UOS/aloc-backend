@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class StudyScheduleResponse {
+public class StudyScheduleResponseDto {
 	private int week;
 	private String date;
 	private String location;

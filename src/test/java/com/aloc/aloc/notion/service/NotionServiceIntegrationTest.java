@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.aloc.aloc.notion.NotionProperty;
-import com.aloc.aloc.notion.dto.response.StudyScheduleResponse;
+import com.aloc.aloc.notion.dto.response.StudyScheduleResponseDto;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -19,7 +19,7 @@ public class NotionServiceIntegrationTest {
 	private NotionProperty notionProperty;
 	@Test
 	void getStudySchedule() {
-		StudyScheduleResponse response = notionService.getStudySchedule();
+		StudyScheduleResponseDto response = notionService.getStudySchedule();
 		assertNotNull(response);
 		assertTrue(response.getWeek() > 0);
 		assertNotNull(response.getDate());

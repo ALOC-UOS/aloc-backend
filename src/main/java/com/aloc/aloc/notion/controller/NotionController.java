@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
-import com.aloc.aloc.notion.dto.response.StudyScheduleResponse;
+import com.aloc.aloc.notion.dto.response.StudyScheduleResponseDto;
 import com.aloc.aloc.notion.service.NotionService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +21,7 @@ public class NotionController {
 
 	@GetMapping("/study-schedule")
 	@Operation(summary = "스터디 일정 조회", description = "예정된 스터디 일정 및 장소를 조회합니다.")
-	public CustomApiResponse<StudyScheduleResponse> getStudySchedule() {
+	public CustomApiResponse<StudyScheduleResponseDto> getStudySchedule() {
 		return CustomApiResponse.onSuccess(notionService.getStudySchedule());
 	}
 
