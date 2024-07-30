@@ -4,6 +4,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
+	private static final Set<Authority> ACTIVE_AUTHORITIES = Set.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
 	private final UserRepository userRepository;
 	private final HistoryService historyService;
 	private final BaekjoonRankScrapingService baekjoonRankScrapingService;
@@ -84,6 +85,12 @@ public class UserService {
 
 	public void saveUser(User user) {
 		userRepository.save(user);
+	}
+
+	public void isActiveUser(User user) {
+		if (!ACTIVE_AUTHORITIES.contains(user.getAuthority())) {
+			throw new org.springframework.security.access.AccessDeniedException("해당 기능을 사용할 수 없는 유저입니다.");
+		}
 	}
 
 	public String checkUserPassword(String githubId, UserPasswordDto userPasswordDto) {
