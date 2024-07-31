@@ -21,6 +21,7 @@ public class AlocRequestScheduler {
 	private final UserRepository userRepository;
 
 	@Transactional
+	@Scheduled(cron = "0 50 23 * * MON")
 	public void resolveCourseChangeRequest() {
 		List<AlocRequest> requests = alocRequestRepository.findAllByRequestTypeAndIsResolvedFalse("changeCourse");
 		for (AlocRequest request : requests) {
