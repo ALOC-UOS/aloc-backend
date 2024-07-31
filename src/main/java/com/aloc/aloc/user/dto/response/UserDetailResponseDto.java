@@ -1,6 +1,6 @@
 package com.aloc.aloc.user.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.aloc.aloc.user.User;
 
@@ -31,8 +31,8 @@ public class UserDetailResponseDto extends UserResponseDto {
 	private final String color5;
 	@Schema(description = "그라데이션 기울기", example = "135")
 	private final Integer degree;
-	@Schema(description = "유저 생성 일자", example = "2024-03-03 23:20:04.000000")
-	private final LocalDateTime createdAt;
+	@Schema(description = "유저 생성 일자", example = "2024-03-04T19:37:55")
+	private final String createdAt;
 
 	public static UserDetailResponseDto of(User user,
 		Integer unsolvedCount,
@@ -64,7 +64,7 @@ public class UserDetailResponseDto extends UserResponseDto {
 			.color4(color4)
 			.color5(color5)
 			.degree(degree)
-			.createdAt(user.getCreatedAt())
+			.createdAt(user.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
 			.build();
 	}
 }
