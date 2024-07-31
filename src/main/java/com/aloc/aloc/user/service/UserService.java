@@ -4,6 +4,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
+	private static final Set<Authority> ACTIVE_AUTHORITIES = Set.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
 	private final UserRepository userRepository;
 	private final HistoryService historyService;
 	private final BaekjoonRankScrapingService baekjoonRankScrapingService;
@@ -53,6 +54,12 @@ public class UserService {
 	public String changeCourse(String githubId) throws AccessDeniedException {
 		User user = userRepository.findByGithubId(githubId)
 			.orElseThrow(() -> new NoSuchElementException("존재하지 않은 사용자입니다."));
+
+		if (user.getAuthority().equals(Authority.ROLE_GUEST)) {
+			changeCourseForGuest(user);
+			return "guest 유저의 코스 변경이 완료되었습니다.";
+		}
+
 		if (user.getCourse().equals(Course.FULL)) {
 			throw new AccessDeniedException("FULL 코스에서 HALF 코스로의 변경은 불가합니다. 담당자에게 문의하세요.");
 		}
@@ -65,6 +72,11 @@ public class UserService {
 		return "다음 주차부터 FULL 코스로 변경됩니다.";
 	}
 
+	private void changeCourseForGuest(User user) {
+		user.setCourse(user.getCourse().equals(Course.FULL) ? Course.HALF : Course.FULL);
+		saveUser(user);
+	}
+
 	@Transactional
 	public void updateUserRank(User user, Integer rank) {
 		user.setRank(rank);
@@ -73,8 +85,7 @@ public class UserService {
 	}
 
 	public List<User> getActiveUsers() {
-		List<Authority> authorities = List.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
-		return userRepository.findAllByAuthorityIn(authorities);
+		return userRepository.findAllByAuthorityIn(ACTIVE_AUTHORITIES);
 	}
 
 	public User findUser(String githubId) {
@@ -84,6 +95,18 @@ public class UserService {
 
 	public void saveUser(User user) {
 		userRepository.save(user);
+	}
+
+	public void isActiveUser(User user) {
+		if (!ACTIVE_AUTHORITIES.contains(user.getAuthority())) {
+			throw new org.springframework.security.access.AccessDeniedException("해당 기능을 사용할 수 없는 유저입니다.");
+		}
+	}
+
+	public User getActiveUser(String githubId) {
+		User user = findUser(githubId);
+		isActiveUser(user);
+		return user;
 	}
 
 	public String checkUserPassword(String githubId, UserPasswordDto userPasswordDto) {

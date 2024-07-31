@@ -24,7 +24,6 @@ import com.aloc.aloc.user.service.UserFacade;
 import com.aloc.aloc.user.service.UserRegistrationService;
 import com.aloc.aloc.user.service.UserService;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

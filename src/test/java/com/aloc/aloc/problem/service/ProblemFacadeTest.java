@@ -30,6 +30,7 @@ import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
+import com.aloc.aloc.user.enums.Authority;
 import com.aloc.aloc.user.service.UserService;
 
 @ExtendWith(MockitoExtension.class)
@@ -72,6 +73,7 @@ public class ProblemFacadeTest {
 			Course.FULL
 		);
 		user1.setId(1L);
+		user1.setAuthority(Authority.ROLE_USER);
 		User user2 = new User(
 			"user2",
 			"baekjoon2",
@@ -184,12 +186,12 @@ public class ProblemFacadeTest {
 	void checkSolved_LoadUserProblemRecordThrowsException_PropagatesException() {
 		// Arrange
 		String username = "testUser";
-		when(userService.findUser(username)).thenReturn(user1);
+		when(userService.getActiveUser(username)).thenReturn(user1);
 		doThrow(new RuntimeException("Error loading problem record")).when(problemFacade).loadUserProblemRecord(user1);
 
 		// Act & Assert
 		assertThrows(RuntimeException.class, () -> problemFacade.checkSolved(username));
-		verify(userService).findUser(username);
+		verify(userService).getActiveUser(username);
 		verify(problemFacade).loadUserProblemRecord(user1);
 	}
 

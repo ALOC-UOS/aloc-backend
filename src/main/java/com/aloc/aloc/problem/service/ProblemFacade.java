@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 import com.aloc.aloc.user.service.UserService;
@@ -29,14 +28,14 @@ public class ProblemFacade implements UserProblemRecordLoader {
 
 	public String checkSolved(String username) {
 		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
-		User user = userService.findUser(username);
+		User user = userService.getActiveUser(username);
 		loadUserProblemRecord(user);
 		return "success";
 	}
 
 	public String checkTodaySolved(String username) {
-		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
-		User user = userService.findUser(username);
+		// 오늘의 문제의 풀이 여부를 확인합니다.
+		User user = userService.getActiveUser(username);
 		loadUserTodayProblemRecord(user);
 		return "success";
 	}
