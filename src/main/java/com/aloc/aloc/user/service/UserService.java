@@ -85,8 +85,7 @@ public class UserService {
 	}
 
 	public List<User> getActiveUsers() {
-		List<Authority> authorities = List.of(Authority.ROLE_USER, Authority.ROLE_ADMIN);
-		return userRepository.findAllByAuthorityIn(authorities);
+		return userRepository.findAllByAuthorityIn(ACTIVE_AUTHORITIES);
 	}
 
 	public User findUser(String githubId) {
@@ -102,6 +101,12 @@ public class UserService {
 		if (!ACTIVE_AUTHORITIES.contains(user.getAuthority())) {
 			throw new org.springframework.security.access.AccessDeniedException("해당 기능을 사용할 수 없는 유저입니다.");
 		}
+	}
+
+	public User getActiveUser(String githubId) {
+		User user = findUser(githubId);
+		isActiveUser(user);
+		return user;
 	}
 
 	public String checkUserPassword(String githubId, UserPasswordDto userPasswordDto) {
