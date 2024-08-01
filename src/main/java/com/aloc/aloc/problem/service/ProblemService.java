@@ -92,7 +92,7 @@ public class ProblemService {
 		return todayProblem;
 	}
 
-	public void updateProblemHiddenFalse(Routine routine) {
+	public Integer updateProblemHiddenFalse(Routine routine) {
 		if (routine.equals(Routine.DAILY)) {
 			Problem halfTodayProblem = problemRepository.findFirstHiddenProblemByCourseAndRoutine(Course.HALF, routine);
 			Problem fullTodayProblem = problemRepository.findFirstHiddenProblemByCourseAndRoutine(Course.FULL, routine);
@@ -100,12 +100,14 @@ public class ProblemService {
 			fullTodayProblem.setHidden(false);
 			problemRepository.save(halfTodayProblem);
 			problemRepository.save(fullTodayProblem);
+			return 2;
 		} else {
 			List<Problem> problems = problemRepository.findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(routine);
 			for (Problem problem : problems) {
 				problem.setHidden(false);
 			}
 			problemRepository.saveAll(problems);
+			return problems.size();
 		}
 	}
 

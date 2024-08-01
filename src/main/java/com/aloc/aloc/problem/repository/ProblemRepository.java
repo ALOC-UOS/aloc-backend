@@ -80,7 +80,8 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		+ "WHERE p.hidden = true "
 		+ "AND p.problemType.course = :course "
 		+ "AND p.problemType.routine = :routine "
-		+ "ORDER BY p.createdAt ASC")
+		+ "ORDER BY p.createdAt ASC "
+		+ "LIMIT 1")
 	Problem findFirstHiddenProblemByCourseAndRoutine(Course course, Routine routine);
 }
 
