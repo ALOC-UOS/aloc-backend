@@ -170,8 +170,13 @@ public class ProblemScrapingService {
 
 	private List<String> extractProblemNumbers(Elements rows) {
 		List<String> problemNumbers = new ArrayList<>();
+		int count = 0;
 		for (Element row : rows) {
+			if (count >= 100) {
+				break;  // 100개에 도달하면 루프 종료
+			}
 			problemNumbers.add(row.select(".list_problem_id").text());
+			count++;
 		}
 		return problemNumbers;
 	}
@@ -243,6 +248,7 @@ public class ProblemScrapingService {
 		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
 
 		String titleKo = extractTitleKo(jsonObject); // 한국어 제목 추출
+		System.out.println("titleKo = " + titleKo);
 		if (titleKo == null) {
 			throw new IllegalArgumentException("Korean title not found in JSON: " + jsonString);
 		}
@@ -254,9 +260,7 @@ public class ProblemScrapingService {
 	}
 
 	private String extractTitleKo(JsonObject jsonObject) {
-		if (jsonObject.has("titleKo")) {
-			return jsonObject.get("titleKo").getAsString();
-		} else if (jsonObject.has("titles")) {
+		if (jsonObject.has("titles")) {
 			JsonArray titles = jsonObject.getAsJsonArray("titles");
 			for (JsonElement titleElement : titles) {
 				JsonObject titleObject = titleElement.getAsJsonObject();

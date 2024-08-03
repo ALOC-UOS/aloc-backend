@@ -105,11 +105,12 @@ public class ProblemSolvingService {
 	public void addUserProblemRecord(User user) {
 		List<Problem> problems = problemService.getHiddenProblemsBySeasonAndCourse(user.getCourse());
 		for (Problem problem : problems) {
-			userProblemService.saveUserProblem(UserProblem.builder()
-				.user(user)
-				.problem(problemService.findProblemById(problem.getId()))
-				.season(currentSeason)
-				.build());
+			UserProblem userProblem = userProblemService.getOrCreateUserProblem(
+				user,
+				problem,
+				false
+			);
+			userProblemService.saveUserProblem(userProblem);
 		}
 	}
 }
