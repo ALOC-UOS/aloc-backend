@@ -77,12 +77,14 @@ public class CoinService {
 	}
 
 
-	void addCoinEligibleForTodayProblem(User user, Problem problem) {
+	int addCoinEligibleForTodayProblem(User user, Problem problem) {
 		// 오늘의 문제가 Daily 문제인 경우 코인을 지급합니다.
 		if (problem.getProblemType().getRoutine() == Routine.DAILY) {
 			int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
 			user.addCoin(coinToAdd);
+			return coinToAdd;
 		}
+		return 0;
 	}
 
 	private boolean isEligibleForCoin(Problem problem) {

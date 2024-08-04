@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
+import com.aloc.aloc.problem.dto.response.TodayProblemSolvedResponseDto;
 import com.aloc.aloc.problem.service.ProblemFacade;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problemtype.enums.Course;
@@ -87,7 +88,7 @@ public class ProblemController {
 		description = "오늘의 문제 풀이 상태 업데이트 성공",
 		content = @Content(schema = @Schema(implementation = String.class))
 	)
-	public CustomApiResponse<String> checkTodaySolved(
+	public CustomApiResponse<TodayProblemSolvedResponseDto> checkTodaySolved(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) {
 		return CustomApiResponse.onSuccess(problemFacade.checkTodaySolved(user.getUsername()));
