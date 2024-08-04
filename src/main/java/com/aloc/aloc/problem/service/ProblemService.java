@@ -31,8 +31,6 @@ public class ProblemService {
 	private final ProblemRepository problemRepository;
 	private final ProblemTypeRepository problemTypeRepository;
 	private final ProblemMapper problemMapper;
-	private final TagRepository tagRepository;
-	private final ProblemTagRepository problemTagRepository;
 	private final AlgorithmService algorithmService;
 
 	@Value("${app.season}")
@@ -145,44 +143,13 @@ public class ProblemService {
 		return problemRepository.findHiddenProblemsBySeasonAndCourse(currentSeason, course);
 	}
 
-	public Problem addProblem(ProblemRequestDto problemRequestDto) {
-		Algorithm algorithm = algorithmService.getAlgorithmByName(problemRequestDto.getAlgorithm());
-		ProblemType problemType = problemTypeRepository.findById(problemRequestDto.getProblemTypeId())
-			.orElseThrow(() -> new IllegalArgumentException("해당 문제 타입이 없습니다."));
-		if (checkProblemExistByProblemId(problemRequestDto.getProblemId())) {
-			throw new IllegalArgumentException("해당 문제가 이미 이번 시즌에 존재합니다.");
-		}
-		return createProblem(problemRequestDto, algorithm, problemType);
+	public Algorithm getAlgorithmByAlgorithmName(String algorithm) {
+		return algorithmService.getAlgorithmByName(algorithm);
 	}
 
-	private void saveProblemTag(Problem problem, List<String> tags) {
-		for (String tagName : tags) {
-			Tag tag = tagRepository.findByKoreanName(tagName)
-				.orElseThrow(() -> new IllegalArgumentException("해당 태그가 없습니다."));
-			ProblemTag problemTag = ProblemTag.builder()
-				.problem(problem)
-				.tag(tag)
-				.build();
-			problemTagRepository.save(problemTag);
-			problem.addProblemTag(problemTag);
-		}
-	}
-
-	private Problem createProblem(
-		ProblemRequestDto problemRequestDto,
-		Algorithm algorithm,
-		ProblemType problemType
-	) {
-		Problem problem = Problem.builder()
-			.title(problemRequestDto.getTitle())
-			.algorithm(algorithm)
-			.problemId(problemRequestDto.getProblemId())
-			.difficulty(problemRequestDto.getDifficulty())
-			.problemType(problemType)
-			.build();
-		problemRepository.save(problem);
-		saveProblemTag(problem, problemRequestDto.getTags());
-		return problem;
+	public ProblemType getProblemTypeById(Long problemType) {
+		return problemTypeRepository.findById(problemType)
+			.orElseThrow(() -> new IllegalArgumentException("문제 타입이 없습니다."));
 	}
 }
 

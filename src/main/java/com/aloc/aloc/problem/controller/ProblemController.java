@@ -124,16 +124,23 @@ public class ProblemController {
 		return CustomApiResponse.onSuccess(problemFacade.getWeeklyProblems(user.getUsername()));
 	}
 
-	@PostMapping("/user-problem")
-	public CustomApiResponse<String> addUserProblem(String githubId, Long problemId) {
-		return CustomApiResponse.onSuccess(problemFacade.addUserProblem(githubId, problemId));
+	@SecurityRequirement(name = "JWT Auth")
+	@PostMapping("/user-problem/force")
+	public CustomApiResponse<String> addUserProblem(
+		String githubId,
+		Long problemId,
+		@Parameter(hidden = true) @AuthenticationPrincipal User user
+	) {
+		return CustomApiResponse.onSuccess(problemFacade.addUserProblemForce(user.getUsername(), githubId, problemId));
 	}
 
+	@SecurityRequirement(name = "JWT Auth")
 	@PostMapping("/problem/force")
 	public CustomApiResponse<String> addProblem(
-		@RequestBody ProblemRequestDto problemRequestDto
+		@RequestBody ProblemRequestDto problemRequestDto,
+		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) {
 		return CustomApiResponse.onSuccess(
-			problemFacade.addProblemAndUserProblem(problemRequestDto));
+			problemFacade.addProblemAndUserProblemForce(user.getUsername(), problemRequestDto));
 	}
 }
