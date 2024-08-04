@@ -110,10 +110,6 @@ public class ProblemSolvingService {
 	}
 
 	public void addUserProblem(User user, Problem problem) {
-		userProblemService.saveUserProblem(UserProblem.builder()
-			.user(user)
-			.problem(problem)
-			.season(currentSeason)
-			.build());
+		userProblemService.getOrCreateUserProblem(user, problem, false);
 	}
 }

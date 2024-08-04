@@ -6,11 +6,14 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.request.ProblemRequestDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
+import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
+import com.aloc.aloc.scraper.ProblemScrapingService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 import com.aloc.aloc.user.service.UserService;
@@ -27,7 +30,7 @@ public class ProblemFacade implements UserProblemRecordLoader {
 	private final UserService userService;
 	private final ProblemMapper problemMapper;
 	private final ProblemSolvingService problemSolvingService;
-
+	private final ProblemScrapingService problemScrapingService;
 	public String checkSolved(String username) {
 		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
 		User user = userService.findUser(username);
@@ -114,15 +117,26 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		}
 	}
 
-	public String addUserProblem(String githubId, Long problemId) {
+	public String addUserProblemForce(String username, String githubId, Long problemId) {
+		userService.checkAdmin(username);
 		User user = userService.findUser(githubId);
 		Problem problem = problemService.findProblemById(problemId);
 		problemSolvingService.addUserProblem(user, problem);
 		return "success";
 	}
 
-	public String addProblemAndUserProblem(ProblemRequestDto problemRequestDto) {
-		Problem problem = problemService.addProblem(problemRequestDto);
+	public String addProblemAndUserProblemForce(String username, ProblemRequestDto problemRequestDto) {
+		userService.checkAdmin(username);
+		Algorithm algorithm = problemService.getAlgorithmByAlgorithmName(problemRequestDto.getAlgorithm());
+		ProblemType problemType = problemService.getProblemTypeById(problemRequestDto.getProblemType());
+		if (problemService.checkProblemExistByProblemId(problemRequestDto.getProblemId())) {
+			return "already exist";
+		}
+		Problem problem = problemScrapingService.getProblemByProblemId(
+			problemRequestDto.getProblemId(),
+			algorithm,
+			problemType
+		);
 		List<User> activeUsers = userService.getActiveUsers();
 		for (User user : activeUsers) {
 			problemSolvingService.addUserProblem(user, problem);
