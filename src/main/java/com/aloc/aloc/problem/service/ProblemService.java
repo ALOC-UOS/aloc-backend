@@ -48,16 +48,14 @@ public class ProblemService {
 	}
 
 	List<Problem> getWeeklyProblem(User user) {
-		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
-			.orElseThrow(() -> new RuntimeException("해당 주차 알고리즘이 없습니다."));
-		System.out.println("thisWeekAlgorithm = " + thisWeekAlgorithm);
+		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm();
 		ProblemType problemType = problemTypeRepository
 			.findProblemTypeByCourseAndRoutine(user.getCourse(), Routine.WEEKLY)
 			.orElseThrow(() -> new IllegalArgumentException("해당 코스의 주간 문제 타입이 없습니다."));
 		System.out.println("problemType = " + problemType.getId());
 		return problemRepository.findVisibleProblemsByAlgorithmAndCourse(
 			currentSeason,
-			thisWeekAlgorithm.getAlgorithmId(),
+			weeklyAlgorithm.getAlgorithmId(),
 			problemType.getId()
 		);
 	}
@@ -103,17 +101,22 @@ public class ProblemService {
 		return todayProblem;
 	}
 
-	public void updateProblemHiddenFalse(Routine routine) {
-		List<Problem> problems = problemRepository.findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(routine);
+	public Integer updateProblemHiddenFalse(Routine routine) {
 		if (routine.equals(Routine.DAILY)) {
-			Problem problem = problems.get(0);
-			problem.setHidden(false);
-			problemRepository.save(problem);
+			Problem halfTodayProblem = problemRepository.findFirstHiddenProblemByCourseAndRoutine(Course.HALF, routine);
+			Problem fullTodayProblem = problemRepository.findFirstHiddenProblemByCourseAndRoutine(Course.FULL, routine);
+			halfTodayProblem.setHidden(false);
+			fullTodayProblem.setHidden(false);
+			problemRepository.save(halfTodayProblem);
+			problemRepository.save(fullTodayProblem);
+			return 2;
 		} else {
+			List<Problem> problems = problemRepository.findAllByHiddenIsTrueAndProblemType_RoutineOrderByIdAsc(routine);
 			for (Problem problem : problems) {
 				problem.setHidden(false);
 			}
 			problemRepository.saveAll(problems);
+			return problems.size();
 		}
 	}
 

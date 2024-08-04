@@ -7,7 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -68,7 +68,7 @@ public class ProblemScrapingService {
 		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 5개
 		Algorithm dailyAlgorithm = algorithmService.findDailyAlgorithm(); // 1주에 7개
 
-		Map<CourseRoutineTier, List<Problem>> crawledProblems = new HashMap<>();
+		Map<CourseRoutineTier, List<Problem>> crawledProblems = new LinkedHashMap<>();
 
 		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 			try {
@@ -181,8 +181,13 @@ public class ProblemScrapingService {
 
 	private List<String> extractProblemNumbers(Elements rows) {
 		List<String> problemNumbers = new ArrayList<>();
+		int count = 0;
 		for (Element row : rows) {
+			if (count >= 100) {
+				break;  // 100개에 도달하면 루프 종료
+			}
 			problemNumbers.add(row.select(".list_problem_id").text());
+			count++;
 		}
 		return problemNumbers;
 	}
@@ -264,9 +269,7 @@ public class ProblemScrapingService {
 	}
 
 	private String extractTitleKo(JsonObject jsonObject) {
-		if (jsonObject.has("titleKo")) {
-			return jsonObject.get("titleKo").getAsString();
-		} else if (jsonObject.has("titles")) {
+		if (jsonObject.has("titles")) {
 			JsonArray titles = jsonObject.getAsJsonArray("titles");
 			for (JsonElement titleElement : titles) {
 				JsonObject titleObject = titleElement.getAsJsonObject();
