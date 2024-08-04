@@ -68,7 +68,7 @@ public class ProblemScrapingService {
 		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 5개
 		Algorithm dailyAlgorithm = algorithmService.findDailyAlgorithm(); // 1주에 7개
 
-		Map<CourseRoutineTier, List<Integer>> crawledProblems = new HashMap<>();
+		Map<CourseRoutineTier, List<Problem>> crawledProblems = new HashMap<>();
 
 		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 			try {
@@ -96,16 +96,23 @@ public class ProblemScrapingService {
 		return getCrawlingResultMessage(crawledProblems);
 	}
 
-	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Integer>> crawledProblems) {
+	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Problem>> crawledProblems) {
 		StringBuilder message = new StringBuilder();
 
-		for (Map.Entry<CourseRoutineTier, List<Integer>> entry : crawledProblems.entrySet()) {
+		for (Map.Entry<CourseRoutineTier, List<Problem>> entry : crawledProblems.entrySet()) {
 			CourseRoutineTier tier = entry.getKey();
-			List<Integer> problems = entry.getValue();
+			List<Problem> problems = entry.getValue();
 			message.append("[").append(tier).append("]").append("\n")
 				.append("✅ 크롤링 성공 문제수: ").append(problems.size()).append("개\n")
-				.append("🔢 문제 번호: ").append(problems.stream().map(String::valueOf).collect(Collectors.joining(", ")))
-				.append("\n\n");
+				.append("🔢 문제 목록:\n");
+
+			for (Problem problem : problems) {
+				message.append("   - ")
+					.append(problem.getProblemId())
+					.append(": ")
+					.append(problem.getTitle())
+					.append("\n");
+			}
 		}
 		return message.toString();
 	}
@@ -116,17 +123,17 @@ public class ProblemScrapingService {
 	}
 
 	@Transactional
-	public List<Integer> addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
+	public List<Problem> addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
 		throws IOException {
 		ProblemType problemType = problemTypeRepository
 			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine())
 			.orElseThrow(() -> new NoSuchElementException("해당 문제 타입이 존재하지 않습니다."));
 
-		String url = getProblemUrl(courseRoutineTier, algorithm.getAlgorithmId());
+		String url = getProblemSetUrl(courseRoutineTier, algorithm.getAlgorithmId());
 		return crawlAndAddProblems(url, problemType, algorithm, courseRoutineTier.getTargetCount());
 	}
 
-	private String getProblemUrl(CourseRoutineTier courseRoutineTier, int algorithmId) {
+	private String getProblemSetUrl(CourseRoutineTier courseRoutineTier, int algorithmId) {
 		String tiers = courseRoutineTier.getTierList().stream()
 			.map(Object::toString)
 			.collect(Collectors.joining(","));
@@ -138,7 +145,7 @@ public class ProblemScrapingService {
 	}
 
 	@Transactional
-	public List<Integer> crawlAndAddProblems(String url, ProblemType problemType, Algorithm algorithm, int targetCount)
+	public List<Problem> crawlAndAddProblems(String url, ProblemType problemType, Algorithm algorithm, int targetCount)
 		throws IOException {
 		Document document = Jsoup.connect(url).get();
 		Elements rows = document.select("tbody tr");
@@ -162,7 +169,14 @@ public class ProblemScrapingService {
 			})
 			.filter(Objects::nonNull)
 			.limit(targetCount)
-			.toList();
+			.collect(Collectors.toList());
+	}
+
+	@Transactional
+	public Problem crawlAndAddProblem(String problemUrl, ProblemType problemType, Algorithm algorithm)
+		throws IOException {
+		String jsonString = fetchJsonFromUrl(problemUrl);
+		return parseAndSaveProblem(jsonString, algorithm, problemType);
 	}
 
 	private List<String> extractProblemNumbers(Elements rows) {
@@ -236,7 +250,7 @@ public class ProblemScrapingService {
 	}
 
 	@Transactional
-	public int parseAndSaveProblem(String jsonString, Algorithm algorithm, ProblemType problemType) {
+	public Problem parseAndSaveProblem(String jsonString, Algorithm algorithm, ProblemType problemType) {
 		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
 
 		String titleKo = extractTitleKo(jsonObject); // 한국어 제목 추출
@@ -246,8 +260,7 @@ public class ProblemScrapingService {
 		int problemId = jsonObject.get("problemId").getAsInt();
 		int tier = jsonObject.get("level").getAsInt();
 		List<Tag> tagList = extractTags(jsonObject);
-		saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList);
-		return problemId;
+		return saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList);
 	}
 
 	private String extractTitleKo(JsonObject jsonObject) {
@@ -292,7 +305,7 @@ public class ProblemScrapingService {
 	}
 
 	@Transactional
-	public void saveProblem(String titleKo, int tier, int problemId, Algorithm algorithm,
+	public Problem saveProblem(String titleKo, int tier, int problemId, Algorithm algorithm,
 		ProblemType problemType, List<Tag> tagList) {
 		Problem problem = Problem.builder()
 			.title(titleKo)
@@ -310,6 +323,21 @@ public class ProblemScrapingService {
 				.build();
 			problemTagRepository.save(problemTag);
 			problem.addProblemTag(problemTag);
+		}
+		return problem;
+	}
+
+	@Transactional
+	public Problem getProblemByProblemId(
+		int problemId,
+		Algorithm algorithm,
+		ProblemType problemType) {
+		String url = getProblemUrl(String.valueOf(problemId));
+		System.out.println("url: " + url);
+		try {
+			return crawlAndAddProblem(url, problemType, algorithm);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 }
