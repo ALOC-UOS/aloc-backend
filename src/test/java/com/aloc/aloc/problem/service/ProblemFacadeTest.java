@@ -30,6 +30,7 @@ import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
+import com.aloc.aloc.user.enums.Authority;
 import com.aloc.aloc.user.service.UserService;
 
 @ExtendWith(MockitoExtension.class)
@@ -72,6 +73,7 @@ public class ProblemFacadeTest {
 			Course.FULL
 		);
 		user1.setId(1L);
+		user1.setAuthority(Authority.ROLE_USER);
 		User user2 = new User(
 			"user2",
 			"baekjoon2",
@@ -153,16 +155,18 @@ public class ProblemFacadeTest {
 	void getSolvedProblemListByUser_shouldReturnListOfSolvedProblem() {
 		// Given=
 		when(userService.findUser(user1.getGithubId())).thenReturn(user1); // 추가된 부분
-		when(problemSolvingService.getSolvedProblemListByUser(user1, 2, null)).thenReturn(
+		when(problemSolvingService.getSolvedProblemListByUser(user1, 2)).thenReturn(
 			Arrays.asList(
 				ProblemSolvedResponseDto.builder()
-					.problemId(1L)
+					.id(1L)
+					.problemId(222)
 					.problemTitle("Problem 1")
 					.isSolved(true)
 					.problemDifficulty(3)
 					.build(),
 				ProblemSolvedResponseDto.builder()
-					.problemId(2L)
+					.id(2L)
+					.problemId(2224)
 					.problemTitle("Problem 2")
 					.isSolved(true)
 					.problemDifficulty(4)
@@ -170,7 +174,7 @@ public class ProblemFacadeTest {
 			));
 
 		// When
-		List<ProblemSolvedResponseDto> result = problemFacade.getSolvedProblemListByUser(user1.getGithubId(), 2, null);
+		List<ProblemSolvedResponseDto> result = problemFacade.getSolvedProblemListByUser(user1.getGithubId(), 2);
 
 		// Then
 		assertEquals(2, result.size());
@@ -182,12 +186,12 @@ public class ProblemFacadeTest {
 	void checkSolved_LoadUserProblemRecordThrowsException_PropagatesException() {
 		// Arrange
 		String username = "testUser";
-		when(userService.findUser(username)).thenReturn(user1);
+		when(userService.getActiveUser(username)).thenReturn(user1);
 		doThrow(new RuntimeException("Error loading problem record")).when(problemFacade).loadUserProblemRecord(user1);
 
 		// Act & Assert
 		assertThrows(RuntimeException.class, () -> problemFacade.checkSolved(username));
-		verify(userService).findUser(username);
+		verify(userService).getActiveUser(username);
 		verify(problemFacade).loadUserProblemRecord(user1);
 	}
 

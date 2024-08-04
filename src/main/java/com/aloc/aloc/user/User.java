@@ -89,6 +89,10 @@ public class User extends AuditingTimeEntity {
 		this.password = passwordEncoder.encode(password);
 	}
 
+	public Boolean matchPassword(PasswordEncoder passwordEncoder, String password) {
+		return passwordEncoder.matches(password, this.password);
+	}
+
 	public void addSolvedCount() {
 		this.solvedCount++;
 	}

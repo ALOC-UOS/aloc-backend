@@ -10,7 +10,6 @@ import com.aloc.aloc.problem.dto.request.ProblemRequestDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 import com.aloc.aloc.user.service.UserService;
@@ -30,14 +29,14 @@ public class ProblemFacade implements UserProblemRecordLoader {
 
 	public String checkSolved(String username) {
 		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
-		User user = userService.findUser(username);
+		User user = userService.getActiveUser(username);
 		loadUserProblemRecord(user);
 		return "success";
 	}
 
 	public String checkTodaySolved(String username) {
-		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
-		User user = userService.findUser(username);
+		// 오늘의 문제의 풀이 여부를 확인합니다.
+		User user = userService.getActiveUser(username);
 		loadUserTodayProblemRecord(user);
 		return "success";
 	}
@@ -55,16 +54,14 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		return problemSolvingService.getWeeklyProblem(user);
 	}
 
-	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(
-		String githubId, Integer season, Routine routine
-	) {
+	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(String githubId, Integer season) {
 		User user = userService.findUser(githubId);
-		return problemSolvingService.getUnsolvedProblemListByUser(user, season, routine);
+		return problemSolvingService.getUnsolvedProblemListByUser(user, season);
 	}
 
-	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId, Integer season, Routine routine) {
+	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId, Integer season) {
 		User user = userService.findUser(githubId);
-		return problemSolvingService.getSolvedProblemListByUser(user, season, routine);
+		return problemSolvingService.getSolvedProblemListByUser(user, season);
 	}
 
 	public Boolean getTodayProblemSolved(Long userId, Course course) {
@@ -81,6 +78,7 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
 		try {
 			for (Problem problem : problems) {
+				System.out.println(problem.getProblemId());
 				boolean isSolved =
 					problemSolvingService.updateUserAndSaveSolvedProblem(user, problem);
 				if (isSolved) {

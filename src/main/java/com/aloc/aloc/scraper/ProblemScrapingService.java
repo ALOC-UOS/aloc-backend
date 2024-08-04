@@ -7,7 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -68,7 +68,7 @@ public class ProblemScrapingService {
 		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 5개
 		Algorithm dailyAlgorithm = algorithmService.findDailyAlgorithm(); // 1주에 7개
 
-		Map<CourseRoutineTier, List<Integer>> crawledProblems = new HashMap<>();
+		Map<CourseRoutineTier, List<Integer>> crawledProblems = new LinkedHashMap<>();
 
 		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 			try {
@@ -93,18 +93,21 @@ public class ProblemScrapingService {
 		});
 		future.get();
 		updateWeeklyAlgorithmHidden(weeklyAlgorithm);
-		return getCrawlingResultMessage(crawledProblems);
+		return getCrawlingResultMessage(crawledProblems, weeklyAlgorithm, dailyAlgorithm);
 	}
 
-	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Integer>> crawledProblems) {
+	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Integer>> crawledProblems,
+		Algorithm weeklyAlgorithm, Algorithm dailyAlgorithm) {
 		StringBuilder message = new StringBuilder();
-
+		message.append("[ ").append(weeklyAlgorithm.getWeek()).append("주차 크롤링 결과 ]\n\n")
+			.append("weekly 알고리즘 : ").append(weeklyAlgorithm.getName()).append("\n")
+			.append("daily 알고리즘 : ").append(dailyAlgorithm.getName()).append("\n\n");
 		for (Map.Entry<CourseRoutineTier, List<Integer>> entry : crawledProblems.entrySet()) {
 			CourseRoutineTier tier = entry.getKey();
 			List<Integer> problems = entry.getValue();
 			message.append("[").append(tier).append("]").append("\n")
-				.append("✅ 크롤링 성공 문제수: ").append(problems.size()).append("개\n")
-				.append("🔢 문제 번호: ").append(problems.stream().map(String::valueOf).collect(Collectors.joining(", ")))
+				.append("✅  크롤링 성공 문제수: ").append(problems.size()).append("개\n")
+				.append("🔢  문제 번호: ").append(problems.stream().map(String::valueOf).collect(Collectors.joining(", ")))
 				.append("\n\n");
 		}
 		return message.toString();
@@ -167,8 +170,13 @@ public class ProblemScrapingService {
 
 	private List<String> extractProblemNumbers(Elements rows) {
 		List<String> problemNumbers = new ArrayList<>();
+		int count = 0;
 		for (Element row : rows) {
+			if (count >= 100) {
+				break;  // 100개에 도달하면 루프 종료
+			}
 			problemNumbers.add(row.select(".list_problem_id").text());
+			count++;
 		}
 		return problemNumbers;
 	}
@@ -240,6 +248,7 @@ public class ProblemScrapingService {
 		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
 
 		String titleKo = extractTitleKo(jsonObject); // 한국어 제목 추출
+		System.out.println("titleKo = " + titleKo);
 		if (titleKo == null) {
 			throw new IllegalArgumentException("Korean title not found in JSON: " + jsonString);
 		}
@@ -251,9 +260,7 @@ public class ProblemScrapingService {
 	}
 
 	private String extractTitleKo(JsonObject jsonObject) {
-		if (jsonObject.has("titleKo")) {
-			return jsonObject.get("titleKo").getAsString();
-		} else if (jsonObject.has("titles")) {
+		if (jsonObject.has("titles")) {
 			JsonArray titles = jsonObject.getAsJsonArray("titles");
 			for (JsonElement titleElement : titles) {
 				JsonObject titleObject = titleElement.getAsJsonObject();

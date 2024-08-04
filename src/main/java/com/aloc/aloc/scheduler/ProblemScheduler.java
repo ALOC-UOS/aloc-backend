@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import com.aloc.aloc.problem.service.ProblemFacade;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problemtype.enums.Routine;
+import com.aloc.aloc.webhook.DiscordWebhookService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,23 +15,25 @@ import lombok.RequiredArgsConstructor;
 public class ProblemScheduler {
 	private final ProblemFacade problemFacade;
 	private final ProblemService problemService;
-	private final AlocRequestScheduler alocRequestScheduler;
+	private final DiscordWebhookService discordWebhookService;
 
 	// weekly 문제를 공개합니다.
 	public void updateAllWeeklyProblemHidden() {
-		problemService.updateProblemHiddenFalse(Routine.WEEKLY);
+		Integer openedCnt = problemService.updateProblemHiddenFalse(Routine.WEEKLY);
+		discordWebhookService.sendNotification(openedCnt + "개의 Weekly 문제가 공개되었습니다.");
 		updateDailyProblemHidden();
 	}
 
-	@Scheduled(cron = "0 0 0 * * WED-SAT")
+	// 수요일 부터 일요일까지 매일 daily 문제를 공개합니다.
+	@Scheduled(cron = "0 0 0 * * WED,THU,FRI,SAT,SUN,MON")
 	public void updateDailyProblemHidden() {
-		problemService.updateProblemHiddenFalse(Routine.DAILY);
+		Integer openedCnt = problemService.updateProblemHiddenFalse(Routine.DAILY);
+		discordWebhookService.sendNotification(openedCnt + "개의 Daily 문제가 공개되었습니다.");
 	}
 
 	@Scheduled(cron = "0 0 0 * * TUE")
 	// 코스 변경 요청을 처리한 후, user problem을 할당합니다.
 	public void updateAllUserProblem() {
-		alocRequestScheduler.resolveCourseChangeRequest();
 		problemFacade.updateAllUserProblem();
 		updateAllWeeklyProblemHidden();
 	}

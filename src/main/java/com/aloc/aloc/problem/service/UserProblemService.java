@@ -56,9 +56,9 @@ public class UserProblemService {
 	}
 
 	// 시즌, 풀이 여부, 루틴에 따라 유저의 문제 목록을 가져옵니다.
-	public List<UserProblem> getUserProblemList(Long userId, Integer season, Boolean isSolved, Routine routine) {
+	public List<UserProblem> getUserProblemList(Long userId, Integer season, Boolean isSolved) {
 		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
-			userId, season, isSolved, routine);
+			userId, season, isSolved);
 	}
 
 	public Boolean isProblemSolvedToday(Long userId, Long id) {

@@ -77,7 +77,8 @@ public class ProblemMapper {
 			.map(solvedProblem -> {
 				Problem problem = solvedProblem.getProblem();
 				return ProblemSolvedResponseDto.builder()
-					.problemId(problem.getId())
+					.id(problem.getId())
+					.problemId(problem.getProblemId())
 					.problemTitle(problem.getTitle())
 					.problemDifficulty(problem.getDifficulty())
 					.isSolved(true)
@@ -89,7 +90,8 @@ public class ProblemMapper {
 	// TODO: 수정
 	public ProblemSolvedResponseDto mapToProblemSolvedResponseDto(Problem problem, boolean isSolved) {
 		return ProblemSolvedResponseDto.builder()
-			.problemId(problem.getId())
+			.id(problem.getId())
+			.problemId(problem.getProblemId())
 			.problemTitle(problem.getTitle())
 			.problemDifficulty(problem.getDifficulty())
 			.isSolved(isSolved)
