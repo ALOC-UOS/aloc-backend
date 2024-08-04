@@ -75,11 +75,12 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 	List<Problem> findHiddenProblemsBySeasonAndCourse(
 		@Param("season") Integer currentSeason,
 		@Param("course") Course course);
-  
+
 	Boolean existsProblemByProblemIdAndAlgorithm_Season(
 		Integer problemId,
 		Integer season
 	);
+
 	@Query("SELECT p FROM Problem p "
 		+ "WHERE p.hidden = true "
 		+ "AND p.problemType.course = :course "
