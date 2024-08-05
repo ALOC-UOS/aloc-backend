@@ -1,6 +1,5 @@
 package com.aloc.aloc.problem.service;
 
-import com.aloc.aloc.user.service.UserService;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +13,7 @@ import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
