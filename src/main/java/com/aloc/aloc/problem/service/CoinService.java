@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.service;
 
+import com.aloc.aloc.user.service.UserService;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,7 @@ public class CoinService {
 	private final AlgorithmService algorithmService;
 	private final UserProblemRepository userProblemRepository;
 	private final ProblemRepository problemRepository;
+	private final UserService userService;
 
 	@Value("${app.season}")
 	private Integer currentSeason;
@@ -73,6 +75,7 @@ public class CoinService {
 		if (isEligibleForCoin(problem)) {
 			int coinToAdd = calculateCoinToAdd(problem);
 			user.addCoin(coinToAdd);
+			userService.saveUser(user);
 		}
 	}
 
@@ -82,6 +85,7 @@ public class CoinService {
 		if (problem.getProblemType().getRoutine() == Routine.DAILY) {
 			int coinToAdd = calculateCoinToAdd(problem);
 			user.addCoin(coinToAdd);
+			userService.saveUser(user);
 			return coinToAdd;
 		}
 		return 0;
