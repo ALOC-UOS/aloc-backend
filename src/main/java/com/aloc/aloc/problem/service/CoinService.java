@@ -38,13 +38,14 @@ public class CoinService {
 		return getCoinsForPlace(solvedUserCount);
 	}
 
-	public int calculateCoinToAddForWeekly(Algorithm algorithm, Course course) {
+	public int calculateCoinToAddForWeekly(Problem problem) {
 		Algorithm thisWeekAlgorithm = algorithmService.getWeeklyAlgorithmBySeason(currentSeason)
 			.orElseThrow(() -> new RuntimeException("이번주 알고리즘이 존재하지 않습니다."));
 
-		if (thisWeekAlgorithm.equals(algorithm)
-			&& getUnsolvedProblemCount(problemRepository.findAllByAlgorithm(algorithm)) == 0) {
-			return getCoinsForCourse(course);
+		if (thisWeekAlgorithm.equals(problem.getAlgorithm())
+			&& getUnsolvedProblemCount(problemRepository
+			.findAllByAlgorithmAndProblemType(problem.getAlgorithm(), problem.getProblemType())) == 0) {
+			return getCoinsForCourse(problem.getProblemType().getCourse());
 		}
 		return 0;
 	}
@@ -71,7 +72,7 @@ public class CoinService {
 
 	void addCoinIfEligible(User user, Problem problem) {
 		if (isEligibleForCoin(problem)) {
-			int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
+			int coinToAdd = calculateCoinToAdd(problem);
 			user.addCoin(coinToAdd);
 		}
 	}
@@ -80,7 +81,7 @@ public class CoinService {
 	int addCoinEligibleForTodayProblem(User user, Problem problem) {
 		// 오늘의 문제가 Daily 문제인 경우 코인을 지급합니다.
 		if (problem.getProblemType().getRoutine() == Routine.DAILY) {
-			int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
+			int coinToAdd = calculateCoinToAdd(problem);
 			user.addCoin(coinToAdd);
 			return coinToAdd;
 		}
@@ -92,9 +93,9 @@ public class CoinService {
 		// Weekly 문제는 항상 코인을 받음
 	}
 
-	private int calculateCoinToAdd(Problem problem, Course course) {
+	private int calculateCoinToAdd(Problem problem) {
 		return problem.getProblemType().getRoutine().equals(Routine.DAILY)
 			? calculateCoinToAddForDaily(problem.getId())
-			: calculateCoinToAddForWeekly(problem.getAlgorithm(), course);
+			: calculateCoinToAddForWeekly(problem);
 	}
 }
