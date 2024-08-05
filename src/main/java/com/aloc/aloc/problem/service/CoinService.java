@@ -41,7 +41,6 @@ public class CoinService {
 	public int calculateCoinToAddForWeekly(Problem problem) {
 		Algorithm thisWeekAlgorithm = algorithmService.getWeeklyAlgorithmBySeason(currentSeason)
 			.orElseThrow(() -> new RuntimeException("이번주 알고리즘이 존재하지 않습니다."));
-
 		if (thisWeekAlgorithm.equals(problem.getAlgorithm())
 			&& getUnsolvedProblemCount(problemRepository
 			.findAllByAlgorithmAndProblemType(problem.getAlgorithm(), problem.getProblemType())) == 0) {
@@ -51,7 +50,7 @@ public class CoinService {
 	}
 
 	private int getUnsolvedProblemCount(List<Problem> thisWeekProblems) {
-		return userProblemRepository.countByProblemsIn(thisWeekProblems);
+		return userProblemRepository.countByUnsolvedProblemsIn(thisWeekProblems);
 	}
 
 	private int getCoinsForPlace(int solvedUserCount) {

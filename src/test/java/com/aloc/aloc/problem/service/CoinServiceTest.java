@@ -110,7 +110,7 @@ class CoinServiceTest {
 		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
 		when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, fullWeekly))
 			.thenReturn(List.of(new Problem()));
-		when(userProblemRepository.countByProblemsIn(any(List.class))).thenReturn(0);
+		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class))).thenReturn(0);
 
 		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeekly);
 
@@ -123,7 +123,7 @@ class CoinServiceTest {
 		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
 		when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, halfWeekly))
 			.thenReturn(List.of(new Problem()));
-		when(userProblemRepository.countByProblemsIn(any(List.class))).thenReturn(0);
+		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class))).thenReturn(0);
 
 		int coins = coinService.calculateCoinToAddForWeekly(problemHalfWeekly);
 
@@ -146,7 +146,7 @@ class CoinServiceTest {
 		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
 		when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, fullWeekly))
 			.thenReturn(List.of(new Problem()));
-		when(userProblemRepository.countByProblemsIn(any(List.class))).thenReturn(1);
+		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class))).thenReturn(1);
 
 		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeekly);
 
