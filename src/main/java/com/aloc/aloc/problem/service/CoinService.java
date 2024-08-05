@@ -74,8 +74,11 @@ public class CoinService {
 	void addCoinIfEligible(User user, Problem problem) {
 		if (isEligibleForCoin(problem)) {
 			int coinToAdd = calculateCoinToAdd(problem);
+			System.out.println(user.getCoin());
+			System.out.println(coinToAdd);
 			user.addCoin(coinToAdd);
 			userService.saveUser(user);
+			System.out.println(user.getCoin());
 		}
 	}
 
