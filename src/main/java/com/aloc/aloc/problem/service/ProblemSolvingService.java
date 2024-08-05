@@ -76,7 +76,7 @@ public class ProblemSolvingService {
 
 		if (isSolved) {
 			// 코인을 지급하고 사용자 정보를 저장합니다.
-			System.out.println("문제를 풀었어요" + problem.getId() + " " + user.getGithubId());
+			System.out.println("문제를 풀었어요 " + problem.getId() + " " + user.getGithubId());
 			userProblem.setIsSolved(true);
 			userProblemService.saveUserProblem(userProblem);
 			coinService.addCoinIfEligible(user, problem);
