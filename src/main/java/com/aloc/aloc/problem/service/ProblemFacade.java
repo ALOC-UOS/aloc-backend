@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
+import com.aloc.aloc.problem.dto.response.TodayProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
@@ -33,11 +34,10 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		return "success";
 	}
 
-	public String checkTodaySolved(String username) {
+	public TodayProblemSolvedResponseDto checkTodaySolved(String username) {
 		// 오늘의 문제의 풀이 여부를 확인합니다.
 		User user = userService.getActiveUser(username);
-		loadUserTodayProblemRecord(user);
-		return "success";
+		return loadUserTodayProblemRecord(user);
 	}
 
 	public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
@@ -93,15 +93,16 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		}
 	}
 
-	public void loadUserTodayProblemRecord(User user) {
+	public TodayProblemSolvedResponseDto loadUserTodayProblemRecord(User user) {
 		Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
-		boolean isSolved = problemSolvingService.updateTodaySolvedProblem(user, todayProblem);
-		if (isSolved) {
+		TodayProblemSolvedResponseDto response = problemSolvingService.updateTodaySolvedProblem(user, todayProblem);
+		if (response.getIsSolved()) {
 			System.out.println("오늘의 문제를 풀었어요" + user.getGithubId());
 			user.addSolvedCount();
 			userService.checkUserRank(user);
 			userService.saveUser(user);
 		}
+		return response;
 	}
 
 	public void updateAllUserProblem() {

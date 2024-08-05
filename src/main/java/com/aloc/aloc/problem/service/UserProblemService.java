@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
-import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
 
 import lombok.RequiredArgsConstructor;
@@ -65,5 +64,9 @@ public class UserProblemService {
 		return userProblemRepository.existsByUserIdAndProblemIdAndSolvedAtAfter(
 			userId, id, LocalDateTime.now().minusDays(1)
 		);
+	}
+
+	public int getSolvedUserCount(Long problemId) {
+		return userProblemRepository.countSolvingUsersByProblemId(problemId, currentSeason);
 	}
 }
