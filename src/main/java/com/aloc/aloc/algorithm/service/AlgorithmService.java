@@ -55,8 +55,8 @@ public class AlgorithmService {
 						.build();
 	}
 
-	public Optional<Algorithm> getAlgorithmBySeason(int season) {
-		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(season);
+	public Optional<Algorithm> getWeeklyAlgorithmBySeason(int season) {
+		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(season);
 	}
 
 	public void saveAlgorithm(Algorithm algorithm) {
