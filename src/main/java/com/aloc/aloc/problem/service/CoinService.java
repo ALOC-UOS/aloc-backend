@@ -39,7 +39,7 @@ public class CoinService {
 	}
 
 	public int calculateCoinToAddForWeekly(Algorithm algorithm, Course course) {
-		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
+		Algorithm thisWeekAlgorithm = algorithmService.getWeeklyAlgorithmBySeason(currentSeason)
 			.orElseThrow(() -> new RuntimeException("이번주 알고리즘이 존재하지 않습니다."));
 
 		if (thisWeekAlgorithm.equals(algorithm)

@@ -95,7 +95,7 @@ class CoinServiceTest {
 	@Test
 	@DisplayName("이번주에 FULL 코스 유저가 이번주 weekly 문제 다 풀었을 때 테스트")
 	void calculateCoinToAddForWeekly_FullCourse() {
-		when(algorithmService.getAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfProblem));
+		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfProblem));
 		when(problemRepository.findAllByAlgorithm(algorithmOfProblem)).thenReturn(List.of(new Problem()));
 		when(userProblemRepository.countByProblemsIn(any(List.class))).thenReturn(0);
 
@@ -107,7 +107,7 @@ class CoinServiceTest {
 	@Test
 	@DisplayName("이번주에 HALF 코스 유저가 이번주 weekly 문제 다 풀었을 때 테스트")
 	void calculateCoinToAddForWeekly_HalfCourse() {
-		when(algorithmService.getAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfProblem));
+		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfProblem));
 		when(problemRepository.findAllByAlgorithm(algorithmOfProblem)).thenReturn(List.of(new Problem()));
 		when(userProblemRepository.countByProblemsIn(any(List.class))).thenReturn(0);
 
@@ -119,7 +119,7 @@ class CoinServiceTest {
 	@Test
 	@DisplayName("해당 weekly 문제의 알고리즘이 이번주 알고리즘이 아닐 때 테스트")
 	void calculateCoinToAddForWeekly_NoMatchingAlgorithm() {
-		when(algorithmService.getAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
+		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
 
 		int coins = coinService.calculateCoinToAddForWeekly(algorithmOfProblem, Course.FULL);
 
@@ -129,7 +129,7 @@ class CoinServiceTest {
 	@Test
 	@DisplayName("이번주 weekly 문제를 다 풀지 않았을 때")
 	void calculateCoinToAddForWeekly_SomeUnsolvedProblems() {
-		when(algorithmService.getAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfProblem));
+		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfProblem));
 		when(problemRepository.findAllByAlgorithm(algorithmOfProblem)).thenReturn(List.of(new Problem()));
 		when(userProblemRepository.countByProblemsIn(any(List.class))).thenReturn(1);
 
