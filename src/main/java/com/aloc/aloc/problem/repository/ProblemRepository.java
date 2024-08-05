@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.entity.Problem;
+import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 
@@ -65,8 +66,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		@Param("season") Integer season
 	);
 
-	List<Problem> findAllByAlgorithm(Algorithm algorithm);
-
+	List<Problem> findAllByAlgorithmAndProblemType(Algorithm algorithm, ProblemType problemType);
 
 	@Query("SELECT p FROM Problem p "
 		+ "WHERE p.algorithm.season = :season "
