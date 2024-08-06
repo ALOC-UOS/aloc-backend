@@ -49,8 +49,9 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
 		+ "FROM UserProblem up "
 		+ "WHERE up.problem "
 		+ "IN :problems "
-		+ "AND up.isSolved = false ")
-	int countByUnsolvedProblemsIn(@Param("problems") List<Problem> problems);
+		+ "AND up.isSolved = false "
+		+ "AND up.user.id = :userId")
+	int countByUnsolvedProblemsIn(@Param("problems") List<Problem> problems, @Param("userId")Long userId);
 
 	@Query("SELECT COUNT(up) "
 		+ "FROM UserProblem up "
