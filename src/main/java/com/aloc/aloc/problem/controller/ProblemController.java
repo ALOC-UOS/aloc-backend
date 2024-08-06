@@ -119,6 +119,6 @@ public class ProblemController {
 	public CustomApiResponse<List<ProblemSolvedResponseDto>> getWeeklyCompletionStatus(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) {
-		return CustomApiResponse.onSuccess(problemFacade.getWeeklyProblem(user.getUsername()));
+		return CustomApiResponse.onSuccess(problemFacade.getWeeklyProblems(user.getUsername()));
 	}
 }

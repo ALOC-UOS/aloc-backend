@@ -35,8 +35,8 @@ public class ProblemSolvingService {
 		return userProblemService.getSolvedUserListByProblemId(problemId);
 	}
 
-	public List<ProblemSolvedResponseDto> getWeeklyProblem(User user) {
-		List<Problem> thisWeekProblems = problemService.getWeeklyProblem(user);
+	public List<ProblemSolvedResponseDto> getWeeklyProblems(User user) {
+		List<Problem> thisWeekProblems = problemService.getWeeklyProblems(user);
 
 		// 이번주 weekly 문제를 풀이 현황과 함께 리턴합니다.
 		return thisWeekProblems.stream()

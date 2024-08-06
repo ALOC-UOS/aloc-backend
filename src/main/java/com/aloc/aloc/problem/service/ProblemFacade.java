@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,9 +49,14 @@ public class ProblemFacade implements UserProblemRecordLoader {
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getWeeklyProblem(String username) {
+	public List<ProblemSolvedResponseDto> getWeeklyProblems(String username) {
 		User user = userService.findUser(username);
-		return problemSolvingService.getWeeklyProblem(user);
+		List<ProblemSolvedResponseDto> problems = problemSolvingService.getWeeklyProblems(user);
+		return problems.stream()
+			.sorted(Comparator
+				.comparing(ProblemSolvedResponseDto::getIsSolved).reversed()
+				.thenComparing(ProblemSolvedResponseDto::getProblemDifficulty))
+			.collect(Collectors.toList());
 	}
 
 	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(String githubId, Integer season) {
