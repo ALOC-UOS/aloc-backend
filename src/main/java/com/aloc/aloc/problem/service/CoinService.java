@@ -40,19 +40,19 @@ public class CoinService {
 		return getCoinsForPlace(solvedUserCount);
 	}
 
-	public int calculateCoinToAddForWeekly(Problem problem) {
+	public int calculateCoinToAddForWeekly(Problem problem, User user) {
 		Algorithm thisWeekAlgorithm = algorithmService.getWeeklyAlgorithmBySeason(currentSeason)
 			.orElseThrow(() -> new RuntimeException("이번주 알고리즘이 존재하지 않습니다."));
 		if (thisWeekAlgorithm.equals(problem.getAlgorithm())
 			&& getUnsolvedProblemCount(problemRepository
-			.findAllByAlgorithmAndProblemType(problem.getAlgorithm(), problem.getProblemType())) == 0) {
+			.findAllByAlgorithmAndProblemType(problem.getAlgorithm(), problem.getProblemType()), user.getId()) == 0) {
 			return getCoinsForCourse(problem.getProblemType().getCourse());
 		}
 		return 0;
 	}
 
-	private int getUnsolvedProblemCount(List<Problem> thisWeekProblems) {
-		return userProblemRepository.countByUnsolvedProblemsIn(thisWeekProblems);
+	private int getUnsolvedProblemCount(List<Problem> thisWeekProblems, Long userId) {
+		return userProblemRepository.countByUnsolvedProblemsIn(thisWeekProblems, userId);
 	}
 
 	private int getCoinsForPlace(int solvedUserCount) {
@@ -73,7 +73,7 @@ public class CoinService {
 
 	void addCoinIfEligible(User user, Problem problem) {
 		if (isEligibleForCoin(problem)) {
-			int coinToAdd = calculateCoinToAdd(problem);
+			int coinToAdd = calculateCoinToAdd(problem, user);
 			System.out.println(user.getCoin());
 			System.out.println(coinToAdd);
 			user.addCoin(coinToAdd);
@@ -86,7 +86,7 @@ public class CoinService {
 	int addCoinEligibleForTodayProblem(User user, Problem problem) {
 		// 오늘의 문제가 Daily 문제인 경우 코인을 지급합니다.
 		if (problem.getProblemType().getRoutine() == Routine.DAILY) {
-			int coinToAdd = calculateCoinToAdd(problem);
+			int coinToAdd = calculateCoinToAdd(problem, user);
 			user.addCoin(coinToAdd);
 			userService.saveUser(user);
 			return coinToAdd;
@@ -99,9 +99,9 @@ public class CoinService {
 		// Weekly 문제는 항상 코인을 받음
 	}
 
-	private int calculateCoinToAdd(Problem problem) {
+	private int calculateCoinToAdd(Problem problem, User user) {
 		return problem.getProblemType().getRoutine().equals(Routine.DAILY)
 			? calculateCoinToAddForDaily(problem.getId())
-			: calculateCoinToAddForWeekly(problem);
+			: calculateCoinToAddForWeekly(problem, user);
 	}
 }

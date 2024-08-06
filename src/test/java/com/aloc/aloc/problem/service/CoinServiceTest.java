@@ -2,6 +2,7 @@ package com.aloc.aloc.problem.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -24,6 +25,8 @@ import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
+import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.enums.Authority;
 
 @ExtendWith(MockitoExtension.class)
 class CoinServiceTest {
@@ -50,6 +53,7 @@ class CoinServiceTest {
 	private Problem problemFullWeekly;
 	private Problem problemHalfWeekly;
 	private Problem problemFullWeeklyNotThisWeek;
+	private User user;
 
 	@BeforeEach
 	void setUp() {
@@ -61,7 +65,8 @@ class CoinServiceTest {
 		problemFullWeekly = new Problem(1L, "풀 위클리", 10, algorithmOfThisWeek, false, 1, fullWeekly, null);
 		problemHalfWeekly = new Problem(2L, "하프 위클리", 11, algorithmOfThisWeek, false, 2, halfWeekly, null);
 		problemFullWeeklyNotThisWeek = new Problem(3L, "풀 위클리", 10, algorithmOfProblem, false, 3, fullWeekly, null);
-
+		user = new User(1L, "홍길동", "baekjoonId", "githubId", "2021920000", "discordId", "notionEmail",
+			"profileNumber", 10, 0, Course.FULL, "profileColor", "password", Authority.ROLE_USER, "refreshToken", 0);
 	}
 
 	@Test
@@ -110,9 +115,9 @@ class CoinServiceTest {
 		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
 		when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, fullWeekly))
 			.thenReturn(List.of(new Problem()));
-		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class))).thenReturn(0);
+		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class), eq(user.getId()))).thenReturn(0);
 
-		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeekly);
+		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeekly, user);
 
 		assertEquals(COINS_FOR_FULL, coins);
 	}
@@ -123,9 +128,9 @@ class CoinServiceTest {
 		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
 		when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, halfWeekly))
 			.thenReturn(List.of(new Problem()));
-		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class))).thenReturn(0);
+		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class), eq(user.getId()))).thenReturn(0);
 
-		int coins = coinService.calculateCoinToAddForWeekly(problemHalfWeekly);
+		int coins = coinService.calculateCoinToAddForWeekly(problemHalfWeekly, user);
 
 		assertEquals(COINS_FOR_HALF, coins);
 	}
@@ -135,7 +140,7 @@ class CoinServiceTest {
 	void calculateCoinToAddForWeekly_NoMatchingAlgorithm() {
 		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
 
-		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeeklyNotThisWeek);
+		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeeklyNotThisWeek, user);
 
 		assertEquals(0, coins);
 	}
@@ -146,9 +151,9 @@ class CoinServiceTest {
 		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
 		when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, fullWeekly))
 			.thenReturn(List.of(new Problem()));
-		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class))).thenReturn(1);
+		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class), eq(user.getId()))).thenReturn(1);
 
-		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeekly);
+		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeekly, user);
 
 		assertEquals(0, coins);
 	}
