@@ -270,10 +270,10 @@ public class ProblemFacadeTest {
 		// Assert
 		assertNotNull(result);
 		assertEquals(2, result.size());
-		assertTrue(result.get(1).getIsSolved());
-		assertFalse(result.get(2).getIsSolved());
-		assertEquals(222, result.get(1).getProblemId());
-		assertEquals(4, result.get(2).getProblemDifficulty());
+		assertTrue(result.get(0).getIsSolved());
+		assertFalse(result.get(1).getIsSolved());
+		assertEquals(222, result.get(0).getProblemId());
+		assertEquals(4, result.get(1).getProblemDifficulty());
 		verify(userService).findUser(user1.getGithubId());
 		verify(problemSolvingService).getWeeklyProblems(user1);
 	}
