@@ -47,7 +47,6 @@ public class ProblemService {
 		ProblemType problemType = problemTypeRepository
 			.findProblemTypeByCourseAndRoutine(user.getCourse(), Routine.WEEKLY)
 			.orElseThrow(() -> new IllegalArgumentException("해당 코스의 주간 문제 타입이 없습니다."));
-		System.out.println("problemType = " + problemType.getId());
 		return problemRepository.findVisibleProblemsByAlgorithmAndCourse(
 			currentSeason,
 			weeklyAlgorithm.getAlgorithmId(),
