@@ -31,8 +31,8 @@ public class ProblemScheduler {
 		discordWebhookService.sendNotification(openedCnt + "개의 Daily 문제가 공개되었습니다.");
 	}
 
-	@Scheduled(cron = "0 0 0 * * TUE")
-	// 코스 변경 요청을 처리한 후, user problem을 할당합니다.
+//	@Scheduled(cron = "0 0 0 * * TUE")
+	@Scheduled(cron = "0 5 10 ? * TUE")	// 코스 변경 요청을 처리한 후, user problem을 할당합니다.
 	public void updateAllUserProblem() {
 		problemFacade.updateAllUserProblem();
 		updateAllWeeklyProblemHidden();
