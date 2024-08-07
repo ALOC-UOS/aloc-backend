@@ -56,7 +56,6 @@ public class ProblemServiceTest {
 			"discord",
 			15,
 			"notion",
-			"11550",
 			Course.FULL
 		);
 		user1.setId(1L);
@@ -68,7 +67,6 @@ public class ProblemServiceTest {
 			"password",
 			"discord",
 			15,
-			"11551",
 			"notion",
 			Course.FULL
 		);

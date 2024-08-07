@@ -61,7 +61,6 @@ public class ProblemSolvingServiceTest {
 			"discord",
 			15,
 			"notion",
-			"11550",
 			Course.FULL
 		);
 

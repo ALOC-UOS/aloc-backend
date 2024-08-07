@@ -62,7 +62,6 @@ public class ProblemMapper {
 			.baekjoonId(user.getBaekjoonId())
 			.profileColor(user.getProfileColor())
 			.studentId(user.getStudentId())
-			.profileNumber(user.getProfileNumber())
 			.rank(user.getRank())
 			.coin(user.getCoin())
 			.solvedAt(userProblem.getSolvedAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))

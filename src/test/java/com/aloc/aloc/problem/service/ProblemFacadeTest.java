@@ -72,7 +72,6 @@ public class ProblemFacadeTest {
 			"discord",
 			15,
 			"notion",
-			"11550",
 			Course.FULL
 		);
 		user1.setId(1L);
@@ -85,7 +84,6 @@ public class ProblemFacadeTest {
 			"password",
 			"discord",
 			15,
-			"11551",
 			"notion",
 			Course.FULL
 		);
@@ -112,11 +110,11 @@ public class ProblemFacadeTest {
 		solvedUsers = Arrays.asList(
 			SolvedUserResponseDto.builder()
 				.username("user1").githubId("github1").baekjoonId("baekjoon1")
-				.profileColor("blue").studentId("20210001").profileNumber("1")
+				.profileColor("blue").studentId("20210001")
 				.rank(10).coin(100).solvedAt("11:30:00").build(),
 			SolvedUserResponseDto.builder()
 				.username("user2").githubId("github2").baekjoonId("baekjoon2")
-				.profileColor("red").studentId("20210002").profileNumber("2")
+				.profileColor("red").studentId("20210002")
 				.rank(20).coin(200).solvedAt("12:45:00").build()
 		);
 
