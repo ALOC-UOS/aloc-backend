@@ -1,7 +1,10 @@
 package com.aloc.aloc.problem.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -236,6 +239,43 @@ public class ProblemFacadeTest {
 		// Assert
 		verify(problemSolvingService, times(1000))
 			.updateUserAndSaveSolvedProblem(eq(user1), any(Problem.class));
+	}
+
+	@Test
+	@DisplayName("위클리 문제 가져오기 성공 테스트")
+	void getWeeklyProblem_Success() {
+		// Arrange
+		when(userService.findUser(user1.getGithubId())).thenReturn(user1);
+		List<ProblemSolvedResponseDto> mockProblems = Arrays.asList(
+				ProblemSolvedResponseDto.builder()
+					.id(1L)
+					.problemId(222)
+					.problemTitle("Problem 1")
+					.isSolved(true)
+					.problemDifficulty(3)
+					.build(),
+				ProblemSolvedResponseDto.builder()
+					.id(2L)
+					.problemId(2224)
+					.problemTitle("Problem 2")
+					.isSolved(false)
+					.problemDifficulty(4)
+					.build()
+		);
+		when(problemSolvingService.getWeeklyProblems(user1)).thenReturn(mockProblems);
+
+		// Act
+		List<ProblemSolvedResponseDto> result = problemFacade.getWeeklyProblems(user1.getGithubId());
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(2, result.size());
+		assertTrue(result.get(0).getIsSolved());
+		assertFalse(result.get(1).getIsSolved());
+		assertEquals(222, result.get(0).getProblemId());
+		assertEquals(4, result.get(1).getProblemDifficulty());
+		verify(userService).findUser(user1.getGithubId());
+		verify(problemSolvingService).getWeeklyProblems(user1);
 	}
 
 	private Problem createMockProblem(Long id) {

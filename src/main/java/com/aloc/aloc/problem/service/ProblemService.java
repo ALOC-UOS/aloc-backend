@@ -42,7 +42,7 @@ public class ProblemService {
 		return problemRepository.findVisibleProblemsByAlgorithmAndCourse(season, algorithmId, problemType.getId());
 	}
 
-	List<Problem> getWeeklyProblem(User user) {
+	List<Problem> getWeeklyProblems(User user) {
 		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm();
 		ProblemType problemType = problemTypeRepository
 			.findProblemTypeByCourseAndRoutine(user.getCourse(), Routine.WEEKLY)
