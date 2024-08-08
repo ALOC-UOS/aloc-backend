@@ -32,7 +32,6 @@ public class ProblemScheduler {
 	}
 
 	@Scheduled(cron = "0 0 0 * * TUE")
-	// 코스 변경 요청을 처리한 후, user problem을 할당합니다.
 	public void updateAllUserProblem() {
 		problemFacade.updateAllUserProblem();
 		updateAllWeeklyProblemHidden();

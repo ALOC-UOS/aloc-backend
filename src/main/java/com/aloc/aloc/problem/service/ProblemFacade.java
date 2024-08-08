@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.request.ProblemRequestDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
+import com.aloc.aloc.problem.dto.response.TodayProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
@@ -37,11 +39,10 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		return "success";
 	}
 
-	public String checkTodaySolved(String username) {
+	public TodayProblemSolvedResponseDto checkTodaySolved(String username) {
 		// 오늘의 문제의 풀이 여부를 확인합니다.
 		User user = userService.getActiveUser(username);
-		loadUserTodayProblemRecord(user);
-		return "success";
+		return loadUserTodayProblemRecord(user);
 	}
 
 	public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
@@ -52,9 +53,14 @@ public class ProblemFacade implements UserProblemRecordLoader {
 			.collect(Collectors.toList());
 	}
 
-	public List<ProblemSolvedResponseDto> getWeeklyProblem(String username) {
+	public List<ProblemSolvedResponseDto> getWeeklyProblems(String username) {
 		User user = userService.findUser(username);
-		return problemSolvingService.getWeeklyProblem(user);
+		List<ProblemSolvedResponseDto> problems = problemSolvingService.getWeeklyProblems(user);
+		return problems.stream()
+			.sorted(Comparator
+				.comparing(ProblemSolvedResponseDto::getIsSolved).reversed()
+				.thenComparing(ProblemSolvedResponseDto::getProblemDifficulty))
+			.collect(Collectors.toList());
 	}
 
 	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(String githubId, Integer season) {
@@ -96,15 +102,16 @@ public class ProblemFacade implements UserProblemRecordLoader {
 		}
 	}
 
-	public void loadUserTodayProblemRecord(User user) {
+	public TodayProblemSolvedResponseDto loadUserTodayProblemRecord(User user) {
 		Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
-		boolean isSolved = problemSolvingService.updateTodaySolvedProblem(user, todayProblem);
-		if (isSolved) {
+		TodayProblemSolvedResponseDto response = problemSolvingService.updateTodaySolvedProblem(user, todayProblem);
+		if (response.getIsSolved()) {
 			System.out.println("오늘의 문제를 풀었어요" + user.getGithubId());
 			user.addSolvedCount();
 			userService.checkUserRank(user);
 			userService.saveUser(user);
 		}
+		return response;
 	}
 
 	public void updateAllUserProblem() {

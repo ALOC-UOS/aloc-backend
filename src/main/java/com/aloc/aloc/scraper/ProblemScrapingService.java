@@ -65,7 +65,9 @@ public class ProblemScrapingService {
 	@Transactional
 	public String addProblemsForThisWeek()
 		throws ExecutionException, InterruptedException {
-		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 5개
+		Algorithm lastWeeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 지난 주차의 weekly Hidden False로 변경
+		updateWeeklyAlgorithmHidden(lastWeeklyAlgorithm);
+		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 5개 새로운 주차의 weekly Algorithm
 		Algorithm dailyAlgorithm = algorithmService.findDailyAlgorithm(); // 1주에 7개
 
 		Map<CourseRoutineTier, List<Problem>> crawledProblems = new LinkedHashMap<>();
@@ -92,8 +94,7 @@ public class ProblemScrapingService {
 			}
 		});
 		future.get();
-		updateWeeklyAlgorithmHidden(weeklyAlgorithm);
-		return getCrawlingResultMessage(crawledProblems);
+		return getCrawlingResultMessage(crawledProblems, weeklyAlgorithm, dailyAlgorithm);
 	}
 
 	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Problem>> crawledProblems) {

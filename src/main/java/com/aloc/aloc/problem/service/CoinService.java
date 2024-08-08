@@ -13,6 +13,7 @@ import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,7 @@ public class CoinService {
 	private final AlgorithmService algorithmService;
 	private final UserProblemRepository userProblemRepository;
 	private final ProblemRepository problemRepository;
+	private final UserService userService;
 
 	@Value("${app.season}")
 	private Integer currentSeason;
@@ -38,19 +40,19 @@ public class CoinService {
 		return getCoinsForPlace(solvedUserCount);
 	}
 
-	public int calculateCoinToAddForWeekly(Algorithm algorithm, Course course) {
-		Algorithm thisWeekAlgorithm = algorithmService.getAlgorithmBySeason(currentSeason)
+	public int calculateCoinToAddForWeekly(Problem problem, User user) {
+		Algorithm thisWeekAlgorithm = algorithmService.getWeeklyAlgorithmBySeason(currentSeason)
 			.orElseThrow(() -> new RuntimeException("이번주 알고리즘이 존재하지 않습니다."));
-
-		if (thisWeekAlgorithm.equals(algorithm)
-			&& getUnsolvedProblemCount(problemRepository.findAllByAlgorithm(algorithm)) == 0) {
-			return getCoinsForCourse(course);
+		if (thisWeekAlgorithm.equals(problem.getAlgorithm())
+			&& getUnsolvedProblemCount(problemRepository
+			.findAllByAlgorithmAndProblemType(problem.getAlgorithm(), problem.getProblemType()), user.getId()) == 0) {
+			return getCoinsForCourse(problem.getProblemType().getCourse());
 		}
 		return 0;
 	}
 
-	private int getUnsolvedProblemCount(List<Problem> thisWeekProblems) {
-		return userProblemRepository.countByProblemsIn(thisWeekProblems);
+	private int getUnsolvedProblemCount(List<Problem> thisWeekProblems, Long userId) {
+		return userProblemRepository.countByUnsolvedProblemsIn(thisWeekProblems, userId);
 	}
 
 	private int getCoinsForPlace(int solvedUserCount) {
@@ -71,18 +73,25 @@ public class CoinService {
 
 	void addCoinIfEligible(User user, Problem problem) {
 		if (isEligibleForCoin(problem)) {
-			int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
+			int coinToAdd = calculateCoinToAdd(problem, user);
+			System.out.println(user.getCoin());
+			System.out.println(coinToAdd);
 			user.addCoin(coinToAdd);
+			userService.saveUser(user);
+			System.out.println(user.getCoin());
 		}
 	}
 
 
-	void addCoinEligibleForTodayProblem(User user, Problem problem) {
+	int addCoinEligibleForTodayProblem(User user, Problem problem) {
 		// 오늘의 문제가 Daily 문제인 경우 코인을 지급합니다.
 		if (problem.getProblemType().getRoutine() == Routine.DAILY) {
-			int coinToAdd = calculateCoinToAdd(problem, user.getCourse());
+			int coinToAdd = calculateCoinToAdd(problem, user);
 			user.addCoin(coinToAdd);
+			userService.saveUser(user);
+			return coinToAdd;
 		}
+		return 0;
 	}
 
 	private boolean isEligibleForCoin(Problem problem) {
@@ -90,9 +99,9 @@ public class CoinService {
 		// Weekly 문제는 항상 코인을 받음
 	}
 
-	private int calculateCoinToAdd(Problem problem, Course course) {
+	private int calculateCoinToAdd(Problem problem, User user) {
 		return problem.getProblemType().getRoutine().equals(Routine.DAILY)
 			? calculateCoinToAddForDaily(problem.getId())
-			: calculateCoinToAddForWeekly(problem.getAlgorithm(), course);
+			: calculateCoinToAddForWeekly(problem, user);
 	}
 }

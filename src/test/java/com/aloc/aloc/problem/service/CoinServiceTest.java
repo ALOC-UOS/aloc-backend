@@ -2,6 +2,7 @@ package com.aloc.aloc.problem.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -21,7 +22,11 @@ import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
+import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
+import com.aloc.aloc.problemtype.enums.Routine;
+import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.enums.Authority;
 
 @ExtendWith(MockitoExtension.class)
 class CoinServiceTest {
@@ -43,13 +48,25 @@ class CoinServiceTest {
 	private static final int COINS_FOR_HALF = 100;
 	private final Long problemId = 1L;
 	private Algorithm algorithmOfThisWeek;
-	private Algorithm algorithmOfProblem;
+	private ProblemType fullWeekly;
+	private ProblemType halfWeekly;
+	private Problem problemFullWeekly;
+	private Problem problemHalfWeekly;
+	private Problem problemFullWeeklyNotThisWeek;
+	private User user;
 
 	@BeforeEach
 	void setUp() {
 		ReflectionTestUtils.setField(coinService, "currentSeason", currentSeason);
-		algorithmOfProblem = new Algorithm(1, 1, "알고리즘 1", currentSeason, false);
+		Algorithm algorithmOfProblem = new Algorithm(1, 1, "알고리즘 1", currentSeason, false);
 		algorithmOfThisWeek = new Algorithm(2, 2, "알고리즘 2", currentSeason, false);
+		fullWeekly = new ProblemType(3L, Routine.WEEKLY, Course.FULL);
+		halfWeekly = new ProblemType(4L, Routine.WEEKLY, Course.HALF);
+		problemFullWeekly = new Problem(1L, "풀 위클리", 10, algorithmOfThisWeek, false, 1, fullWeekly, null);
+		problemHalfWeekly = new Problem(2L, "하프 위클리", 11, algorithmOfThisWeek, false, 2, halfWeekly, null);
+		problemFullWeeklyNotThisWeek = new Problem(3L, "풀 위클리", 10, algorithmOfProblem, false, 3, fullWeekly, null);
+		user = new User(1L, "홍길동", "baekjoonId", "githubId", "2021920000", "discordId", "notionEmail",
+			"profileNumber", 10, 0, Course.FULL, "profileColor", "password", Authority.ROLE_USER, "refreshToken", 0);
 	}
 
 	@Test
@@ -95,11 +112,12 @@ class CoinServiceTest {
 	@Test
 	@DisplayName("이번주에 FULL 코스 유저가 이번주 weekly 문제 다 풀었을 때 테스트")
 	void calculateCoinToAddForWeekly_FullCourse() {
-		when(algorithmService.getAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfProblem));
-		when(problemRepository.findAllByAlgorithm(algorithmOfProblem)).thenReturn(List.of(new Problem()));
-		when(userProblemRepository.countByProblemsIn(any(List.class))).thenReturn(0);
+		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
+		when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, fullWeekly))
+			.thenReturn(List.of(new Problem()));
+		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class), eq(user.getId()))).thenReturn(0);
 
-		int coins = coinService.calculateCoinToAddForWeekly(algorithmOfProblem, Course.FULL);
+		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeekly, user);
 
 		assertEquals(COINS_FOR_FULL, coins);
 	}
@@ -107,11 +125,12 @@ class CoinServiceTest {
 	@Test
 	@DisplayName("이번주에 HALF 코스 유저가 이번주 weekly 문제 다 풀었을 때 테스트")
 	void calculateCoinToAddForWeekly_HalfCourse() {
-		when(algorithmService.getAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfProblem));
-		when(problemRepository.findAllByAlgorithm(algorithmOfProblem)).thenReturn(List.of(new Problem()));
-		when(userProblemRepository.countByProblemsIn(any(List.class))).thenReturn(0);
+		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
+		when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, halfWeekly))
+			.thenReturn(List.of(new Problem()));
+		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class), eq(user.getId()))).thenReturn(0);
 
-		int coins = coinService.calculateCoinToAddForWeekly(algorithmOfProblem, Course.HALF);
+		int coins = coinService.calculateCoinToAddForWeekly(problemHalfWeekly, user);
 
 		assertEquals(COINS_FOR_HALF, coins);
 	}
@@ -119,9 +138,9 @@ class CoinServiceTest {
 	@Test
 	@DisplayName("해당 weekly 문제의 알고리즘이 이번주 알고리즘이 아닐 때 테스트")
 	void calculateCoinToAddForWeekly_NoMatchingAlgorithm() {
-		when(algorithmService.getAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
+		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
 
-		int coins = coinService.calculateCoinToAddForWeekly(algorithmOfProblem, Course.FULL);
+		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeeklyNotThisWeek, user);
 
 		assertEquals(0, coins);
 	}
@@ -129,11 +148,12 @@ class CoinServiceTest {
 	@Test
 	@DisplayName("이번주 weekly 문제를 다 풀지 않았을 때")
 	void calculateCoinToAddForWeekly_SomeUnsolvedProblems() {
-		when(algorithmService.getAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfProblem));
-		when(problemRepository.findAllByAlgorithm(algorithmOfProblem)).thenReturn(List.of(new Problem()));
-		when(userProblemRepository.countByProblemsIn(any(List.class))).thenReturn(1);
+		when(algorithmService.getWeeklyAlgorithmBySeason(currentSeason)).thenReturn(Optional.of(algorithmOfThisWeek));
+		when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, fullWeekly))
+			.thenReturn(List.of(new Problem()));
+		when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class), eq(user.getId()))).thenReturn(1);
 
-		int coins = coinService.calculateCoinToAddForWeekly(algorithmOfProblem, Course.FULL);
+		int coins = coinService.calculateCoinToAddForWeekly(problemFullWeekly, user);
 
 		assertEquals(0, coins);
 	}
