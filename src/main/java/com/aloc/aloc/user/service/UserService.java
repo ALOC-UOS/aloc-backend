@@ -88,6 +88,10 @@ public class UserService {
 		return userRepository.findAllByAuthorityIn(ACTIVE_AUTHORITIES);
 	}
 
+	public List<User> getActiveUsersByCourse(Course course) {
+		return userRepository.findAllByAuthorityInAndCourse(ACTIVE_AUTHORITIES, course);
+	}
+
 	public User findUser(String githubId) {
 		return userRepository.findByGithubId(githubId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));

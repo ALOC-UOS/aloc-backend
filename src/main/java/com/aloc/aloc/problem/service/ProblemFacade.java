@@ -141,7 +141,7 @@ public class ProblemFacade implements UserProblemRecordLoader {
 			algorithm,
 			problemType
 		);
-		List<User> activeUsers = userService.getActiveUsers();
+		List<User> activeUsers = userService.getActiveUsersByCourse(problemType.getCourse());
 		for (User user : activeUsers) {
 			problemSolvingService.addUserProblem(user, problem);
 		}

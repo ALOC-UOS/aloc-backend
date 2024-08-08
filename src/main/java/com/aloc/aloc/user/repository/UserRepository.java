@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.enums.Authority;
 
@@ -24,4 +25,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 	boolean existsByBaekjoonId(String username);
 
 	void deleteByGithubId(String githubId);
+
+	List<User> findAllByAuthorityInAndCourse(Set<Authority> activeAuthorities, Course course);
 }
