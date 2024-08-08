@@ -129,4 +129,3 @@ public class ProblemSolvingService {
 		userProblemService.getOrCreateUserProblem(user, problem, false);
 	}
 }
-

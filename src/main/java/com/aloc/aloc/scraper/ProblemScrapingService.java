@@ -128,17 +128,17 @@ public class ProblemScrapingService {
 	}
 
 	@Transactional
-	public List<Integer> addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
+	public List<Problem> addProblemsByType(Algorithm algorithm, CourseRoutineTier courseRoutineTier)
 		throws IOException {
 		ProblemType problemType = problemTypeRepository
 			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine())
 			.orElseThrow(() -> new NoSuchElementException("해당 문제 타입이 존재하지 않습니다."));
 
-		String url = getProblemSetUrl(courseRoutineTier, algorithm.getAlgorithmId());
+		String url = getProblemUrl(courseRoutineTier, algorithm.getAlgorithmId());
 		return crawlAndAddProblems(url, problemType, algorithm, courseRoutineTier.getTargetCount());
 	}
 
-	private String getProblemSetUrl(CourseRoutineTier courseRoutineTier, int algorithmId) {
+	private String getProblemUrl(CourseRoutineTier courseRoutineTier, int algorithmId) {
 		String tiers = courseRoutineTier.getTierList().stream()
 			.map(Object::toString)
 			.collect(Collectors.joining(","));
