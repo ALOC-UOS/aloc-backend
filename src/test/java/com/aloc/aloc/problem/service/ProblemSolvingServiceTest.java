@@ -61,13 +61,11 @@ public class ProblemSolvingServiceTest {
 			"discord",
 			15,
 			"notion",
-			"11550",
 			Course.FULL
 		);
 
 		Algorithm algorithm1 = new Algorithm(1, 1, "Algorithm 1", 2, false);
 		Algorithm algorithm2 = new Algorithm(2, 2, "Algorithm 2", 2, true);
-
 		problem1 = new Problem("Problem 1", 3, algorithm2, null, null);
 		problem2 = new Problem("Problem 2", 4, algorithm2, null, null);
 		problem1.setId(1L);

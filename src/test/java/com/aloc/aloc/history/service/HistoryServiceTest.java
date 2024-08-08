@@ -62,7 +62,6 @@ class HistoryServiceTest {
 			"userDiscord",
 			1,
 			"userNotion",
-			"1",
 			Course.FULL
 		);
 	}

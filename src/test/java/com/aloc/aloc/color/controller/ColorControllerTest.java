@@ -50,7 +50,6 @@ public class ColorControllerTest {
 			"userDiscord",
 			2,
 			"userNotion",
-			"2",
 			Course.FULL
 		);
 		user.setAuthority(Authority.ROLE_USER);

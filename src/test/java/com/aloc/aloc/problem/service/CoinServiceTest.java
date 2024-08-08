@@ -66,7 +66,7 @@ class CoinServiceTest {
 		problemHalfWeekly = new Problem(2L, "하프 위클리", 11, algorithmOfThisWeek, false, 2, halfWeekly, null);
 		problemFullWeeklyNotThisWeek = new Problem(3L, "풀 위클리", 10, algorithmOfProblem, false, 3, fullWeekly, null);
 		user = new User(1L, "홍길동", "baekjoonId", "githubId", "2021920000", "discordId", "notionEmail",
-			"profileNumber", 10, 0, Course.FULL, "profileColor", "password", Authority.ROLE_USER, "refreshToken", 0);
+			10, 0, Course.FULL, "profileColor", "password", Authority.ROLE_USER, "refreshToken", 0);
 	}
 
 	@Test

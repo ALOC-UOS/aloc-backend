@@ -45,13 +45,12 @@ public class UserRequestDto {
 	@Schema(description = "HALF/FULL 코스", example = "HALF")
 	private Course course;
 
-	public User toEntity(String profileNumber, Integer rank, BCryptPasswordEncoder passwordEncoder) {
+	public User toEntity(Integer rank, BCryptPasswordEncoder passwordEncoder) {
 		return User.builder()
 			.username(username)
 			.password(passwordEncoder.encode(password))
 			.githubId(githubId)
 			.baekjoonId(baekjoonId)
-			.profileNumber(profileNumber)
 			.studentId(studentId)
 			.discordId(discordId)
 			.rank(rank)

@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +16,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.scraper.BaekjoonRankScrapingService;
-import com.aloc.aloc.scraper.GithubProfileScrapingService;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.request.UserRequestDto;
 import com.aloc.aloc.user.repository.UserRepository;
@@ -42,9 +39,6 @@ public class AuthServiceTest {
 	@MockBean
 	private BaekjoonRankScrapingService baekjoonRankScrapingService;
 
-	@MockBean
-	private GithubProfileScrapingService githubProfileScrapingService;
-
 	private UserRequestDto createUserRequestDto() {
 		UserRequestDto dto = new UserRequestDto();
 		dto.setUsername("홍길동");
@@ -67,8 +61,6 @@ public class AuthServiceTest {
 		when(userRepository.existsByBaekjoonId(userRequestDto.getBaekjoonId())).thenReturn(false);
 		when(passwordEncoder.encode(userRequestDto.getPassword())).thenReturn("encodedPassword");
 		when(baekjoonRankScrapingService.extractBaekjoonRank(userRequestDto.getBaekjoonId())).thenReturn(15);
-		when(githubProfileScrapingService.extractProfileNumber(userRequestDto.getGithubId())).thenReturn(
-			Optional.of("20210001"));
 
 		// when
 		authService.signUp(userRequestDto);
@@ -107,35 +99,12 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	@DisplayName("회원가입 실패 - GitHub 프로필 없음")
-	public void testSignUp_FailToGetGithubProfile() {
-		// given
-		UserRequestDto userRequestDto = createUserRequestDto();
-
-		// when
-		when(userRepository.existsByGithubId(userRequestDto.getGithubId())).thenReturn(false);
-		when(userRepository.existsByBaekjoonId(userRequestDto.getBaekjoonId())).thenReturn(false);
-		when(passwordEncoder.encode(userRequestDto.getPassword())).thenReturn("encodedPassword");
-		when(baekjoonRankScrapingService.extractBaekjoonRank(
-			userRequestDto.getBaekjoonId())).thenReturn(15);
-		when(githubProfileScrapingService.extractProfileNumber(userRequestDto.getGithubId()))
-			.thenReturn(Optional.empty());
-
-		// then
-		assertThrows(IllegalArgumentException.class, () -> authService.signUp(userRequestDto));
-		verify(userRepository, never()).save(any(User.class));
-		verify(githubProfileScrapingService).extractProfileNumber(userRequestDto.getGithubId());
-	}
-
-	@Test
 	@DisplayName("회원가입 실패 - Baekjoon 랭크 추출 실패")
 	public void testSignUp_BaekjoonRankExtractionFails() {
 		UserRequestDto userRequestDto = createUserRequestDto();
 
 		when(userRepository.existsByGithubId(userRequestDto.getGithubId())).thenReturn(false);
 		when(userRepository.existsByBaekjoonId(userRequestDto.getBaekjoonId())).thenReturn(false);
-		when(githubProfileScrapingService.extractProfileNumber(userRequestDto.getGithubId())).thenReturn(
-			Optional.of("20210001"));
 		when(baekjoonRankScrapingService.extractBaekjoonRank(userRequestDto.getBaekjoonId()))
 			.thenThrow(new RuntimeException("Baekjoon rank extraction failed"));
 

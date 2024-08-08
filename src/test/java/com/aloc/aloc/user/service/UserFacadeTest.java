@@ -47,7 +47,6 @@ public class UserFacadeTest {
 			"adminDiscord",
 			1,
 			"adminNotion",
-			"1",
 			Course.FULL
 		);
 		User user2 = new User(
@@ -59,7 +58,6 @@ public class UserFacadeTest {
 			"userDiscord",
 			2,
 			"userNotion",
-			"2",
 			Course.FULL
 		);
 
@@ -72,7 +70,6 @@ public class UserFacadeTest {
 				.baekjoonId("baekjoon1")
 				.profileColor("1")
 				.studentId("20210001")
-				.profileNumber("adminNotion")
 				.rank(1)
 				.coin(0)
 				.solvedCount(0)
@@ -93,7 +90,6 @@ public class UserFacadeTest {
 				.baekjoonId("userBaekjoon")
 				.profileColor("2")
 				.studentId("20210002")
-				.profileNumber("userNotion")
 				.rank(2)
 				.coin(0)
 				.solvedCount(0)
