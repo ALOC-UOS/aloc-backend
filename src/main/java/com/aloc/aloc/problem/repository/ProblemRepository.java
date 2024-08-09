@@ -83,5 +83,10 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 		+ "ORDER BY p.createdAt ASC "
 		+ "LIMIT 1")
 	Problem findFirstHiddenProblemByCourseAndRoutine(Course course, Routine routine);
+
+	Boolean existsProblemByProblemIdAndAlgorithm_Season(
+		Integer problemId,
+		Integer season
+	);
 }
 

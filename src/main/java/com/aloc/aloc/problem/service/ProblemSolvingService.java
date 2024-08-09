@@ -76,7 +76,6 @@ public class ProblemSolvingService {
 
 		if (isSolved) {
 			// 코인을 지급하고 사용자 정보를 저장합니다.
-			System.out.println("문제를 풀었어요 " + problem.getId() + " " + user.getGithubId());
 			userProblem.setIsSolved(true);
 			userProblemService.saveUserProblem(userProblem);
 			coinService.addCoinIfEligible(user, problem);
@@ -119,17 +118,14 @@ public class ProblemSolvingService {
 		response.setUserCoin(userCoin);
 	}
 
-
 	public void addUserProblemRecord(User user) {
 		List<Problem> problems = problemService.getHiddenProblemsBySeasonAndCourse(user.getCourse());
 		for (Problem problem : problems) {
-			UserProblem userProblem = userProblemService.getOrCreateUserProblem(
-				user,
-				problem,
-				false
-			);
-			userProblemService.saveUserProblem(userProblem);
+			addUserProblem(user, problem);
 		}
 	}
-}
 
+	public void addUserProblem(User user, Problem problem) {
+		userProblemService.getOrCreateUserProblem(user, problem, false);
+	}
+}

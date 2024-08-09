@@ -9,13 +9,18 @@ import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.service.AlgorithmService;
+import com.aloc.aloc.problem.dto.request.ProblemRequestDto;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
+import com.aloc.aloc.problemtag.ProblemTag;
+import com.aloc.aloc.problemtag.repository.ProblemTagRepository;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
+import com.aloc.aloc.tag.Tag;
+import com.aloc.aloc.tag.repository.TagRepository;
 import com.aloc.aloc.user.User;
 
 import lombok.RequiredArgsConstructor;
@@ -63,11 +68,15 @@ public class ProblemService {
 			.collect(Collectors.toList());
 	}
 
-	public void checkProblemExist(Long problemId) {
-		Optional<Problem> problem = problemRepository.findById(problemId);
+	public void checkProblemExist(Long id) {
+		Optional<Problem> problem = problemRepository.findById(id);
 		if (problem.isEmpty()) {
 			throw new IllegalArgumentException("해당 문제가 존재하지 않습니다.");
 		}
+	}
+
+	public Boolean checkProblemExistByProblemId(Integer problemId) {
+		return problemRepository.existsProblemByProblemIdAndAlgorithm_Season(problemId, currentSeason);
 	}
 
 	public ProblemResponseDto getTodayProblemDto(Course course) {
@@ -133,4 +142,14 @@ public class ProblemService {
 	public List<Problem> getHiddenProblemsBySeasonAndCourse(Course course) {
 		return problemRepository.findHiddenProblemsBySeasonAndCourse(currentSeason, course);
 	}
+
+	public Algorithm getAlgorithmByAlgorithmName(String algorithm) {
+		return algorithmService.getAlgorithmByName(algorithm);
+	}
+
+	public ProblemType getProblemTypeById(Long problemType) {
+		return problemTypeRepository.findById(problemType)
+			.orElseThrow(() -> new IllegalArgumentException("문제 타입이 없습니다."));
+	}
 }
+

@@ -7,11 +7,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
+import com.aloc.aloc.problem.dto.request.ProblemRequestDto;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.dto.response.TodayProblemSolvedResponseDto;
@@ -120,5 +122,25 @@ public class ProblemController {
 		@Parameter(hidden = true) @AuthenticationPrincipal User user
 	) {
 		return CustomApiResponse.onSuccess(problemFacade.getWeeklyProblems(user.getUsername()));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@PostMapping("/user-problem/force")
+	public CustomApiResponse<String> addUserProblem(
+		String githubId,
+		Long problemId,
+		@Parameter(hidden = true) @AuthenticationPrincipal User user
+	) {
+		return CustomApiResponse.onSuccess(problemFacade.addUserProblemForce(user.getUsername(), githubId, problemId));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@PostMapping("/problem/force")
+	public CustomApiResponse<String> addProblem(
+		@RequestBody ProblemRequestDto problemRequestDto,
+		@Parameter(hidden = true) @AuthenticationPrincipal User user
+	) {
+		return CustomApiResponse.onSuccess(
+			problemFacade.addProblemAndUserProblemForce(user.getUsername(), problemRequestDto));
 	}
 }
