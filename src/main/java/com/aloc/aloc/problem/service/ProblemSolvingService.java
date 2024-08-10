@@ -116,6 +116,7 @@ public class ProblemSolvingService {
 		response.setPlace(place);
 		response.setObtainCoin(coin);
 		response.setUserCoin(userCoin);
+		response.setIsSolved(true);
 	}
 
 	public void addUserProblemRecord(User user) {
