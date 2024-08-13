@@ -1,6 +1,7 @@
 package com.aloc.aloc.coinhistory.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.coinhistory.CoinHistory;
 import com.aloc.aloc.coinhistory.enums.CoinType;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CoinHistoryService {
 	private final CoinHistoryRepository coinHistoryRepository;
+
+	@Transactional
 	public void addCoinHistory(User user, int coin, CoinType coinType, String description) {
 		CoinHistory coinHistory = CoinHistory.builder()
 			.coin(coin)

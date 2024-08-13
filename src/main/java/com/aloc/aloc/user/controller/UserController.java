@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aloc.aloc.global.apipayload.CustomApiResponse;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.service.ProblemFacade;
+import com.aloc.aloc.user.dto.request.UserCoinDto;
 import com.aloc.aloc.user.dto.request.UserPasswordDto;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
 import com.aloc.aloc.user.service.UserFacade;
@@ -121,5 +122,18 @@ public class UserController {
 		@Parameter(hidden = true) @AuthenticationPrincipal User user,
 		@RequestBody @Valid UserPasswordDto userPasswordDto) {
 		return CustomApiResponse.onSuccess(userService.updateUserPassword(user.getUsername(), userPasswordDto));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@PatchMapping("/user/change-coin")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "유저의 코인이 업데이트되었습니다."),
+		@ApiResponse(responseCode = "401", description = "관리자만 가능합니다."),
+		@ApiResponse(responseCode = "500", description = "유저의 코인 변경을 실패했습니다.")
+	})
+	@Operation(summary = "유저 코인 업데이트", description = "유저의 코인을 업데이트합니다.")
+	public CustomApiResponse<String> updateUserCoin(@Parameter(hidden = true) @AuthenticationPrincipal User user,
+		@RequestBody @Valid UserCoinDto userCoinDto) {
+		return CustomApiResponse.onSuccess(userService.updateUserCoin(user.getUsername(), userCoinDto));
 	}
 }
