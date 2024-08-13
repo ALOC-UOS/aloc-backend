@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.service.AlgorithmService;
+import com.aloc.aloc.coinhistory.enums.CoinType;
+import com.aloc.aloc.coinhistory.service.CoinHistoryService;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
@@ -24,6 +26,7 @@ public class CoinService {
 	private final UserProblemRepository userProblemRepository;
 	private final ProblemRepository problemRepository;
 	private final UserService userService;
+	private final CoinHistoryService coinHistoryService;
 
 	@Value("${app.season}")
 	private Integer currentSeason;
@@ -78,6 +81,7 @@ public class CoinService {
 			System.out.println(coinToAdd);
 			user.addCoin(coinToAdd);
 			userService.saveUser(user);
+			coinHistoryService.addCoinHistory(user, coinToAdd, CoinType.WEEKLY, "이번주 위클리 문제 해결");
 			System.out.println(user.getCoin());
 		}
 	}
@@ -89,6 +93,7 @@ public class CoinService {
 			int coinToAdd = calculateCoinToAdd(problem, user);
 			user.addCoin(coinToAdd);
 			userService.saveUser(user);
+			coinHistoryService.addCoinHistory(user, coinToAdd, CoinType.DAILY, "오늘의 문제 해결");
 			return coinToAdd;
 		}
 		return 0;

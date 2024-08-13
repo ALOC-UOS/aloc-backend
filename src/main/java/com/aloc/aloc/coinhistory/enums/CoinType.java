@@ -5,5 +5,6 @@ public enum CoinType {
 	WEEKLY,
 	BUY_COLOR,
 	BUY_ITEM,
-	STUDY_REWARD
+	STUDY_REWARD,
+	ETC
 }
