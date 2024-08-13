@@ -31,7 +31,7 @@ public class ProblemScheduler {
 		discordWebhookService.sendNotification(openedCnt + "개의 Daily 문제가 공개되었습니다.");
 	}
 
-	@Scheduled(cron = "0 30 19 * * TUE")
+	@Scheduled(cron = "0 0 0 * * TUE")
 	public void updateAllUserProblem() {
 		problemFacade.updateAllUserProblem();
 		updateAllWeeklyProblemHidden();
