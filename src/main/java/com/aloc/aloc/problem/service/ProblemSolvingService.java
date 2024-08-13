@@ -127,6 +127,7 @@ public class ProblemSolvingService {
 	}
 
 	public void addUserProblem(User user, Problem problem) {
-		userProblemService.getOrCreateUserProblem(user, problem, false);
+		UserProblem userProblem = userProblemService.getOrCreateUserProblem(user, problem, false);
+		userProblemService.saveUserProblem(userProblem);
 	}
 }
