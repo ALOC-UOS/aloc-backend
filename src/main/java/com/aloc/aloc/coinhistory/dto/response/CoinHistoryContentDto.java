@@ -18,7 +18,7 @@ public class CoinHistoryContentDto {
 	private CoinType coinType;
 	private String date;
 
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 e");
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
 
 	public static List<CoinHistoryContentDto> listOf(List<CoinHistory> coinHistories) {
 		return coinHistories.stream()
