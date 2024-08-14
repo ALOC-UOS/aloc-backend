@@ -3,6 +3,7 @@ package com.aloc.aloc.coinhistory.controller;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,12 +25,11 @@ import lombok.RequiredArgsConstructor;
 public class CoinHistoryController {
 	private final CoinHistoryService coinHistoryService;
 	private final UserService userService;
-	@GetMapping("")
-	@SecurityRequirement(name = "JWT Auth")
+	@GetMapping("/{githubId}")
 	@Operation(summary = "유저 코인 히스토리 조회", description = "유저의 코인 히스토리 목록을 조회합니다.")
 	public CustomApiResponse<CoinHistoryResponseDto> getCoinHistory(
-		@Parameter(hidden = true) @AuthenticationPrincipal User user) {
+		@Parameter(description = "조회하려는 유저의 githubId", required = true) @PathVariable() String githubId) {
 		return CustomApiResponse.onSuccess(coinHistoryService
-			.getUserCoinHistory(userService.findUser(user.getUsername())));
+			.getUserCoinHistory(userService.findUser(githubId)));
 	}
 }
