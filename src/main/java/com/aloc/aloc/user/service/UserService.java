@@ -12,10 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.alcorequest.AlocRequest;
 import com.aloc.aloc.alcorequest.repository.AlocRequestRepository;
+import com.aloc.aloc.coinhistory.service.CoinHistoryService;
 import com.aloc.aloc.history.service.HistoryService;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.BaekjoonRankScrapingService;
 import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.dto.request.UserCoinDto;
 import com.aloc.aloc.user.dto.request.UserPasswordDto;
 import com.aloc.aloc.user.enums.Authority;
 import com.aloc.aloc.user.repository.UserRepository;
@@ -31,6 +33,7 @@ public class UserService {
 	private final BaekjoonRankScrapingService baekjoonRankScrapingService;
 	private final AlocRequestRepository alocRequestRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
+	private final CoinHistoryService coinHistoryService;
 
 	public void checkAdmin(String githubId) {
 		Optional<User> userOptional = userRepository.findByGithubId(githubId);
@@ -129,5 +132,17 @@ public class UserService {
 		user.encodePassword(passwordEncoder);
 		saveUser(user);
 		return "유저 비밀번호 변경을 성공하였습니다.";
+	}
+
+	@Transactional
+	public String updateUserCoin(String githubId, UserCoinDto userCoinDto) {
+		checkAdmin(githubId);
+
+		User user = findUser(userCoinDto.getGithubId());
+		user.setCoin(user.getCoin() + userCoinDto.getCoin());
+		saveUser(user);
+		coinHistoryService.addCoinHistory(user, userCoinDto.getCoin(),
+			userCoinDto.getCoinType(), userCoinDto.getDescription());
+		return "유저의 코인 업데이트 성공하였습니다.";
 	}
 }
