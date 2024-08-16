@@ -1,5 +1,6 @@
 package com.aloc.aloc.user;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,4 +21,16 @@ public class UserProfile {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	private Integer coin;
+
+	@Column(nullable = false)
+	private String profileColor;
+
+	@Column(nullable = false)
+	private String studentId;
+
+	private String discordId;
+
+	private String notionEmail;
 }
