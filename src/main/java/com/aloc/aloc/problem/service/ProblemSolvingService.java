@@ -10,6 +10,7 @@ import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.dto.response.TodayProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
+import com.aloc.aloc.problem.enums.ProblemStatus;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.SolvedCheckingService;
 import com.aloc.aloc.user.User;
@@ -85,12 +86,11 @@ public class ProblemSolvingService {
 
 	public TodayProblemSolvedResponseDto updateTodaySolvedProblem(User user, Problem todayProblem) {
 		TodayProblemSolvedResponseDto response = TodayProblemSolvedResponseDto.builder()
-			.isSolved(false)
-			.isAlreadySolved(false)
+			.solvedStatus(ProblemStatus.UNSOLVED)
 			.build();
 
 		if (userProblemService.isProblemAlreadySolved(user.getId(), todayProblem.getId())) {
-			response.setIsAlreadySolved(true);
+			response.setSolvedStatus(ProblemStatus.ALREADY_SOLVED);
 			return response;
 		}
 
@@ -118,7 +118,7 @@ public class ProblemSolvingService {
 		response.setPlace(place);
 		response.setObtainCoin(coin);
 		response.setUserCoin(userCoin);
-		response.setIsSolved(true);
+		response.setSolvedStatus(ProblemStatus.SOLVED);
 	}
 
 	public void addUserProblemRecord(User user) {
