@@ -1,7 +1,7 @@
 package com.aloc.aloc.marathon;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

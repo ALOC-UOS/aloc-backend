@@ -1,6 +1,6 @@
 package com.aloc.aloc.user.dto.response;
 
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.enums.Authority;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,10 +37,10 @@ public class UserResponseDto {
 			.authority(user.getAuthority())
 			.githubId(user.getGithubId())
 			.baekjoonId(user.getBaekjoonId())
-			.profileColor(user.getProfileColor())
-			.studentId(user.getStudentId())
+			.profileColor(user.getUserProfile().getProfileColor())
+			.studentId(user.getUserProfile().getStudentId())
 			.rank(user.getRank())
-			.coin(user.getCoin())
+			.coin(user.getUserProfile().getCoin())
 			.build();
 	}
 }

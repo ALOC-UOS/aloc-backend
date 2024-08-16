@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -56,6 +56,10 @@ public class UserProblemService {
 
 	// 시즌, 풀이 여부, 루틴에 따라 유저의 문제 목록을 가져옵니다.
 	public List<UserProblem> getUserProblemList(Long userId, Integer season, Boolean isSolved) {
+		System.out.println(userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
+			userId, season, isSolved));
+		System.out.println(season);
+		System.out.println(isSolved);
 		return userProblemRepository.findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
 			userId, season, isSolved);
 	}

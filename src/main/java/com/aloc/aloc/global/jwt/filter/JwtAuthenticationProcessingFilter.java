@@ -21,7 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.aloc.aloc.global.jwt.service.JwtService;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

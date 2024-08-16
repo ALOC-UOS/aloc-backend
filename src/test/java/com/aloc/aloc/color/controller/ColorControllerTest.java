@@ -24,7 +24,7 @@ import com.aloc.aloc.color.dto.response.ColorResponseDto;
 import com.aloc.aloc.color.service.ColorService;
 import com.aloc.aloc.global.login.service.UserDetailsServiceImpl;
 import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.enums.Authority;
 
 

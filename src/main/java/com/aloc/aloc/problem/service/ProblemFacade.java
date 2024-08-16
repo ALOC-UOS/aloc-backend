@@ -16,8 +16,8 @@ import com.aloc.aloc.problem.enums.ProblemStatus;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.ProblemScrapingService;
-import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;

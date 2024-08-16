@@ -10,7 +10,7 @@ import com.aloc.aloc.coinhistory.dto.response.CoinHistoryContentDto;
 import com.aloc.aloc.coinhistory.dto.response.CoinHistoryResponseDto;
 import com.aloc.aloc.coinhistory.enums.CoinType;
 import com.aloc.aloc.coinhistory.repository.CoinHistoryRepository;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +33,7 @@ public class CoinHistoryService {
 	public CoinHistoryResponseDto getUserCoinHistory(User user) {
 		List<CoinHistory> coinHistories = coinHistoryRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId());
 		return CoinHistoryResponseDto.builder()
-			.userCoin(user.getCoin())
+			.userCoin(user.getUserProfile().getCoin())
 			.histories(CoinHistoryContentDto.listOf(coinHistories))
 			.build();
 	}

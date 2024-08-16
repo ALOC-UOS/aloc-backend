@@ -2,7 +2,7 @@ package com.aloc.aloc.user.dto.response;
 
 import java.time.format.DateTimeFormatter;
 
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -49,10 +49,10 @@ public class UserDetailResponseDto extends UserResponseDto {
 			.authority(user.getAuthority())
 			.githubId(user.getGithubId())
 			.baekjoonId(user.getBaekjoonId())
-			.profileColor(user.getProfileColor())
-			.studentId(user.getStudentId().substring(2, 4))
+			.profileColor(user.getUserProfile().getProfileColor())
+			.studentId(user.getUserProfile().getStudentId().substring(2, 4))
 			.rank(user.getRank())
-			.coin(user.getCoin())
+			.coin(user.getUserProfile().getCoin())
 			.solvedCount(user.getSolvedCount())
 			.unsolvedCount(unsolvedCount)
 			.todaySolved(todaySolved)

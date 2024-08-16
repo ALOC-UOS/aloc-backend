@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.aloc.aloc.history.service.HistoryService;
 import com.aloc.aloc.problem.service.UserProblemRecordLoader;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.enums.Authority;
 
 import lombok.RequiredArgsConstructor;

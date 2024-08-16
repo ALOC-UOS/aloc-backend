@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
+import com.aloc.aloc.user.entity.User;
 
 public class UserFacadeTest {
 

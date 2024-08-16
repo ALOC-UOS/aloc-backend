@@ -1,7 +1,4 @@
-package com.aloc.aloc.history;
-
-import com.aloc.aloc.global.domain.AuditingTimeEntity;
-import com.aloc.aloc.user.entity.User;
+package com.aloc.aloc.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,41 +7,42 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 
 @Entity
-@Getter
-@ToString
 @AllArgsConstructor
-@NoArgsConstructor
-public class History extends AuditingTimeEntity {
-
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class UserProfile {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@Column(nullable = false)
-	private String username;
+	private Integer coin;
 
 	@Column(nullable = false)
-	private String icon;
+	private String profileColor;
 
-	private Integer rank;
+	@Column(nullable = false)
+	private String studentId;
 
-	@Builder
-	public History(User user, String username, String icon, Integer rank) {
-		this.user = user;
-		this.username = username;
-		this.icon = icon;
-		this.rank = rank;
+	private String discordId;
+
+	private String notionEmail;
+
+	public void addCoin(int coinToAdd) {
+		this.coin += coinToAdd;
 	}
 }
