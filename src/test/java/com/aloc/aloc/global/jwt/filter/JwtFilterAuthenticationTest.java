@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.auth.dto.RefreshTokenDto;
 import com.aloc.aloc.global.jwt.service.JwtService;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

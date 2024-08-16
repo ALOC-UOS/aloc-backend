@@ -26,7 +26,7 @@ import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 @ExtendWith(MockitoExtension.class)
 public class ProblemSolvingServiceTest {

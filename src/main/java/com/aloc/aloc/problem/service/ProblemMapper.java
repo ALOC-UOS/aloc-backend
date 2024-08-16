@@ -15,8 +15,8 @@ import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.tag.Tag;
 import com.aloc.aloc.tag.dto.TagSimpleDto;
-import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
+import com.aloc.aloc.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -63,7 +63,7 @@ public class ProblemMapper {
 			.profileColor(user.getProfileColor())
 			.studentId(user.getStudentId())
 			.rank(user.getRank())
-			.coin(user.getCoin())
+			.coin(user.getUserProfile().getCoin())
 			.solvedAt(userProblem.getSolvedAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
 			.build();
 	}

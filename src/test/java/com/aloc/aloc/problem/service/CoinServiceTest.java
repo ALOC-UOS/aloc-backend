@@ -25,7 +25,7 @@ import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.enums.Authority;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,8 +65,17 @@ class CoinServiceTest {
 		problemFullWeekly = new Problem(1L, "풀 위클리", 10, algorithmOfThisWeek, false, 1, fullWeekly, null);
 		problemHalfWeekly = new Problem(2L, "하프 위클리", 11, algorithmOfThisWeek, false, 2, halfWeekly, null);
 		problemFullWeeklyNotThisWeek = new Problem(3L, "풀 위클리", 10, algorithmOfProblem, false, 3, fullWeekly, null);
-		user = new User(1L, "홍길동", "baekjoonId", "githubId", "2021920000", "discordId", "notionEmail",
-			10, 0, Course.FULL, "profileColor", "password", Authority.ROLE_USER, "refreshToken", 0);
+		user = new User(
+			"홍길동",
+			"baekjoonId",
+			"githubId",
+			"2021920000",
+			"password",
+			"discordId",
+			10,
+			"notionEmail",
+			Course.FULL
+		);
 	}
 
 	@Test

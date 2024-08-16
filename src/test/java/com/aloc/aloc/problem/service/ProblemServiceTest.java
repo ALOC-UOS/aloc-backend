@@ -24,7 +24,7 @@ import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 @ExtendWith(MockitoExtension.class)
 public class ProblemServiceTest {

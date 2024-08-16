@@ -16,8 +16,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.scraper.BaekjoonRankScrapingService;
-import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.request.UserRequestDto;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.repository.UserRepository;
 
 

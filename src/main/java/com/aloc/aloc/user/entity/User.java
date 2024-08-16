@@ -1,5 +1,4 @@
-package com.aloc.aloc.user;
-
+package com.aloc.aloc.user.entity;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -7,13 +6,16 @@ import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.enums.Authority;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -54,8 +56,6 @@ public class User extends AuditingTimeEntity {
 
 	private Integer rank;
 
-	private Integer coin;
-
 	@Enumerated(EnumType.STRING)
 	private Course course;
 
@@ -74,6 +74,8 @@ public class User extends AuditingTimeEntity {
 	@Column
 	private Integer solvedCount = 0;
 
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private UserProfile userProfile;
 
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
@@ -118,11 +120,14 @@ public class User extends AuditingTimeEntity {
 		this.course = course;
 		this.authority = Authority.ROLE_GUEST;
 		this.rank = rank;
-		this.coin = 0;
-	}
-
-	public void addCoin(int coinToAdd) {
-		this.coin += coinToAdd;
+		this.userProfile = UserProfile.builder()
+			.user(this)
+			.coin(0)
+			.profileColor("Blue")
+			.studentId(studentId)
+			.discordId(discordId)
+			.notionEmail(notionEmail)
+			.build();
 	}
 }
 

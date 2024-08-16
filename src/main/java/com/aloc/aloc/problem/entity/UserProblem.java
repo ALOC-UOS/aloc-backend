@@ -2,7 +2,7 @@ package com.aloc.aloc.problem.entity;
 
 import java.time.LocalDateTime;
 
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

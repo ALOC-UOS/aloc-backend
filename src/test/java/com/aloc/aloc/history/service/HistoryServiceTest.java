@@ -25,7 +25,7 @@ import com.aloc.aloc.history.History;
 import com.aloc.aloc.history.dto.response.HistoryResponseDto;
 import com.aloc.aloc.history.repository.HistoryRepository;
 import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional

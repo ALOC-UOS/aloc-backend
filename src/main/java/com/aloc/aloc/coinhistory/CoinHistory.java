@@ -2,7 +2,7 @@ package com.aloc.aloc.coinhistory;
 
 import com.aloc.aloc.coinhistory.enums.CoinType;
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
