@@ -53,7 +53,7 @@ public class ColorService {
 		user.getUserProfile().setCoin(user.getUserProfile().getCoin() - COLOR_CHANGE_MONEY);
 
 		String colorName = pickColor();
-		user.setProfileColor(colorName);
+		user.getUserProfile().setProfileColor(colorName);
 		Color color = colorRepository.findById(colorName).orElseThrow();
 
 		userRepository.save(user);

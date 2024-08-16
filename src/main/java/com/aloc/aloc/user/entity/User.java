@@ -47,20 +47,10 @@ public class User extends AuditingTimeEntity {
 	@Column(nullable = false)
 	private String githubId;
 
-	@Column(nullable = false)
-	private String studentId;
-
-	private String discordId;
-
-	private String notionEmail;
-
 	private Integer rank;
 
 	@Enumerated(EnumType.STRING)
 	private Course course;
-
-	@Column(nullable = false)
-	private String profileColor;
 
 	@Column(nullable = false)
 	private String password = "password";
@@ -112,11 +102,7 @@ public class User extends AuditingTimeEntity {
 		this.username = username;
 		this.baekjoonId = baekjoonId;
 		this.githubId = githubId;
-		this.studentId = studentId;
-		this.profileColor = "Blue";
 		this.password = password;
-		this.discordId = discordId;
-		this.notionEmail = notionEmail;
 		this.course = course;
 		this.authority = Authority.ROLE_GUEST;
 		this.rank = rank;
