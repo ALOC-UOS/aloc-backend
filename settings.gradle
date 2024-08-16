@@ -1,1 +1,6 @@
 rootProject.name = 'aloc'
+buildCache {
+    local {
+        enabled = true
+    }
+}
