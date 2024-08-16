@@ -37,8 +37,8 @@ public class UserResponseDto {
 			.authority(user.getAuthority())
 			.githubId(user.getGithubId())
 			.baekjoonId(user.getBaekjoonId())
-			.profileColor(user.getProfileColor())
-			.studentId(user.getStudentId())
+			.profileColor(user.getUserProfile().getProfileColor())
+			.studentId(user.getUserProfile().getStudentId())
 			.rank(user.getRank())
 			.coin(user.getUserProfile().getCoin())
 			.build();
