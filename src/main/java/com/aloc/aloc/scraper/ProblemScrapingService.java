@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.enums.CourseRoutineTier;
 import com.aloc.aloc.algorithm.service.AlgorithmService;
+import com.aloc.aloc.global.apipayload.exception.ScrapException;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problemtag.ProblemTag;
@@ -52,6 +53,7 @@ public class ProblemScrapingService {
 	private static final String HEADER_FIELD_VALUE =
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 			+ "(KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
+	private static final int RUBY_1 = 30;
 
 	@Value("${app.season}")
 	private int currentSeason;
@@ -134,12 +136,32 @@ public class ProblemScrapingService {
 			.findByCourseAndRoutine(courseRoutineTier.getCourse(), courseRoutineTier.getRoutine())
 			.orElseThrow(() -> new NoSuchElementException("해당 문제 타입이 존재하지 않습니다."));
 
-		String url = getProblemUrl(courseRoutineTier, algorithm.getAlgorithmId());
-		return crawlAndAddProblems(url, problemType, algorithm, courseRoutineTier.getTargetCount());
+		List<Integer> tierList = new ArrayList<>(courseRoutineTier.getTierList());
+		List<Problem> crawledProblems = new ArrayList<>();
+		int targetCount = courseRoutineTier.getTargetCount();
+		int maxTier = tierList.get(tierList.size() - 1);
+
+		while (true) {
+			String url = getProblemUrl(tierList, algorithm.getAlgorithmId());
+			crawledProblems.addAll(crawlAndAddProblems(url, problemType, algorithm, targetCount));
+
+			if (crawledProblems.size() == targetCount) {
+				break;
+			}
+
+			crawledProblems = new ArrayList<>();
+			maxTier++;
+
+			if (maxTier > RUBY_1) { // 가장 높은 단계까지 포함하여 조회해도 문제 수가 targetCount 충족 못할 때
+				throw new ScrapException("스크롤 할 문제가 부족합니다. 수동으로 문제 추가해주세요.");
+			}
+			tierList.add(maxTier);
+		}
+		return crawledProblems;
 	}
 
-	private String getProblemUrl(CourseRoutineTier courseRoutineTier, int algorithmId) {
-		String tiers = courseRoutineTier.getTierList().stream()
+	private String getProblemUrl(List<Integer> tierList, int algorithmId) {
+		String tiers = tierList.stream()
 			.map(Object::toString)
 			.collect(Collectors.joining(","));
 
