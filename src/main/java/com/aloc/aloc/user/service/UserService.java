@@ -10,8 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.alcorequest.AlocRequest;
-import com.aloc.aloc.alcorequest.repository.AlocRequestRepository;
+import com.aloc.aloc.alocrequest.AlocRequest;
+import com.aloc.aloc.alocrequest.repository.AlocRequestRepository;
 import com.aloc.aloc.coinhistory.service.CoinHistoryService;
 import com.aloc.aloc.history.service.HistoryService;
 import com.aloc.aloc.problemtype.enums.Course;

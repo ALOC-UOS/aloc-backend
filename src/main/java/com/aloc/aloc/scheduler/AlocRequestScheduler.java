@@ -6,8 +6,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.alcorequest.AlocRequest;
-import com.aloc.aloc.alcorequest.repository.AlocRequestRepository;
+import com.aloc.aloc.alocrequest.AlocRequest;
+import com.aloc.aloc.alocrequest.repository.AlocRequestRepository;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.repository.UserRepository;
