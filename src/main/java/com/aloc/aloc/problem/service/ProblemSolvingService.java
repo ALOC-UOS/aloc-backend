@@ -10,6 +10,7 @@ import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.dto.response.TodayProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
+import com.aloc.aloc.problem.enums.ProblemStatus;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.SolvedCheckingService;
 import com.aloc.aloc.user.entity.User;
@@ -85,10 +86,11 @@ public class ProblemSolvingService {
 
 	public TodayProblemSolvedResponseDto updateTodaySolvedProblem(User user, Problem todayProblem) {
 		TodayProblemSolvedResponseDto response = TodayProblemSolvedResponseDto.builder()
-			.isSolved(false)
+			.solvedStatus(ProblemStatus.UNSOLVED)
 			.build();
 
 		if (userProblemService.isProblemAlreadySolved(user.getId(), todayProblem.getId())) {
+			response.setSolvedStatus(ProblemStatus.ALREADY_SOLVED);
 			return response;
 		}
 
@@ -105,7 +107,7 @@ public class ProblemSolvingService {
 	private void processSolvedProblem(User user, Problem todayProblem, UserProblem userProblem,
 		TodayProblemSolvedResponseDto response) {
 		System.out.println("오늘의 문제를 풀었어요: " + user.getGithubId());
-		int place = userProblemService.getSolvedUserCount(todayProblem.getId());
+		int place = userProblemService.getSolvedUserCount(todayProblem.getId()) + 1;
 		int coin = coinService.addCoinEligibleForTodayProblem(user, todayProblem);
 
 		userProblem.setIsSolved(true);
@@ -116,7 +118,7 @@ public class ProblemSolvingService {
 		response.setPlace(place);
 		response.setObtainCoin(coin);
 		response.setUserCoin(userCoin);
-		response.setIsSolved(true);
+		response.setSolvedStatus(ProblemStatus.SOLVED);
 	}
 
 	public void addUserProblemRecord(User user) {

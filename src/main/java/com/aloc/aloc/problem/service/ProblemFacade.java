@@ -12,6 +12,7 @@ import com.aloc.aloc.problem.dto.request.ProblemRequestDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.dto.response.TodayProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
+import com.aloc.aloc.problem.enums.ProblemStatus;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.ProblemScrapingService;
@@ -105,7 +106,7 @@ public class ProblemFacade implements UserProblemRecordLoader {
 	public TodayProblemSolvedResponseDto loadUserTodayProblemRecord(User user) {
 		Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
 		TodayProblemSolvedResponseDto response = problemSolvingService.updateTodaySolvedProblem(user, todayProblem);
-		if (response.getIsSolved()) {
+		if (response.getSolvedStatus().equals(ProblemStatus.SOLVED)) {
 			System.out.println("오늘의 문제를 풀었어요" + user.getGithubId());
 			user.addSolvedCount();
 			userService.checkUserRank(user);
