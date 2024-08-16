@@ -1,4 +1,4 @@
-package com.aloc.aloc.alcorequest;
+package com.aloc.aloc.alocrequest;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.user.User;
