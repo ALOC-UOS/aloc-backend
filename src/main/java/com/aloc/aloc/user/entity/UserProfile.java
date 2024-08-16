@@ -1,4 +1,4 @@
-package com.aloc.aloc.user;
+package com.aloc.aloc.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,9 +9,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@AllArgsConstructor
+@Builder
+@Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserProfile {
 	@Id
@@ -33,4 +41,8 @@ public class UserProfile {
 	private String discordId;
 
 	private String notionEmail;
+
+	public void addCoin(int coinToAdd) {
+		this.coin += coinToAdd;
+	}
 }

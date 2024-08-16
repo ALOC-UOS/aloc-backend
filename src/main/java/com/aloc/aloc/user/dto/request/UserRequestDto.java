@@ -3,7 +3,7 @@ package com.aloc.aloc.user.dto.request;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;

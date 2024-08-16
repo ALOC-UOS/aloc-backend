@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problem.service.UserProblemService;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import lombok.AllArgsConstructor;
 

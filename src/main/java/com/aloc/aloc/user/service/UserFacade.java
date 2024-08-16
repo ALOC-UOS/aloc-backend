@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
+import com.aloc.aloc.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 

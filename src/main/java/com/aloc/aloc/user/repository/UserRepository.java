@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.aloc.aloc.problemtype.enums.Course;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.enums.Authority;
 
 @Repository

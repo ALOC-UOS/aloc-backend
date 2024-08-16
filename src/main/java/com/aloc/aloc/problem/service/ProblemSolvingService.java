@@ -13,7 +13,7 @@ import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.enums.ProblemStatus;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.SolvedCheckingService;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -111,7 +111,7 @@ public class ProblemSolvingService {
 		int coin = coinService.addCoinEligibleForTodayProblem(user, todayProblem);
 
 		userProblem.setIsSolved(true);
-		updateResponse(response, place, coin, user.getCoin());
+		updateResponse(response, place, coin, user.getUserProfile().getCoin());
 	}
 
 	private void updateResponse(TodayProblemSolvedResponseDto response, int place, int coin, int userCoin) {

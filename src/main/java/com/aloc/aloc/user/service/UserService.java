@@ -16,9 +16,9 @@ import com.aloc.aloc.coinhistory.service.CoinHistoryService;
 import com.aloc.aloc.history.service.HistoryService;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.BaekjoonRankScrapingService;
-import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.request.UserCoinDto;
 import com.aloc.aloc.user.dto.request.UserPasswordDto;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.enums.Authority;
 import com.aloc.aloc.user.repository.UserRepository;
 
@@ -139,7 +139,7 @@ public class UserService {
 		checkAdmin(githubId);
 
 		User user = findUser(userCoinDto.getGithubId());
-		user.setCoin(user.getCoin() + userCoinDto.getCoin());
+		user.getUserProfile().setCoin(user.getUserProfile().getCoin() + userCoinDto.getCoin());
 		saveUser(user);
 		coinHistoryService.addCoinHistory(user, userCoinDto.getCoin(),
 			userCoinDto.getCoinType(), userCoinDto.getDescription());

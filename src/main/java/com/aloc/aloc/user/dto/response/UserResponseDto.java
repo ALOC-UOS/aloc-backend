@@ -1,6 +1,6 @@
 package com.aloc.aloc.user.dto.response;
 
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.enums.Authority;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,7 +40,7 @@ public class UserResponseDto {
 			.profileColor(user.getProfileColor())
 			.studentId(user.getStudentId())
 			.rank(user.getRank())
-			.coin(user.getCoin())
+			.coin(user.getUserProfile().getCoin())
 			.build();
 	}
 }

@@ -1,7 +1,7 @@
 package com.aloc.aloc.history;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity

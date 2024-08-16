@@ -14,7 +14,7 @@ import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -77,12 +77,9 @@ public class CoinService {
 	void addCoinIfEligible(User user, Problem problem) {
 		if (isEligibleForCoin(problem)) {
 			int coinToAdd = calculateCoinToAdd(problem, user);
-			System.out.println(user.getCoin());
-			System.out.println(coinToAdd);
-			user.addCoin(coinToAdd);
+			user.getUserProfile().addCoin(coinToAdd);
 			userService.saveUser(user);
 			coinHistoryService.addCoinHistory(user, coinToAdd, CoinType.WEEKLY, "이번주 위클리 문제 해결");
-			System.out.println(user.getCoin());
 		}
 	}
 
@@ -91,7 +88,7 @@ public class CoinService {
 		// 오늘의 문제가 Daily 문제인 경우 코인을 지급합니다.
 		if (problem.getProblemType().getRoutine() == Routine.DAILY) {
 			int coinToAdd = calculateCoinToAdd(problem, user);
-			user.addCoin(coinToAdd);
+			user.getUserProfile().addCoin(coinToAdd);
 			userService.saveUser(user);
 			coinHistoryService.addCoinHistory(user, coinToAdd, CoinType.DAILY, "오늘의 문제 해결");
 			return coinToAdd;

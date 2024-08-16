@@ -14,7 +14,7 @@ import com.aloc.aloc.history.History;
 import com.aloc.aloc.history.dto.response.HistoryContentDto;
 import com.aloc.aloc.history.dto.response.HistoryResponseDto;
 import com.aloc.aloc.history.repository.HistoryRepository;
-import com.aloc.aloc.user.User;
+import com.aloc.aloc.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 

@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import com.aloc.aloc.color.Color;
 import com.aloc.aloc.color.service.ColorService;
 import com.aloc.aloc.problem.service.ProblemFacade;
-import com.aloc.aloc.user.User;
 import com.aloc.aloc.user.dto.response.UserDetailResponseDto;
+import com.aloc.aloc.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
