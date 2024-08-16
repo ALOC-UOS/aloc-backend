@@ -86,9 +86,11 @@ public class ProblemSolvingService {
 	public TodayProblemSolvedResponseDto updateTodaySolvedProblem(User user, Problem todayProblem) {
 		TodayProblemSolvedResponseDto response = TodayProblemSolvedResponseDto.builder()
 			.isSolved(false)
+			.isAlreadySolved(false)
 			.build();
 
 		if (userProblemService.isProblemAlreadySolved(user.getId(), todayProblem.getId())) {
+			response.setIsAlreadySolved(true);
 			return response;
 		}
 

@@ -50,7 +50,7 @@ public class UserDetailResponseDto extends UserResponseDto {
 			.githubId(user.getGithubId())
 			.baekjoonId(user.getBaekjoonId())
 			.profileColor(user.getProfileColor())
-			.studentId(user.getStudentId())
+			.studentId(user.getStudentId().substring(2, 4))
 			.rank(user.getRank())
 			.coin(user.getCoin())
 			.solvedCount(user.getSolvedCount())

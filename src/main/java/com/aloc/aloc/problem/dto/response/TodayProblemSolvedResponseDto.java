@@ -7,6 +7,7 @@ import lombok.Data;
 @Builder
 public class TodayProblemSolvedResponseDto {
 	private Boolean isSolved;
+	private Boolean isAlreadySolved;
 	private Integer userCoin;
 	private Integer obtainCoin;
 	private Integer place;
