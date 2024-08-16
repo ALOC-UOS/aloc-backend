@@ -45,11 +45,6 @@ jobs:
         mkdir -p ./src/main/resources
         cd ./src/main/resources
         echo "${{ secrets.APPLICATION }}" base64 -d > application.yml
-
-    - name: Create jwt application.yml
-      run: |
-        mkdir -p ./src/main/resources
-        cd ./src/main/resources
         echo "${{ secrets.JWT_APPLICATION }}" base64 -d > application-jwt.yml
 
     - name: Build with Gradle Wrapper

@@ -21,20 +21,25 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/dists
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
       - name: Create application.yml
         run: |
           mkdir -p ./src/main/resources
           cd ./src/main/resources
           echo "${{ secrets.APPLICATION }}" base64 -d > application.yml
-
-      - name: Create jwt application.yml
-        run: |
-          mkdir -p ./src/main/resources
-          cd ./src/main/resources
           echo "${{ secrets.JWT_APPLICATION }}" base64 -d > application-jwt.yml
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --parallel --daemon
 
       - name: Set up Docker Buildx
         id: buildx
