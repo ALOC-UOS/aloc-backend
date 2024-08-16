@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.user.entity.User;
@@ -24,6 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 public class JwtServiceTest {
 	@Autowired
 	JwtService jwtService;
