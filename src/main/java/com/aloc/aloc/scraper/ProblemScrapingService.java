@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,10 +144,11 @@ public class ProblemScrapingService {
 
 		while (true) {
 			String url = getProblemUrl(tierList, algorithm.getAlgorithmId());
-			crawledProblems.addAll(crawlAndAddProblems(url, problemType, algorithm, targetCount));
+			crawledProblems.addAll(crawlProblems(url, problemType, algorithm));
 
-			if (crawledProblems.size() == targetCount) {
-				break;
+			crawledProblems = filterDuplicateProblems(crawledProblems);
+			if (crawledProblems.size() >= targetCount) {
+				return saveAndSortProblems(crawledProblems.subList(0, targetCount), problemType, algorithm);
 			}
 
 			crawledProblems = new ArrayList<>();
@@ -157,7 +159,6 @@ public class ProblemScrapingService {
 			}
 			tierList.add(maxTier);
 		}
-		return crawledProblems;
 	}
 
 	private String getProblemUrl(List<Integer> tierList, int algorithmId) {
@@ -172,7 +173,7 @@ public class ProblemScrapingService {
 	}
 
 	@Transactional
-	public List<Problem> crawlAndAddProblems(String url, ProblemType problemType, Algorithm algorithm, int targetCount)
+	public List<Problem> crawlProblems(String url, ProblemType problemType, Algorithm algorithm)
 		throws IOException {
 		Document document = Jsoup.connect(url).get();
 		Elements rows = document.select("tbody tr");
@@ -181,29 +182,68 @@ public class ProblemScrapingService {
 		// 문제 목록을 섞습니다.
 		Collections.shuffle(problemNumbers);
 
-		// 문제를 하나씩 확인하며 새로운 문제인지 확인합니다. 새로운 문제이면 저장합니다.
+		// 문제를 하나씩 확인하며 새로운 문제인지 확인합니다.
 		return problemNumbers.stream()
 			.filter(problemNumber -> problemService.isNewProblem(problemNumber, problemType, currentSeason))
 			.map(problemNumber -> {
 				try {
 					String problemUrl = getProblemUrl(problemNumber);
 					String jsonString = fetchJsonFromUrl(problemUrl);
-					return parseAndSaveProblem(jsonString, algorithm, problemType);
+					return parseProblem(jsonString, algorithm, problemType);
 				} catch (Exception e) {
 					System.err.println("Error fetching problem " + problemNumber + ": " + e.getMessage());
 					return null;
 				}
 			})
 			.filter(Objects::nonNull)
-			.limit(targetCount)
+			.collect(Collectors.toList());
+	}
+
+	private List<Problem> filterDuplicateProblems(List<Problem> crawledProblems) {
+		return crawledProblems.stream()
+			.filter(problem -> problemService.isNewProblem(problem.getProblemId(),
+				problem.getProblemType(), currentSeason))
+			.distinct()
 			.collect(Collectors.toList());
 	}
 
 	@Transactional
-	public Problem crawlAndAddProblem(String problemUrl, ProblemType problemType, Algorithm algorithm)
-		throws IOException {
-		String jsonString = fetchJsonFromUrl(problemUrl);
-		return parseAndSaveProblem(jsonString, algorithm, problemType);
+	public List<Problem> saveAndSortProblems(List<Problem> problems, ProblemType problemType,
+		Algorithm algorithm) {
+		problems.sort(Comparator.comparingInt(Problem::getDifficulty));
+
+		return problems.stream()
+			.map(problem -> saveProblem(problem.getTitle(), problem.getDifficulty(),
+				problem.getProblemId(), algorithm, problemType, problem.getProblemTagList()))
+			.collect(Collectors.toList());
+	}
+
+	private Problem parseProblem(String jsonString, Algorithm algorithm, ProblemType problemType) {
+		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+
+		String titleKo = extractTitleKo(jsonObject); // 한국어 제목 추출
+		if (titleKo == null) {
+			throw new IllegalArgumentException("Korean title not found in JSON: " + jsonString);
+		}
+		int problemId = jsonObject.get("problemId").getAsInt();
+		int tier = jsonObject.get("level").getAsInt();
+
+		Problem problem = Problem.builder()
+			.title(titleKo)
+			.difficulty(tier)
+			.problemId(problemId)
+			.algorithm(algorithm)
+			.problemType(problemType)
+			.build();
+		// ProblemTag 리스트를 생성하며 Problem 객체와 연결
+		List<ProblemTag> problemTagList = extractTags(jsonObject).stream()
+			.map(tag -> ProblemTag.builder()
+				.problem(problem)  // 여기서 이미 Problem과 연결
+				.tag(tag)
+				.build())
+			.toList();
+		problem.setProblemTagList(problemTagList);
+		return problem;
 	}
 
 	private List<Integer> extractProblemNumbers(Elements rows) {
@@ -219,6 +259,88 @@ public class ProblemScrapingService {
 			count++;
 		}
 		return problemNumbers;
+	}
+
+	private String extractTitleKo(JsonObject jsonObject) {
+		if (jsonObject.has("titles")) {
+			JsonArray titles = jsonObject.getAsJsonArray("titles");
+			for (JsonElement titleElement : titles) {
+				JsonObject titleObject = titleElement.getAsJsonObject();
+				if ("ko".equals(titleObject.get("language").getAsString())) {
+					return titleObject.get("title").getAsString();
+				}
+			}
+		}
+		// 한국어 제목을 찾지 못한 경우, null을 반환합니다.
+		return null;
+	}
+
+	private List<Tag> extractTags(JsonObject jsonObject) {
+		List<Tag> tagList = new ArrayList<>();
+		JsonArray tagsArray = jsonObject.getAsJsonArray("tags");
+		for (int i = 0; i < tagsArray.size(); i++) {
+			JsonObject tagObject = tagsArray.get(i).getAsJsonObject();
+			JsonArray displayNames = tagObject.getAsJsonArray("displayNames");
+			String koreanName = displayNames.get(0).getAsJsonObject().get("name").getAsString();
+			String englishName = displayNames.get(1).getAsJsonObject().get("name").getAsString();
+			Tag tag = findOrCreateTag(koreanName, englishName);
+			tagList.add(tag);
+		}
+		return tagList;
+	}
+
+	private Tag findOrCreateTag(String koreanName, String englishName) {
+		return tagRepository.findByKoreanNameAndEnglishName(koreanName, englishName)
+			.orElseGet(() -> {
+				Tag newTag = Tag.builder()
+					.koreanName(koreanName)
+					.englishName(englishName)
+					.build();
+				return tagRepository.save(newTag);
+			});
+	}
+
+	@Transactional
+	public Problem saveProblem(String titleKo, int tier, int problemId, Algorithm algorithm,
+		ProblemType problemType, List<ProblemTag> problemTagList) {
+		Problem problem = Problem.builder()
+			.title(titleKo)
+			.difficulty(tier)
+			.problemId(problemId)
+			.algorithm(algorithm)
+			.problemType(problemType)
+			.build();
+
+		problemService.saveProblem(problem);
+		for (ProblemTag problemTag : problemTagList) {
+			problemTag.setProblem(problem);
+			problemTagRepository.save(problemTag);
+			problem.addProblemTag(problemTag);
+		}
+		return problem;
+	}
+
+	@Transactional
+	public Problem getProblemByProblemId(
+		int problemId,
+		Algorithm algorithm,
+		ProblemType problemType) {
+		String url = getProblemUrl(problemId);
+		System.out.println("url: " + url);
+		try {
+			return crawlAndAddProblem(url, problemType, algorithm);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Transactional
+	public Problem crawlAndAddProblem(String problemUrl, ProblemType problemType, Algorithm algorithm)
+		throws IOException {
+		String jsonString = fetchJsonFromUrl(problemUrl);
+		Problem problem = parseProblem(jsonString, algorithm, problemType);
+		return saveProblem(problem.getTitle(), problem.getDifficulty(),
+				problem.getProblemId(), algorithm, problemType, problem.getProblemTagList());
 	}
 
 	private String getProblemUrl(int problemNumber) {
@@ -281,95 +403,5 @@ public class ProblemScrapingService {
 			}
 		}
 		return response.toString();
-	}
-
-	@Transactional
-	public Problem parseAndSaveProblem(String jsonString, Algorithm algorithm, ProblemType problemType) {
-		JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
-
-		String titleKo = extractTitleKo(jsonObject); // 한국어 제목 추출
-		if (titleKo == null) {
-			throw new IllegalArgumentException("Korean title not found in JSON: " + jsonString);
-		}
-		int problemId = jsonObject.get("problemId").getAsInt();
-		int tier = jsonObject.get("level").getAsInt();
-		List<Tag> tagList = extractTags(jsonObject);
-		return saveProblem(titleKo, tier, problemId, algorithm, problemType, tagList);
-	}
-
-	private String extractTitleKo(JsonObject jsonObject) {
-		if (jsonObject.has("titles")) {
-			JsonArray titles = jsonObject.getAsJsonArray("titles");
-			for (JsonElement titleElement : titles) {
-				JsonObject titleObject = titleElement.getAsJsonObject();
-				if ("ko".equals(titleObject.get("language").getAsString())) {
-					return titleObject.get("title").getAsString();
-				}
-			}
-		}
-		// 한국어 제목을 찾지 못한 경우, null을 반환합니다.
-		return null;
-	}
-
-	private List<Tag> extractTags(JsonObject jsonObject) {
-		List<Tag> tagList = new ArrayList<>();
-		JsonArray tagsArray = jsonObject.getAsJsonArray("tags");
-		for (int i = 0; i < tagsArray.size(); i++) {
-			JsonObject tagObject = tagsArray.get(i).getAsJsonObject();
-			JsonArray displayNames = tagObject.getAsJsonArray("displayNames");
-			String koreanName = displayNames.get(0).getAsJsonObject().get("name").getAsString();
-			String englishName = displayNames.get(1).getAsJsonObject().get("name").getAsString();
-			Tag tag = findOrCreateTag(koreanName, englishName);
-			tagList.add(tag);
-		}
-		return tagList;
-	}
-
-	private Tag findOrCreateTag(String koreanName, String englishName) {
-		return tagRepository.findByKoreanNameAndEnglishName(koreanName, englishName)
-			.orElseGet(() -> {
-				Tag newTag = Tag.builder()
-					.koreanName(koreanName)
-					.englishName(englishName)
-					.build();
-				return tagRepository.save(newTag);
-			});
-	}
-
-	@Transactional
-	public Problem saveProblem(String titleKo, int tier, int problemId, Algorithm algorithm,
-		ProblemType problemType, List<Tag> tagList) {
-		Problem problem = Problem.builder()
-			.title(titleKo)
-			.difficulty(tier)
-			.problemId(problemId)
-			.algorithm(algorithm)
-			.problemType(problemType)
-			.build();
-
-		problemService.saveProblem(problem);
-		for (Tag tag : tagList) {
-			ProblemTag problemTag = ProblemTag.builder()
-				.problem(problem)
-				.tag(tag)
-				.build();
-			problemTagRepository.save(problemTag);
-			problem.addProblemTag(problemTag);
-		}
-		return problem;
-	}
-
-	@Transactional
-	public Problem getProblemByProblemId(
-		int problemId,
-		Algorithm algorithm,
-		ProblemType problemType) {
-		String url = getProblemUrl(problemId);
-		System.out.println("url: " + url);
-		try {
-			return crawlAndAddProblem(url, problemType, algorithm);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 }
