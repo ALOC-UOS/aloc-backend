@@ -87,7 +87,7 @@ jobs:
             [aloc-spring]
             배포가 성공적으로 완료되었어요 🚀
             커밋한 사람 🙋🏻${{ github.actor }}
-            커밋 ${{ github.event.head_commit.message }}
+            ${{ github.event.head_commit.message }}
       - name: Send deployment failure to Discord
         if: failure()
         uses: tsickert/discord-webhook@v5.3.0
@@ -98,4 +98,4 @@ jobs:
             배포 중 문제가 발생했어요 ❌
             잘못한 사람 🙋🏻${{ github.actor }}
             url: https://github.com/ALOC-UOS/aloc-backend/actions/runs/${{ github.run_id }}
-            커밋 ${{ github.event.head_commit.message }}
+            ${{ github.event.head_commit.message }}
