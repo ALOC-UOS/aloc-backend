@@ -1,15 +1,13 @@
 package com.aloc.aloc.chat.service;
 
-import com.aloc.aloc.chat.dto.ChatMessage.MessageType;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.aloc.aloc.chat.dto.ChatMessage;
+import com.aloc.aloc.chat.dto.ChatMessage.MessageType;
 import com.aloc.aloc.chat.dto.ChatRoom;
 import com.aloc.aloc.chat.repository.ChatRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;

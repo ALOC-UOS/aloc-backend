@@ -1,6 +1,5 @@
 package com.aloc.aloc.chat.base;
 
-import com.aloc.aloc.chat.dto.ChatMessage;
 import java.io.IOException;
 
 import org.springframework.stereotype.Component;
@@ -8,6 +7,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.aloc.aloc.chat.dto.ChatMessage;
 import com.aloc.aloc.chat.service.ChatService;
 
 import lombok.RequiredArgsConstructor;
