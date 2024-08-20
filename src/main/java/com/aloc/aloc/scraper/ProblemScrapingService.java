@@ -74,7 +74,16 @@ public class ProblemScrapingService {
 
 		Map<CourseRoutineTier, List<Problem>> crawledProblems = new LinkedHashMap<>();
 
-		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+		CompletableFuture<Void> future = CompletableFuture.runAsync(
+			getErrorInAddProblemsForThisWeek(crawledProblems, weeklyAlgorithm, dailyAlgorithm));
+		future.get();
+		return getCrawlingResultMessage(crawledProblems, weeklyAlgorithm, dailyAlgorithm);
+	}
+
+	private Runnable getErrorInAddProblemsForThisWeek(
+		Map<CourseRoutineTier, List<Problem>> crawledProblems, Algorithm weeklyAlgorithm,
+		Algorithm dailyAlgorithm) {
+		return () -> {
 			try {
 				crawledProblems.put(CourseRoutineTier.HALF_WEEKLY,
 					addProblemsByType(weeklyAlgorithm, CourseRoutineTier.HALF_WEEKLY));
@@ -94,34 +103,42 @@ public class ProblemScrapingService {
 			} catch (Exception e) {
 				throw new RuntimeException("Error in addProblemsForThisWeek", e);
 			}
-		});
-		future.get();
-		return getCrawlingResultMessage(crawledProblems, weeklyAlgorithm, dailyAlgorithm);
+		};
 	}
 
 	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Problem>> crawledProblems,
 		Algorithm weeklyAlgorithm, Algorithm dailyAlgorithm) {
 		StringBuilder message = new StringBuilder();
-		message.append("[ ").append(weeklyAlgorithm.getWeek()).append("주차 크롤링 결과 ]\n\n")
-			.append("weekly 알고리즘 : ").append(weeklyAlgorithm.getName()).append("\n")
-			.append("daily 알고리즘 : ").append(dailyAlgorithm.getName()).append("\n\n");
+		getStringBuilder(
+			getMessage(weeklyAlgorithm, dailyAlgorithm, message), "\n\n");
 		for (Map.Entry<CourseRoutineTier, List<Problem>> entry : crawledProblems.entrySet()) {
 			CourseRoutineTier tier = entry.getKey();
 			List<Problem> problems = entry.getValue();
-			message.append("[").append(tier).append("]").append("\n")
-				.append("✅  크롤링 성공 문제수: ").append(problems.size()).append("개\n")
-				.append("🔢  문제 번호: ").append(problems.stream().map(String::valueOf).collect(Collectors.joining(", ")))
-				.append("\n\n");
+			getStringBuilder(message.append("[").append(tier).append("]").append("\n")
+					.append("✅  크롤링 성공 문제수: ").append(problems.size()).append("개\n")
+					.append("🔢  문제 번호: ")
+					.append(problems.stream().map(String::valueOf).collect(Collectors.joining(", "))),
+				"\n\n");
 
 			for (Problem problem : problems) {
-				message.append("   - ")
+				getStringBuilder(message.append("   - ")
 					.append(problem.getProblemId())
 					.append(": ")
-					.append(problem.getTitle())
-					.append("\n");
+					.append(problem.getTitle()), "\n");
 			}
 		}
 		return message.toString();
+	}
+
+	private static StringBuilder getMessage(Algorithm weeklyAlgorithm, Algorithm dailyAlgorithm,
+		StringBuilder message) {
+		return message.append("[ ").append(weeklyAlgorithm.getWeek()).append("주차 크롤링 결과 ]\n\n")
+			.append("weekly 알고리즘 : ").append(weeklyAlgorithm.getName()).append("\n")
+			.append("daily 알고리즘 : ").append(dailyAlgorithm.getName());
+	}
+
+	private static StringBuilder getStringBuilder(StringBuilder message, String str) {
+		return message.append(str);
 	}
 
 	private void updateWeeklyAlgorithmHidden(Algorithm weeklyAlgorithm) {
@@ -141,6 +158,15 @@ public class ProblemScrapingService {
 		int targetCount = courseRoutineTier.getTargetCount();
 		int maxTier = tierList.get(tierList.size() - 1);
 
+		crawledProblems = getProblemList(algorithm, tierList, crawledProblems, problemType,
+			targetCount,
+			maxTier);
+		return crawledProblems;
+	}
+
+	private List<Problem> getProblemList(Algorithm algorithm, List<Integer> tierList,
+		List<Problem> crawledProblems, ProblemType problemType, int targetCount, int maxTier)
+		throws IOException {
 		while (true) {
 			String url = getProblemUrl(tierList, algorithm.getAlgorithmId());
 			crawledProblems.addAll(crawlAndAddProblems(url, problemType, algorithm, targetCount));
@@ -275,7 +301,7 @@ public class ProblemScrapingService {
 			new InputStreamReader(connection.getInputStream()))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				response.append(line);
+				getStringBuilder(response, line);
 			}
 		}
 		return response.toString();
