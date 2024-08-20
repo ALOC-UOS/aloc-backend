@@ -83,4 +83,3 @@ flyway {
     table = 'schema_history'
     baselineVersion = 1
     locations = ['classpath:db/migration']
-}
