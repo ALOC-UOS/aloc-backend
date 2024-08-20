@@ -1,5 +1,6 @@
 package com.aloc.aloc.user.dto.response;
 
+import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.enums.Authority;
 
@@ -30,6 +31,8 @@ public class UserResponseDto {
 	private Integer rank;
 	@Schema(description = "코인", example = "100")
 	private Integer coin;
+	@Schema(description = "코스", example = "FULL")
+	private Course course;
 
 	public static UserResponseDto of(User user) {
 		return UserResponseDto.builder()
@@ -41,6 +44,7 @@ public class UserResponseDto {
 			.studentId(user.getUserProfile().getStudentId())
 			.rank(user.getRank())
 			.coin(user.getUserProfile().getCoin())
+			.course(user.getCourse())
 			.build();
 	}
 }
