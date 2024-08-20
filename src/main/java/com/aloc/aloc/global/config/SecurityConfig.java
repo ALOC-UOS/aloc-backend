@@ -54,7 +54,9 @@ public class SecurityConfig {
 					"/api2/sign-up",
 					"/swagger-ui/**",
 					"/api-docs/**",
-					"/api2/swagger-ui.html"
+					"/api2/swagger-ui.html",
+					"/api2/chat/**",
+					"/api2/ws/**"
 				).permitAll()
 				.requestMatchers(
 					"/purchase",
