@@ -76,6 +76,7 @@ jobs:
                --network my_network \
                --ip 172.18.0.2 \
                -p 8080:8080 \
+               -p 443:443 \
                ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest
 
       - name: Send deployment status to Discord
