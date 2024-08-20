@@ -111,7 +111,10 @@ public class ProblemScrapingService {
 			List<Problem> problems = entry.getValue();
 			message.append("[").append(tier).append("]").append("\n")
 				.append("✅  크롤링 성공 문제수: ").append(problems.size()).append("개\n")
-				.append("🔢  문제 번호: ").append(problems.stream().map(String::valueOf).collect(Collectors.joining(", ")))
+				.append("🔢  문제 번호: ").append(problems.stream()
+					.map(problem -> String.valueOf(problem.getProblemId()))
+					.collect(Collectors.joining(", "))
+				)
 				.append("\n\n");
 
 			for (Problem problem : problems) {
