@@ -123,10 +123,9 @@ public class ProblemService {
 		return problemRepository.findVisibleProblemsBySeasonAndCourse(currentSeason, course);
 	}
 
-	public boolean isNewProblem(String problemId, ProblemType problemType, Integer season) {
-		Integer problemIdInt = Integer.parseInt(problemId);
+	public boolean isNewProblem(int problemId, ProblemType problemType, Integer season) {
 		return problemRepository.notExistsByProblemIdAndCourseAndSeason(
-			problemIdInt, problemType.getCourse(), season);
+			problemId, problemType.getCourse(), season);
 	}
 
 	public Problem saveProblem(Problem problem) {

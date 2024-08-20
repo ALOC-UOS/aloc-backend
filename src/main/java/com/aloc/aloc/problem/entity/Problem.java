@@ -72,6 +72,7 @@ public class Problem extends AuditingTimeEntity {
 		this.algorithm = algorithm;
 		this.problemId = problemId;
 		this.problemType = problemType;
+		this.problemTagList = new ArrayList<>();
 	}
 
 	public void addProblemTag(ProblemTag problemTag) {

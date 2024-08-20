@@ -143,7 +143,7 @@ class ProblemScraperServiceTest {
 			.thenReturn(dailyAlgorithm);
 		when(problemTypeRepository.findByCourseAndRoutine(any(), any()))
 			.thenReturn(Optional.of(problemType));
-		when(problemService.isNewProblem(any(), any(), anyInt()))
+		when(problemService.isNewProblem(anyInt(), any(), anyInt()))
 			.thenReturn(true);
 		when(problemService.saveProblem(any(Problem.class))
 		).thenReturn(savedProblem);

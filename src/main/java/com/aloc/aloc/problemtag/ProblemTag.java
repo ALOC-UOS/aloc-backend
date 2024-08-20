@@ -15,11 +15,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @Builder
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProblemTag extends AuditingTimeEntity {
 	@Id
