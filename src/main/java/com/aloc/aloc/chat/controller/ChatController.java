@@ -15,7 +15,7 @@ import com.aloc.aloc.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/api2/chat")
 public class ChatController {
 	private final ChatService chatService;
 
