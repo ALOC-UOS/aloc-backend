@@ -177,7 +177,7 @@ public class ProblemScrapingService {
 		Document document = Jsoup.connect(url).get();
 		Elements rows = document.select("tbody tr");
 
-		List<String> problemNumbers = extractProblemNumbers(rows);
+		List<Integer> problemNumbers = extractProblemNumbers(rows);
 		// 문제 목록을 섞습니다.
 		Collections.shuffle(problemNumbers);
 
@@ -206,21 +206,23 @@ public class ProblemScrapingService {
 		return parseAndSaveProblem(jsonString, algorithm, problemType);
 	}
 
-	private List<String> extractProblemNumbers(Elements rows) {
-		List<String> problemNumbers = new ArrayList<>();
+	private List<Integer> extractProblemNumbers(Elements rows) {
+		List<Integer> problemNumbers = new ArrayList<>();
 		int count = 0;
 		for (Element row : rows) {
-			if (count >= 100) {
+			if (count >= 25) {
 				break;  // 100개에 도달하면 루프 종료
 			}
-			problemNumbers.add(row.select(".list_problem_id").text());
+			String problemIdText = row.select(".list_problem_id").text();
+			int problemId = Integer.parseInt(problemIdText);
+			problemNumbers.add(problemId);
 			count++;
 		}
 		return problemNumbers;
 	}
 
-	private String getProblemUrl(String problemNumber) {
-		return String.format("https://solved.ac/api/v3/problem/show?problemId=%s", problemNumber);
+	private String getProblemUrl(int problemNumber) {
+		return String.format("https://solved.ac/api/v3/problem/show?problemId=%d", problemNumber);
 	}
 
 	protected String fetchJsonFromUrl(String url) throws IOException {
@@ -362,7 +364,7 @@ public class ProblemScrapingService {
 		int problemId,
 		Algorithm algorithm,
 		ProblemType problemType) {
-		String url = getProblemUrl(String.valueOf(problemId));
+		String url = getProblemUrl(problemId);
 		System.out.println("url: " + url);
 		try {
 			return crawlAndAddProblem(url, problemType, algorithm);
