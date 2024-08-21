@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		log.info("WebSocketConfig.registerWebSocketHandlers called");
-		registry.addHandler(webSocketChatHandler, "/api2/ws/chat")
+		registry.addHandler(webSocketChatHandler, "/ws/chat")
 			.setAllowedOrigins("*");  // 실제 운영 환경에서는 특정 origin만 허용하도록 수정해야 합니다.
 	}
 }
