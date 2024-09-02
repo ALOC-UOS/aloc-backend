@@ -25,13 +25,13 @@ public class ProblemScheduler {
 	}
 
 	// 수요일 부터 일요일까지 매일 daily 문제를 공개합니다.
-	@Scheduled(cron = "0 0 0 * * WED,THU,FRI,SAT,SUN,MON")
+//	@Scheduled(cron = "0 0 0 * * WED,THU,FRI,SAT,SUN,MON")
 	public void updateDailyProblemHidden() {
 		Integer openedCnt = problemService.updateProblemHiddenFalse(Routine.DAILY);
 		discordWebhookService.sendNotification(openedCnt + "개의 Daily 문제가 공개되었습니다.");
 	}
 
-	@Scheduled(cron = "0 0 0 * * TUE")
+//	@Scheduled(cron = "0 0 0 * * TUE")
 	public void updateAllUserProblem() {
 		problemFacade.updateAllUserProblem();
 		updateAllWeeklyProblemHidden();
