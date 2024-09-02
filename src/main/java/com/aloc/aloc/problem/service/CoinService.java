@@ -75,25 +75,31 @@ public class CoinService {
 	}
 
 	void addCoinIfEligible(User user, Problem problem) {
-		if (isEligibleForCoin(problem)) {
-			int coinToAdd = calculateCoinToAdd(problem, user);
-			user.getUserProfile().addCoin(coinToAdd);
-			userService.saveUser(user);
-			coinHistoryService.addCoinHistory(user, coinToAdd, CoinType.WEEKLY, "이번주 위클리 문제 해결");
+		if (!isEligibleForCoin(problem)) {
+			return;
 		}
+
+		int coinToAdd = calculateCoinToAdd(problem, user);
+		if (coinToAdd == 0) {
+			return;
+		}
+		addCoinsToUser(user, coinToAdd, CoinType.WEEKLY, "이번주 위클리 문제 해결");
 	}
 
 
 	int addCoinEligibleForTodayProblem(User user, Problem problem) {
-		// 오늘의 문제가 Daily 문제인 경우 코인을 지급합니다.
-		if (problem.getProblemType().getRoutine() == Routine.DAILY) {
-			int coinToAdd = calculateCoinToAdd(problem, user);
-			user.getUserProfile().addCoin(coinToAdd);
-			userService.saveUser(user);
-			coinHistoryService.addCoinHistory(user, coinToAdd, CoinType.DAILY, "오늘의 문제 해결");
-			return coinToAdd;
+		int coinToAdd = calculateCoinToAdd(problem, user);
+		if (coinToAdd == 0) {
+			return 0;
 		}
-		return 0;
+		addCoinsToUser(user, coinToAdd, CoinType.DAILY, "오늘의 문제 해결");
+		return coinToAdd;
+	}
+
+	private void addCoinsToUser(User user, int coin, CoinType coinType, String description) {
+		user.getUserProfile().addCoin(coin);
+		userService.saveUser(user);
+		coinHistoryService.addCoinHistory(user, coin, coinType, description);
 	}
 
 	private boolean isEligibleForCoin(Problem problem) {
