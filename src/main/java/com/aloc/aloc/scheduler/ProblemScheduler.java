@@ -1,5 +1,8 @@
 package com.aloc.aloc.scheduler;
 
+import java.time.LocalDate;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,23 +20,35 @@ public class ProblemScheduler {
 	private final ProblemService problemService;
 	private final DiscordWebhookService discordWebhookService;
 
-	// weekly 문제를 공개합니다.
-	public void updateAllWeeklyProblemHidden() {
-		Integer openedCnt = problemService.updateProblemHiddenFalse(Routine.WEEKLY);
-		discordWebhookService.sendNotification(openedCnt + "개의 Weekly 문제가 공개되었습니다.");
-		updateDailyProblemHidden();
+	@Value("${app.vacation}")
+	private boolean isVacation;
+
+	@Scheduled(cron = "0 30 0 * * *")
+	public void dailyScheduledTasks() {
+		if (isWednesday()) {
+			executeWednesdayTasks();
+		} else {
+			executeDailyTasks();
+		}
 	}
 
-	// 수요일 부터 일요일까지 매일 daily 문제를 공개합니다.
-//	@Scheduled(cron = "0 0 0 * * WED,THU,FRI,SAT,SUN,MON")
-	public void updateDailyProblemHidden() {
-		Integer openedCnt = problemService.updateProblemHiddenFalse(Routine.DAILY);
-		discordWebhookService.sendNotification(openedCnt + "개의 Daily 문제가 공개되었습니다.");
-	}
-
-//	@Scheduled(cron = "0 0 0 * * TUE")
-	public void updateAllUserProblem() {
+	private void executeWednesdayTasks() {
 		problemFacade.updateAllUserProblem();
-		updateAllWeeklyProblemHidden();
+		if (!isVacation) {
+			updateProblemHidden(Routine.WEEKLY);
+		}
+	}
+
+	private void executeDailyTasks() {
+		updateProblemHidden(Routine.DAILY);
+	}
+
+	private void updateProblemHidden(Routine routine) {
+		Integer openedCnt = problemService.updateProblemHiddenFalse(routine);
+		discordWebhookService.sendNotification(openedCnt + "개의 " + routine.name() + " 문제가 공개되었습니다.");
+	}
+
+	private boolean isWednesday() {
+		return LocalDate.now().getDayOfWeek().getValue() == 3;
 	}
 }

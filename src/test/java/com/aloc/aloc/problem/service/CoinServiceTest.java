@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
@@ -39,7 +40,7 @@ class CoinServiceTest {
 	@InjectMocks
 	private CoinService coinService;
 
-	private final Integer currentSeason = 2;
+	private static final int currentSeason = 2;
 	private static final int COINS_FOR_1ST_PLACE = 50;
 	private static final int COINS_FOR_2ND_PLACE = 40;
 	private static final int COINS_FOR_3RD_PLACE = 30;
