@@ -23,7 +23,7 @@ public class ProblemScheduler {
 	@Value("${app.vacation}")
 	private boolean isVacation;
 
-	@Scheduled(cron = "10 2 * * * *")
+	@Scheduled(cron = "20 2 * * * *")
 	public void dailyScheduledTasks() {
 		if (isWednesday()) {
 			executeWednesdayTasks();
@@ -34,7 +34,7 @@ public class ProblemScheduler {
 
 	private void executeWednesdayTasks() {
 		problemFacade.updateAllUserProblem();
-		if (!isVacation) {
+		if (isVacation) {
 			updateProblemHidden(Routine.WEEKLY);
 		}
 	}
