@@ -164,7 +164,7 @@ public class ProblemScrapingService {
 		}
 	}
 
-	private String getProblemUrl(List<Integer> tierList, int algorithmId) {
+	public String getProblemUrl(List<Integer> tierList, int algorithmId) {
 		String tiers = tierList.stream()
 			.map(Object::toString)
 			.collect(Collectors.joining(","));

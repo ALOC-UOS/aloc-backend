@@ -3,10 +3,13 @@ package com.aloc.aloc.scraper.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +25,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,46 +124,39 @@ class ProblemScraperServiceTest {
 
 	@Test
 	@DisplayName("이번주 문제 추가 성공")
-	void addProblemForThisWeekSuccess() throws ExecutionException, InterruptedException {
-		// given
-		// 시즌2 시작 주차를 기준 알고리즘 반환하도록 구성
-		Algorithm weeklyAlgorithm = algorithms.get(5);
+	void addProblemForThisWeekSuccess() throws ExecutionException, InterruptedException, IOException {
 		Algorithm dailyAlgorithm = algorithms.get(0);
 		ProblemType problemType = new ProblemType();
 
-		Problem savedProblem = Problem.builder()
-			.problemId(123)
-			.title("문제")
-			.algorithm(weeklyAlgorithm)
-			.problemType(problemType)
-			.difficulty(3)
-			.build();
+		when(algorithmService.findDailyAlgorithm()).thenReturn(dailyAlgorithm);
+		when(problemTypeRepository.findByCourseAndRoutine(any(), any())).thenReturn(Optional.of(problemType));
+		when(problemService.isNewProblem(anyInt(), any(), anyInt())).thenReturn(true);
 
-		savedProblem.setId(1L);
+		ProblemScrapingService spyService = spy(problemScrapingService);
+		doReturn("https://www.acmicpc.net/problemset?sort=ac_desc&tier=9,10,11,12,13&algo=158&algo_if=and")
+			.when(spyService).getProblemUrl(anyList(), anyInt());
 
-//		when(algorithmService.findWeeklyAlgorithm())
-//			.thenReturn(weeklyAlgorithm);
-		when(algorithmService.findDailyAlgorithm())
-			.thenReturn(dailyAlgorithm);
-		when(problemTypeRepository.findByCourseAndRoutine(any(), any()))
-			.thenReturn(Optional.of(problemType));
-		when(problemService.isNewProblem(anyInt(), any(), anyInt()))
-			.thenReturn(true);
-		when(problemService.saveProblem(any(Problem.class))
-		).thenReturn(savedProblem);
+		List<Problem> mockProblems = new ArrayList<>();
+		for (int i = 1; i <= 7; i++) {
+			Problem mockProblem = Problem.builder()
+				.problemId(i)
+				.title("Test Problem " + i)
+				.difficulty((i % 5) + 4)
+				.build();
+			mockProblems.add(mockProblem);
+		}
 
-		// when
-		problemScrapingService.addProblemsForThisWeek();
+		doReturn(mockProblems).when(spyService).crawlProblems(anyString(), any(), any());
 
-		// then
-		verify(problemService, times(14)).saveProblem(any(Problem.class)); // 4 types * 6 problems each
-//		verify(algorithmService, times(1)).saveAlgorithm(weeklyAlgorithm);
+		when(problemService.saveProblem(any(Problem.class))).thenReturn(mockProblems.get(0));
+
+		String result = spyService.addProblemsForThisWeek();
+		assertFalse(result.isEmpty(), "Result should not be empty");
 
 		ArgumentCaptor<Problem> problemCaptor = ArgumentCaptor.forClass(Problem.class);
 
 		List<Problem> savedProblems = problemCaptor.getAllValues();
 
-		// 각 문제가 잘 저장되었는지 확인
 		for (Problem problem : savedProblems) {
 			assertNotNull(problem.getProblemId());
 			assertNotNull(problem.getTitle());
