@@ -23,7 +23,7 @@ public class ProblemScheduler {
 	@Value("${app.vacation}")
 	private boolean isVacation;
 
-	@Scheduled(cron = "30 2 * * * *")
+	@Scheduled(cron = "10 9 * * * *")
 	public void dailyScheduledTasks() {
 		if (isWednesday()) {
 			executeWednesdayTasks();
