@@ -15,7 +15,7 @@ public class ProblemCrawlingScheduler {
 	private final ProblemScrapingService problemScraperService;
 	private final DiscordWebhookService discordWebhookService;
 
-	@Scheduled(cron = "0 0 2 * * WED")	// 코스 변경 요청을 처리한 후, user problem을 할당합니다.
+	@Scheduled(cron = "15 2 * * * WED")	// 코스 변경 요청을 처리한 후, user problem을 할당합니다.
 	public void scheduleAddProblemsForThisWeek() {
 		try {
 			String result = problemScraperService.addProblemsForThisWeek();
