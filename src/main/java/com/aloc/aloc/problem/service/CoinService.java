@@ -80,10 +80,7 @@ public class CoinService {
 		}
 
 		int coinToAdd = calculateCoinToAdd(problem, user);
-		if (coinToAdd == 0) {
-			return;
-		}
-		addCoinsToUser(user, coinToAdd, CoinType.WEEKLY, "이번주 위클리 문제 해결");
+		addWeeklyCoinsIfNeeded(user, coinToAdd);
 	}
 
 
@@ -94,6 +91,12 @@ public class CoinService {
 		}
 		addCoinsToUser(user, coinToAdd, CoinType.DAILY, "오늘의 문제 해결");
 		return coinToAdd;
+	}
+
+	private void addWeeklyCoinsIfNeeded(User user, int coinToAdd) {
+		if (coinToAdd > 0) {
+			addCoinsToUser(user, coinToAdd, CoinType.WEEKLY, "이번주 위클리 문제 해결");
+		}
 	}
 
 	private void addCoinsToUser(User user, int coin, CoinType coinType, String description) {
