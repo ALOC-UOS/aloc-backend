@@ -10,8 +10,18 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Item extends AuditingTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +34,6 @@ public class Item extends AuditingTimeEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private ItemType itemType;
+	@Column(nullable = false)
+	private Boolean isHidden = true;
 }
