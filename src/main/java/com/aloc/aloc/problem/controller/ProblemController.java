@@ -143,4 +143,13 @@ public class ProblemController {
 		return CustomApiResponse.onSuccess(
 			problemFacade.addProblemAndUserProblemForce(user.getUsername(), problemRequestDto));
 	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@GetMapping("/daily-problems")
+	@Operation(summary = "이번주 daily 문제 및 유저의 풀이 여부 목록 조회",
+		description = "조회 날짜 기준까지 공개된 daily 문제와 해당 문제의 풀이 여부 목록을 조회합니다.")
+	public CustomApiResponse<List<ProblemSolvedResponseDto>> getDailyCompletionStatus(
+		@Parameter(hidden = true) @AuthenticationPrincipal User user) {
+		return CustomApiResponse.onSuccess(problemFacade.getDailyProblems(user.getUsername()));
+	}
 }
