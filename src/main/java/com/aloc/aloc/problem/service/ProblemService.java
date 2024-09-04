@@ -54,6 +54,11 @@ public class ProblemService {
 		);
 	}
 
+	List<Problem> getDailyProblems(User user) {
+		Algorithm dailyAlgorithm = algorithmService.findDailyAlgorithm();
+		return getVisibleDailyProblemsByAlgorithmId(currentSeason, dailyAlgorithm.getAlgorithmId(), user.getCourse());
+	}
+
 	public List<ProblemResponseDto> getVisibleDailyProblemsDtoByAlgorithmId(
 		int season, int algorithmId, Course course
 	) {

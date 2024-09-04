@@ -48,6 +48,16 @@ public class ProblemSolvingService {
 			.collect(Collectors.toList());
 	}
 
+	public List<ProblemSolvedResponseDto> getDailyProblems(User user) {
+		List<Problem> thisWeekDailyProblems = problemService.getDailyProblems(user);
+		return thisWeekDailyProblems.stream()
+			.map(problem -> {
+				boolean isSolved = userProblemService.isProblemAlreadySolved(user.getId(), problem.getId());
+				return problemMapper.mapToProblemSolvedResponseDto(problem, isSolved);
+			})
+			.collect(Collectors.toList());
+	}
+
 	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(User user, Integer season) {
 		List<UserProblem> unsolvedProblems
 			= userProblemService.getUserProblemList(user.getId(), season, false);
