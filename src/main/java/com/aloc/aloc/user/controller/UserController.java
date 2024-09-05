@@ -1,5 +1,6 @@
 package com.aloc.aloc.user.controller;
 
+import com.aloc.aloc.item.service.UserItemService;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
@@ -135,5 +136,12 @@ public class UserController {
 	public CustomApiResponse<String> updateUserCoin(@Parameter(hidden = true) @AuthenticationPrincipal User user,
 		@RequestBody @Valid UserCoinDto userCoinDto) {
 		return CustomApiResponse.onSuccess(userService.updateUserCoin(user.getUsername(), userCoinDto));
+	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@GetMapping("/user/items")
+	@Operation(summary = "유저가 구매한 모든 아이템을 조회합니다.")
+	public CustomApiResponse<> getUserItem(@Parameter(hidden = true) @AuthenticationPrincipal User user) {
+		return CustomApiResponse.onSuccess()
 	}
 }
