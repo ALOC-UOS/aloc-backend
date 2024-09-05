@@ -19,6 +19,7 @@ public class ChatMessage {
 	private MessageType type;
 	private String roomId;
 	private String sender;
+	private String senderGithub;
 	private String message;
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 

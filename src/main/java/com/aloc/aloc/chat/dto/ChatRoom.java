@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +19,8 @@ public class ChatRoom {
 	private final String roomId;
 	private final String name;
 	private final Set<WebSocketSession> sessions = new HashSet<>();
+	private final ObjectMapper objectMapper = new ObjectMapper();
+
 
 	@Builder
 	public ChatRoom(String roomId, String name) {
@@ -40,6 +45,29 @@ public class ChatRoom {
 
 	public void join(WebSocketSession session) {
 		sessions.add(session);
+		sendUserListToAll();
+	}
+
+	public void leave(WebSocketSession session) {
+		sessions.remove(session);
+		sendUserListToAll();
+	}
+
+	public Set<String> getUserList() {
+		return sessions.stream()
+			.map(session -> (String) session.getAttributes().get("username"))
+			.collect(Collectors.toSet());
+	}
+
+	private void sendUserListToAll() {
+		try {
+			Set<String> userList = getUserList();
+			UserListMessage userListMessage = new UserListMessage("USER_LIST", userList);
+			TextMessage message = new TextMessage(objectMapper.writeValueAsString(userListMessage));
+			sendMessage(message);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to send user list", e);
+		}
 	}
 
 	public static ChatRoom of(String name) {
