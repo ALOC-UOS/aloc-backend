@@ -24,6 +24,7 @@ public class ChatRoom {
 	}
 
 	public void sendMessage(TextMessage message) {
+		sessions.removeIf(session -> !session.isOpen());
 		this.getSessions()
 			.parallelStream()
 			.forEach(session -> sendMessageToSession(session, message));
