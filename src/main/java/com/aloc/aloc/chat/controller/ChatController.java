@@ -1,6 +1,7 @@
 package com.aloc.aloc.chat.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,5 +28,10 @@ public class ChatController {
 	@GetMapping
 	public List<ChatRoom> getAll() {
 		return chatService.findAll();
+	}
+
+	@GetMapping("/user")
+	public Set<String> getUserList(@RequestParam String roomId) {
+		return chatService.findRoomById(roomId).getUserList();
 	}
 }

@@ -1,6 +1,9 @@
 package com.aloc.aloc.chat.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -23,6 +26,8 @@ public class ChatService {
 
 	private final ChatRepository chatRepository;
 	private final ObjectMapper objectMapper;
+	private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+
 
 	public List<ChatRoom> findAll() {
 		return chatRepository.findAll();
@@ -47,7 +52,7 @@ public class ChatService {
 
 		if (isEnterRoom(chatMessage)) {
 			room.join(session);
-			chatMessage.setMessage(chatMessage.getSender() + "님 환영합니다.");
+			chatMessage.setMessage("새로운 분이 등장했어요 🙋🏻");
 			chatMessage.setSender("알림");
 			chatMessage.setType(MessageType.NOTICE);
 		}
@@ -58,5 +63,10 @@ public class ChatService {
 
 	private boolean isEnterRoom(ChatMessage chatMessage) {
 		return chatMessage.getType().equals(ChatMessage.MessageType.ENTER);
+	}
+
+	public Set<String> getUserList(String roomId) {
+		ChatRoom room = findRoomById(roomId);
+		return room != null ? room.getUserList() : new HashSet<>();
 	}
 }
