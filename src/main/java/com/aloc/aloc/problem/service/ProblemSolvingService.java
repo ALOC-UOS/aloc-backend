@@ -1,5 +1,6 @@
 package com.aloc.aloc.problem.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,7 @@ public class ProblemSolvingService {
 	public List<ProblemSolvedResponseDto> getDailyProblems(User user) {
 		List<Problem> thisWeekDailyProblems = problemService.getDailyProblems(user);
 		return thisWeekDailyProblems.stream()
+			.sorted(Comparator.comparing(Problem::getCreatedAt))
 			.map(problem -> {
 				boolean isSolved = userProblemService.isProblemAlreadySolved(user.getId(), problem.getId());
 				return problemMapper.mapToProblemSolvedResponseDto(problem, isSolved);
