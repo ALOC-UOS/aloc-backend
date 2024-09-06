@@ -1,6 +1,6 @@
 package com.aloc.aloc.chat.dto;
 
-import java.util.Set;
+import java.util.List;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,5 +9,5 @@ import lombok.Getter;
 @Getter
 public class UserListMessage {
 	private String type;
-	private Set<String> users;
+	private List<SenderTotalInfo> userList;
 }
