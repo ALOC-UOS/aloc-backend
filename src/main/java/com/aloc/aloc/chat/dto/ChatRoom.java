@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -20,8 +20,8 @@ public class ChatRoom {
 	private final String name;
 	private final Set<WebSocketSession> sessions = new HashSet<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
-
-
+	private final ConcurrentHashMap<WebSocketSession, String> userMap = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, SenderInfo> userInfoMap = new ConcurrentHashMap<>();
 	@Builder
 	public ChatRoom(String roomId, String name) {
 		this.roomId = roomId;
@@ -43,20 +43,21 @@ public class ChatRoom {
 		}
 	}
 
-	public void join(WebSocketSession session) {
+	public void join(WebSocketSession session, String sender, SenderInfo senderInfo) {
 		sessions.add(session);
+		userMap.put(session, sender);
+		userInfoMap.put(sender, senderInfo);
 		sendUserListToAll();
 	}
 
 	public void leave(WebSocketSession session) {
 		sessions.remove(session);
+		userMap.remove(session);
 		sendUserListToAll();
 	}
 
 	public Set<String> getUserList() {
-		return sessions.stream()
-			.map(session -> (String) session.getAttributes().get("username"))
-			.collect(Collectors.toSet());
+		return new HashSet<>(userMap.values());
 	}
 
 	private void sendUserListToAll() {
