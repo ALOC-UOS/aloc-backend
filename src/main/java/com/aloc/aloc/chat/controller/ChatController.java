@@ -1,6 +1,5 @@
 package com.aloc.aloc.chat.controller;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aloc.aloc.chat.dto.ChatRoom;
-import com.aloc.aloc.chat.dto.SenderTotalInfo;
 import com.aloc.aloc.chat.service.ChatService;
 
 
@@ -29,10 +27,5 @@ public class ChatController {
 	@GetMapping
 	public List<ChatRoom> getAll() {
 		return chatService.findAll();
-	}
-
-	@GetMapping("/user")
-	public Collection<SenderTotalInfo> getUserList(@RequestParam String roomId) {
-		return chatService.getUserList(roomId);
 	}
 }

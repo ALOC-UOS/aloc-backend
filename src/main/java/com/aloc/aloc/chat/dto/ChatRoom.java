@@ -2,6 +2,7 @@ package com.aloc.aloc.chat.dto;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,7 +63,9 @@ public class ChatRoom {
 
 	private void sendUserListToAll() {
 		try {
-			Set<String> userList = getUserList();
+			List<SenderTotalInfo> userList = userInfoMap.entrySet().stream()
+				.map(entry -> new SenderTotalInfo(entry.getKey(), entry.getValue()))
+				.toList();
 			UserListMessage userListMessage = new UserListMessage("USER_LIST", userList);
 			TextMessage message = new TextMessage(objectMapper.writeValueAsString(userListMessage));
 			sendMessage(message);
