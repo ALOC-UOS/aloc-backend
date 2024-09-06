@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -14,6 +14,7 @@ import com.aloc.aloc.chat.dto.ChatMessage;
 import com.aloc.aloc.chat.dto.ChatMessage.MessageType;
 import com.aloc.aloc.chat.dto.ChatRoom;
 import com.aloc.aloc.chat.dto.SenderInfo;
+import com.aloc.aloc.chat.dto.SenderTotalInfo;
 import com.aloc.aloc.chat.repository.ChatRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,8 +80,14 @@ public class ChatService {
 		return isNewUser;
 	}
 
-	public Collection<SenderInfo> getUserList(String roomId) {
+	public Collection<SenderTotalInfo> getUserList(String roomId) {
 		ChatRoom room = findRoomById(roomId);
-		return room != null ? room.getUserInfoMap().values() : new HashSet<>();
+		if (room == null || room.getUserInfoMap() == null) {
+			return new HashSet<>();
+		}
+
+		return room.getUserInfoMap().entrySet().stream()
+			.map(entry -> new SenderTotalInfo(entry.getKey(), entry.getValue()))
+			.collect(Collectors.toList());
 	}
 }

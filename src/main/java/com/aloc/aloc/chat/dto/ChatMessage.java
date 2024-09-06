@@ -27,6 +27,7 @@ public class ChatMessage {
 		try {
 			return objectMapper.readValue(payload, ChatMessage.class);
 		} catch (IOException e) {
+			System.out.println(payload);
 			throw new RuntimeException("Failed to parse ChatMessage", e);
 		}
 	}
