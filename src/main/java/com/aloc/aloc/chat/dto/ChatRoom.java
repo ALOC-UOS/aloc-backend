@@ -20,16 +20,13 @@ public class ChatRoom {
 	private final String roomId;
 	private final String name;
 	private final Set<WebSocketSession> sessions = new HashSet<>();
-	private final ObjectMapper objectMapper;
-	private final ConcurrentHashMap<WebSocketSession, String> userMap;
-	private final ConcurrentHashMap<String, SenderInfo> userInfoMap;
+	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ConcurrentHashMap<WebSocketSession, String> userMap = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, SenderInfo> userInfoMap = new ConcurrentHashMap<>();
 	@Builder
 	public ChatRoom(String roomId, String name) {
 		this.roomId = roomId;
 		this.name = name;
-		this.objectMapper = new ObjectMapper();
-		this.userMap = new ConcurrentHashMap<>();
-		this.userInfoMap = new ConcurrentHashMap<>();
 	}
 
 	public void sendMessage(TextMessage message) {
@@ -49,9 +46,16 @@ public class ChatRoom {
 
 	public void join(WebSocketSession session, String sender, SenderInfo senderInfo) {
 		sessions.add(session);
-		userMap.put(session, sender);
-		userInfoMap.put(sender, senderInfo);
-		sendUserListToAll();
+		try {
+			userMap.put(session, sender);
+			userInfoMap.put(sender, senderInfo);
+			sendUserListToAll();
+		} catch (Exception e) {
+			System.out.println(session);
+			System.out.println(sender);
+			System.out.println(senderInfo);
+			throw new RuntimeException("Failed to join user", e);
+		}
 	}
 
 	public void leave(WebSocketSession session) {
