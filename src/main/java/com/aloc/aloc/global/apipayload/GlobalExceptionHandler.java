@@ -3,7 +3,9 @@ package com.aloc.aloc.global.apipayload;
 import java.nio.file.AccessDeniedException;
 import java.util.NoSuchElementException;
 
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -62,5 +64,10 @@ public class GlobalExceptionHandler {
 			ex.getMessage(),
 			ErrorStatus._BAD_REQUEST.getMessage()
 		);
+	}
+
+	@ExceptionHandler(FileUploadException.class)
+	public ResponseEntity<String> handleFileUploadException(FileUploadException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
 }
