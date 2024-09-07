@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public class FileNameGenerator {
 	public static String generateUniqueFileName(String originalFileName) {
-		return UUID.randomUUID().toString() + "_" + originalFileName;
+		return UUID.randomUUID() + "_" + originalFileName;
 	}
 }
