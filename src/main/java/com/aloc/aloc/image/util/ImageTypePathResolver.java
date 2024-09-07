@@ -13,7 +13,7 @@ import com.aloc.aloc.image.enums.ImageType;
 public class ImageTypePathResolver {
 	private final String baseUploadPath;
 
-	public ImageTypePathResolver(@Value("${spring.upload.path}") String baseUploadPath) {
+	public ImageTypePathResolver(@Value("${spring.upload.path:/upload/user}") String baseUploadPath) {
 		this.baseUploadPath = baseUploadPath;
 	}
 
