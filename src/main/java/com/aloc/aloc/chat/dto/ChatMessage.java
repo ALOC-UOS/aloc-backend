@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,11 +18,19 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class ChatMessage {
+	@NotNull(message = "Message type is required")
 	private MessageType type;
+
+	@NotBlank(message = "Room ID is required")
 	private String roomId;
+
+	@NotBlank(message = "Sender is required")
 	private String sender;
 	private SenderInfo senderInfo;
+
+	@NotBlank(message = "Message content is required")
 	private String message;
+
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	public static ChatMessage of(String payload) {
@@ -33,7 +43,7 @@ public class ChatMessage {
 	}
 
 	public enum MessageType {
-		ENTER, TALK, NOTICE
+		ENTER, TALK, NOTICE, LEAVE
 	}
 
 }
