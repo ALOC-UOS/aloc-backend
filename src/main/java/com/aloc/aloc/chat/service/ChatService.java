@@ -46,12 +46,14 @@ public class ChatService {
 		ChatMessage chatMessage
 	) throws JsonProcessingException {
 		ChatRoom room = findRoomById(roomId);
+		if (!isSessionValid(session)) {
+			log.error("WebSocket session is not valid or closed");
+			return;
+		}
 
 		if (room == null) {
 			throw new RuntimeException("Room not found: " + roomId);
 		}
-
-//		validateMessageType(chatMessage);
 
 		if (isEnterRoom(room, chatMessage.getSender(), chatMessage.getSenderInfo())) {
 			room.join(session, chatMessage.getSender(), chatMessage.getSenderInfo());
@@ -64,6 +66,10 @@ public class ChatService {
 		room.sendMessage(textMessage);
 	}
 
+	private boolean isSessionValid(WebSocketSession session) {
+		return session != null && session.isOpen();
+	}
+
 	private boolean isEnterRoom(ChatRoom room, String sender, SenderInfo senderInfo)  {
 		Set<String> userList = room.getUserList();
 		boolean isNewUser = userList.stream()
@@ -73,5 +79,23 @@ public class ChatService {
 			userList.add(sender);
 		}
 		return isNewUser;
+	}
+
+	public void leaveAllRooms(WebSocketSession session) {
+		List<ChatRoom> rooms = findAll();
+		for (ChatRoom room : rooms) {
+			if (room.hasSession(session)) {
+				room.leave(session);
+				ChatMessage leaveMessage = new ChatMessage();
+				leaveMessage.setType(MessageType.LEAVE);
+				leaveMessage.setSender("System");
+				leaveMessage.setMessage("사용자가 채팅방을 나갔습니다.");
+				try {
+					handleAction(room.getRoomId(), session, leaveMessage);
+				} catch (Exception e) {
+					log.error("Error sending leave message", e);
+				}
+			}
+		}
 	}
 }

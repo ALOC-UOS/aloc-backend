@@ -87,4 +87,8 @@ public class ChatRoom {
 			.roomId(UUID.randomUUID().toString())
 			.build();
 	}
+
+	public boolean hasSession(WebSocketSession session) {
+		return sessions.contains(session);
+	}
 }
