@@ -17,8 +17,4 @@ public class UploadedFileInfo {
 	private ImageType imageType;
 	private String fileName;
 	private Path fullPath;
-
-	public String getRelativePath() {
-		return imageType.name().toLowerCase() + "/" + fileName;
-	}
 }
