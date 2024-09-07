@@ -3,6 +3,7 @@ package com.aloc.aloc.chat.base;
 import java.io.IOException;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -26,5 +27,11 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 		String payload = message.getPayload();
 		ChatMessage chatMessage = ChatMessage.of(payload);
 		chatService.handleAction(chatMessage.getRoomId(), session, chatMessage);
+	}
+
+	@Override
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+		log.info("Connection closed: {} with status {}", session.getId(), status);
+		chatService.leaveAllRooms(session);
 	}
 }
