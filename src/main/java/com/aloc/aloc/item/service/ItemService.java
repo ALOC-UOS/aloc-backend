@@ -38,6 +38,7 @@ public class ItemService {
 			.itemType(itemRequestDto.getItemType())
 			.isHidden(itemRequestDto.getIsHidden())
 			.build();
+		// TODO: 이미지 업로드 관련 로직 추가
 		itemRepository.save(item);
 		return "아이템 '%s' 이(가) 성공적으로 추가되었습니다.".formatted(item.getName());
 	}

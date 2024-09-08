@@ -1,5 +1,9 @@
 package com.aloc.aloc.item.dto.request;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.aloc.aloc.item.enums.ItemType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,5 +21,6 @@ public class ItemRequestDto {
 	private ItemType itemType;
 	@Schema(description = "비공개 여부", example = "true")
 	private Boolean isHidden;
-	@Schema(description = "")
+	@Schema(description = "이미지 파일 리스트")
+	private List<MultipartFile> images;
 }

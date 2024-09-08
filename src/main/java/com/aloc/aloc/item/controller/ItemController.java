@@ -2,10 +2,12 @@ package com.aloc.aloc.item.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,11 +40,11 @@ public class ItemController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@PostMapping("/")
+	@PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	@Operation(summary = "아이템 추가", description = "새로운 아이템을 추가합니다.")
 	public CustomApiResponse<String> insertItem(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user,
-		@RequestBody ItemRequestDto itemRequestDto) {
+		@ModelAttribute ItemRequestDto itemRequestDto) {
 		return CustomApiResponse.onSuccess(itemService.insertItem(user.getUsername(), itemRequestDto));
 	}
 
