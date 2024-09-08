@@ -45,11 +45,5 @@ jobs:
         echo "${{ secrets.JWT_APPLICATION }}" base64 -d > application-jwt.yml
         echo "${{ secrets.TEST_APPLICATION }}" base64 -d > application-test.yml
 
-    - name: Create upload directory
-      run: mkdir -p /tmp/upload
-
-    - name: Set environment variable for upload path
-      run: echo "UPLOAD_PATH=/tmp/upload" >> $GITHUB_ENV
-
     - name: Build with Gradle Wrapper
       run: ./gradlew build --parallel --daemon
