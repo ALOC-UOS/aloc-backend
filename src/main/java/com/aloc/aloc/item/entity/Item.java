@@ -35,5 +35,5 @@ public class Item extends AuditingTimeEntity {
 	@Column(nullable = false)
 	private ItemType itemType;
 	@Column(nullable = false)
-	private Boolean isHidden = true;
+	private Boolean isHidden;
 }
