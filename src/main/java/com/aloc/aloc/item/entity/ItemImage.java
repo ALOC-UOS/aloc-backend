@@ -1,8 +1,5 @@
 package com.aloc.aloc.item.entity;
 
-import com.aloc.aloc.global.domain.AuditingTimeEntity;
-import com.aloc.aloc.user.entity.User;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,18 +9,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class UserItem extends AuditingTimeEntity {
+public class ItemImage {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
-
-	@ManyToOne
 	@JoinColumn(name = "item_id", nullable = false)
 	private Item item;
 	@Column(nullable = false)
-	private Boolean isActive;
+	private String imageName;
+	@Column(nullable = false)
+	private String imagePath;
 }

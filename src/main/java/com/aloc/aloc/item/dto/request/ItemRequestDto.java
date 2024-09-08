@@ -17,4 +17,5 @@ public class ItemRequestDto {
 	private ItemType itemType;
 	@Schema(description = "비공개 여부", example = "true")
 	private Boolean isHidden;
+	@Schema(description = "")
 }
