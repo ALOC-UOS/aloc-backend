@@ -22,6 +22,7 @@ import com.aloc.aloc.algorithm.entity.Algorithm;
 import jakarta.persistence.EntityManager;
 
 @DataJpaTest
+@ActiveProfiles("test")
 public class AlgorithmRepositoryTest {
 	@Autowired
 	private AlgorithmRepository algorithmRepository;

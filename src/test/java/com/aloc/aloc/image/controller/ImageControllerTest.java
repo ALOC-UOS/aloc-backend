@@ -20,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +30,7 @@ import com.aloc.aloc.image.service.ImageUploadService;
 
 @WebMvcTest(ImageController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 public class ImageControllerTest {
 	@Autowired
 	private MockMvc mockMvc;

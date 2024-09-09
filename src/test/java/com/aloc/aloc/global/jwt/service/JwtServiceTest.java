@@ -25,6 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 public class JwtServiceTest {
 	@Autowired
 	JwtService jwtService;
