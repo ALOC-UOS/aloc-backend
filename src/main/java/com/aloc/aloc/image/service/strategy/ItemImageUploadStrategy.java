@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ItemImageUploadStrategy implements  ImageUploadStrategy {
+public class ItemImageUploadStrategy implements ImageUploadStrategy {
 	private final FileStorageStrategy fileStorageStrategy;
 	private final ImageTypePathResolver pathResolver;
 	@Override
