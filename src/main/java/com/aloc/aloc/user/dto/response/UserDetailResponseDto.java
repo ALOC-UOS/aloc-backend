@@ -54,6 +54,7 @@ public class UserDetailResponseDto extends UserResponseDto {
 			.course(user.getCourse())
 			.rank(user.getRank())
 			.coin(user.getUserProfile().getCoin())
+			.profileImageFileName(user.getUserProfile().getProfileImageFileName())
 			.solvedCount(user.getSolvedCount())
 			.unsolvedCount(unsolvedCount)
 			.todaySolved(todaySolved)
