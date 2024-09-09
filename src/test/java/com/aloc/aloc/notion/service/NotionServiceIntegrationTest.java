@@ -11,7 +11,6 @@ import com.aloc.aloc.notion.NotionProperty;
 import com.aloc.aloc.notion.dto.response.StudyScheduleResponseDto;
 
 @SpringBootTest
-@ActiveProfiles("test")
 public class NotionServiceIntegrationTest {
 	@Autowired
 	private NotionService notionService;
