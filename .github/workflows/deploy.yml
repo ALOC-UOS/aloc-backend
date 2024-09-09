@@ -77,6 +77,7 @@ jobs:
                --network my_network \
                --ip 172.18.0.2 \
                -p 8080:8080 \
+               -v /home/ubuntu/upload/user:/app/upload \
                ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest
 
       - name: Send deployment status to Discord
