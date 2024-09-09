@@ -32,6 +32,7 @@ import jakarta.persistence.EntityManager;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@ActiveProfiles("test")
 public class JwtFilterAuthenticationTest {
 
 	@Autowired
