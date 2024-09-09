@@ -42,6 +42,8 @@ public class UserProfile {
 
 	private String notionEmail;
 
+	private String profileImageFileName;
+
 	public void addCoin(int coinToAdd) {
 		this.coin += coinToAdd;
 	}

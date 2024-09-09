@@ -87,6 +87,10 @@ public class User extends AuditingTimeEntity {
 		this.solvedCount++;
 	}
 
+	public void setProfileImageFileName(String fileName) {
+		this.userProfile.setProfileImageFileName(fileName);
+	}
+
 	@Builder
 	public User(
 		String username,

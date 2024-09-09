@@ -33,6 +33,8 @@ public class UserResponseDto {
 	private Integer coin;
 	@Schema(description = "코스", example = "FULL")
 	private Course course;
+	@Schema(description = "프로필 이미지 파일 이름", example = "profile.jpg")
+	private String profileImageFileName;
 
 	public static UserResponseDto of(User user) {
 		return UserResponseDto.builder()
@@ -45,6 +47,7 @@ public class UserResponseDto {
 			.rank(user.getRank())
 			.coin(user.getUserProfile().getCoin())
 			.course(user.getCourse())
+			.profileImageFileName(user.getUserProfile().getProfileImageFileName())
 			.build();
 	}
 }
