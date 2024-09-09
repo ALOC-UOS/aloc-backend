@@ -69,7 +69,8 @@ public class SecurityConfig {
 					"/api2/authorize/**",
 					"/api2/user/course",
 					"/api2/withdraw",
-					"/api2/color/change"
+					"/api2/color/change",
+					"/api2/images/upload/profile"
 				).authenticated()
 				.anyRequest().permitAll())
 			.exceptionHandling(exceptionConfig -> exceptionConfig
