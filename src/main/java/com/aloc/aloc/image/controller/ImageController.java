@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.aloc.aloc.image.dto.UploadImageResponseDto;
 import com.aloc.aloc.image.dto.UploadedFileInfo;
 import com.aloc.aloc.image.enums.ImageType;
 import com.aloc.aloc.image.service.ImageUploadService;
@@ -31,20 +32,30 @@ public class ImageController {
 	private final ImageUploadService imageUploadService;
 
 	@PostMapping(value = "/upload/items", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> uploadItemImage(
+	public ResponseEntity<UploadImageResponseDto> uploadItemImage(
 		@RequestParam("file") MultipartFile file) throws FileUploadException {
 		UploadedFileInfo uploadedImage = imageUploadService.uploadImage(file, ImageType.ITEM, null);
-		return ResponseEntity.ok("File uploaded successfully: " + uploadedImage.getFileName());
+		UploadImageResponseDto responseDto = new UploadImageResponseDto(
+			"Item File uploaded successfully",
+			uploadedImage.getFileName()
+		);
+		return ResponseEntity.ok(responseDto);
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
 	@PostMapping(value = "/upload/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> uploadProfileImage(
+	public ResponseEntity<UploadImageResponseDto> uploadProfileImage(
 		@RequestParam("file") MultipartFile file,
 		@Parameter(hidden = true) @AuthenticationPrincipal User user) throws FileUploadException {
 		Map<String, Object> metadata = new HashMap<>();
 		metadata.put("username", user.getUsername());
-		UploadedFileInfo uploadedImage = imageUploadService.uploadImage(file, ImageType.PROFILE, metadata);
-		return ResponseEntity.ok("File uploaded successfully: " + uploadedImage.getFileName());
+
+		UploadedFileInfo uploadedImage = imageUploadService.uploadImage(file, ImageType.PROFILE,
+			metadata);
+		UploadImageResponseDto responseDto = new UploadImageResponseDto(
+			"Profile File uploaded successfully",
+			uploadedImage.getFileName()
+		);
+		return ResponseEntity.ok(responseDto);
 	}
 }
