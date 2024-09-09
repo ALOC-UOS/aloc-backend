@@ -13,6 +13,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
@@ -20,9 +22,7 @@ import com.aloc.aloc.algorithm.entity.Algorithm;
 import jakarta.persistence.EntityManager;
 
 @DataJpaTest
-@ActiveProfiles("test")
 public class AlgorithmRepositoryTest {
-
 	@Autowired
 	private AlgorithmRepository algorithmRepository;
 

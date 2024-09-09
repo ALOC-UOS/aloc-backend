@@ -23,7 +23,6 @@ import com.aloc.aloc.user.repository.UserRepository;
 
 @SpringBootTest
 @Transactional
-@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 public class AuthServiceTest {
 
