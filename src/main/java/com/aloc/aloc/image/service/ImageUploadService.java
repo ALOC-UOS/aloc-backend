@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.aloc.aloc.image.dto.UploadedFileInfo;
+import com.aloc.aloc.image.dto.UploadedImageInfo;
 import com.aloc.aloc.image.enums.ImageType;
 import com.aloc.aloc.image.service.strategy.ImageUploadStrategy;
 
@@ -27,7 +27,7 @@ public class ImageUploadService {
 	}
 
 	@Transactional
-	public UploadedFileInfo uploadImage(
+	public UploadedImageInfo uploadImage(
 		MultipartFile file,
 		ImageType imageType,
 		Map<String, Object> metadata

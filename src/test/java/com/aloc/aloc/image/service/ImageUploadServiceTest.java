@@ -20,7 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.aloc.aloc.image.dto.UploadedFileInfo;
+import com.aloc.aloc.image.dto.UploadedImageInfo;
 import com.aloc.aloc.image.enums.ImageType;
 import com.aloc.aloc.image.service.strategy.FileStorageStrategy;
 import com.aloc.aloc.image.service.strategy.ImageUploadStrategy;
@@ -53,7 +53,7 @@ public class ImageUploadServiceTest {
 		MultipartFile mockFile = mock(MultipartFile.class);
 		Map<String, Object> metadata = new HashMap<>();
 		metadata.put("username", "testUser");
-		UploadedFileInfo mockFileInfo = new UploadedFileInfo(
+		UploadedImageInfo mockFileInfo = new UploadedImageInfo(
 			ImageType.PROFILE,
 			"testFileName.jpg",
 			Path.of("url/to/file")
@@ -61,7 +61,7 @@ public class ImageUploadServiceTest {
 
 		when(profileStrategy.upload(mockFile, metadata)).thenReturn(mockFileInfo);
 
-		UploadedFileInfo result = imageUploadService.uploadImage(mockFile, ImageType.PROFILE, metadata);
+		UploadedImageInfo result = imageUploadService.uploadImage(mockFile, ImageType.PROFILE, metadata);
 
 		assertNotNull(result);
 		assertEquals("testFileName.jpg", result.getFileName());
@@ -73,12 +73,12 @@ public class ImageUploadServiceTest {
 	void testUploadItemImageSuccess() throws Exception {
 		MultipartFile mockFile = mock(MultipartFile.class);
 		Map<String, Object> metadata = new HashMap<>();
-		UploadedFileInfo mockFileInfo = new UploadedFileInfo(ImageType.ITEM, "testFileName.jpg",
+		UploadedImageInfo mockFileInfo = new UploadedImageInfo(ImageType.ITEM, "testFileName.jpg",
 			Path.of("url/to/file"));
 
 		when(itemStrategy.upload(mockFile, metadata)).thenReturn(mockFileInfo);
 
-		UploadedFileInfo result = imageUploadService.uploadImage(mockFile, ImageType.ITEM, metadata);
+		UploadedImageInfo result = imageUploadService.uploadImage(mockFile, ImageType.ITEM, metadata);
 
 		assertNotNull(result);
 		assertEquals("testFileName.jpg", result.getFileName());

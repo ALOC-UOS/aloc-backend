@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UploadedFileInfo {
+public class UploadedImageInfo {
 	private ImageType imageType;
-	private String fileName;
+	private String imageName;
 	private Path fullPath;
 }

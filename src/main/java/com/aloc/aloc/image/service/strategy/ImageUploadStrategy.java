@@ -5,8 +5,8 @@ import java.util.Map;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.aloc.aloc.image.dto.UploadedFileInfo;
+import com.aloc.aloc.image.dto.UploadedImageInfo;
 
 public interface ImageUploadStrategy {
-	UploadedFileInfo upload(MultipartFile file, Map<String, Object> metadata) throws FileUploadException;
+	UploadedImageInfo upload(MultipartFile file, Map<String, Object> metadata) throws FileUploadException;
 }
