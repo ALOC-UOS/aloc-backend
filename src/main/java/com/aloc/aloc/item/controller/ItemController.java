@@ -54,7 +54,7 @@ public class ItemController {
 	public CustomApiResponse<String> updateItem(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user,
 		@RequestBody ItemUpdateRequestDto itemUpdateRequestDto) {
-		return CustomApiResponse.onSuccess(itemService.updateItem(user.getUsername(), itemUpdateRequestDto));
+		return CustomApiResponse.onSuccess(itemService.updateItemInfo(user.getUsername(), itemUpdateRequestDto));
 	}
 
 	@SecurityRequirement(name = "JWT Auth")

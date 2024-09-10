@@ -1,5 +1,7 @@
 package com.aloc.aloc.item.dto.response;
 
+import java.util.List;
+
 import com.aloc.aloc.item.entity.Item;
 import com.aloc.aloc.item.enums.ItemType;
 
@@ -20,14 +22,17 @@ public class ItemResponseDto {
 	private Integer coin;
 	@Schema(description = "아이템 타입(부위)", example = "TOP")
 	private ItemType itemType;
+	@Schema(description = "아이템 이미지 파일 이름 리스트", example = "turtle1.png")
+	private List<String> imageFileNames;
 
-	public static ItemResponseDto of(Item item) {
+	public static ItemResponseDto of(Item item, List<String> imageFileNames) {
 		return ItemResponseDto.builder()
-			.id(item.getId())
-			.name(item.getName())
-			.description(item.getDescription())
-			.coin(item.getCoin())
-			.itemType(item.getItemType())
+				.id(item.getId())
+				.name(item.getName())
+				.description(item.getDescription())
+				.coin(item.getCoin())
+				.itemType(item.getItemType())
+				.imageFileNames(imageFileNames)
 			.build();
 	}
 }

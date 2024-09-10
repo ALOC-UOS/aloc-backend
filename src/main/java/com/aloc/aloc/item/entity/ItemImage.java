@@ -1,40 +1,34 @@
 package com.aloc.aloc.item.entity;
 
-import com.aloc.aloc.global.domain.AuditingTimeEntity;
-import com.aloc.aloc.item.enums.ItemType;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Item extends AuditingTimeEntity {
+@Getter
+public class ItemImage {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "item_id", nullable = false)
+	private Item item;
 	@Column(nullable = false)
-	private String name;
-	private String description;
+	private String fileName;
 	@Column(nullable = false)
-	private Integer coin;
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private ItemType itemType;
-	@Column(nullable = false)
-	private Boolean isHidden;
+	private String fullPath;
+
 }
