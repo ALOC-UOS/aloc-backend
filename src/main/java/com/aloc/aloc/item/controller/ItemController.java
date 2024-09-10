@@ -19,6 +19,7 @@ import com.aloc.aloc.global.apipayload.CustomApiResponse;
 import com.aloc.aloc.item.dto.request.ItemRequestDto;
 import com.aloc.aloc.item.dto.request.ItemUpdateRequestDto;
 import com.aloc.aloc.item.dto.response.ItemResponseDto;
+import com.aloc.aloc.item.dto.response.UserItemResponseDto;
 import com.aloc.aloc.item.service.ItemService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,4 +78,11 @@ public class ItemController {
 		return CustomApiResponse.onSuccess(itemService.purchaseItem(user.getUsername(), itemId));
 	}
 
+	@SecurityRequirement(name = "JWT Auth")
+	@GetMapping("/user-item")
+	@Operation(summary = "유저가 구매한 아이템 조회", description = "유저가 구매한 모든 아이템을 조회합니다.")
+	public CustomApiResponse<List<UserItemResponseDto>> getUserItems(
+			@Parameter(hidden = true) @AuthenticationPrincipal User user) {
+		return CustomApiResponse.onSuccess(itemService.getUserItems(user.getUsername()));
+	}
 }

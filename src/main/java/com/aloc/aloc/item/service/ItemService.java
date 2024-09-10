@@ -18,6 +18,7 @@ import com.aloc.aloc.image.service.ImageUploadService;
 import com.aloc.aloc.item.dto.request.ItemRequestDto;
 import com.aloc.aloc.item.dto.request.ItemUpdateRequestDto;
 import com.aloc.aloc.item.dto.response.ItemResponseDto;
+import com.aloc.aloc.item.dto.response.UserItemResponseDto;
 import com.aloc.aloc.item.entity.Item;
 import com.aloc.aloc.item.entity.ItemImage;
 import com.aloc.aloc.item.repository.ItemImageRepository;
@@ -150,5 +151,10 @@ public class ItemService {
 		if (userItemService.isExists(user, item)) {
 			throw new AlreadyPurchasedException("이미 구매한 아이템입니다.");
 		}
+	}
+
+	public List<UserItemResponseDto> getUserItems(String githubId) {
+		User user = userService.findUser(githubId);
+		return userItemService.getUserItems(user);
 	}
 }
