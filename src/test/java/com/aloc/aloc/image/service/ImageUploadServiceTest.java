@@ -64,7 +64,7 @@ public class ImageUploadServiceTest {
 		UploadedImageInfo result = imageUploadService.uploadImage(mockFile, ImageType.PROFILE, metadata);
 
 		assertNotNull(result);
-		assertEquals("testFileName.jpg", result.getFileName());
+		assertEquals("testFileName.jpg", result.getImageName());
 		verify(profileStrategy).upload(mockFile, metadata);
 	}
 
@@ -81,7 +81,7 @@ public class ImageUploadServiceTest {
 		UploadedImageInfo result = imageUploadService.uploadImage(mockFile, ImageType.ITEM, metadata);
 
 		assertNotNull(result);
-		assertEquals("testFileName.jpg", result.getFileName());
+		assertEquals("testFileName.jpg", result.getImageName());
 		verify(itemStrategy).upload(mockFile, metadata);
 	}
 
