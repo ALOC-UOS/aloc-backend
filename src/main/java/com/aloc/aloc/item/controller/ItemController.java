@@ -67,4 +67,14 @@ public class ItemController {
 		return CustomApiResponse.onSuccess(itemService.deleteItem(user.getUsername(), itemId));
 	}
 
+	@SecurityRequirement(name = "JWT Auth")
+	@PostMapping("/{itemId}")
+	@Operation(summary = "아이템 구매", description = "아이템 id로 해당 아이템을 구매합니다.")
+	public CustomApiResponse<String> buyItem(
+			@Parameter(hidden = true) @AuthenticationPrincipal User user,
+			@Parameter(description = "아이템 id", required = true) @PathVariable() Long itemId
+	) {
+		return CustomApiResponse.onSuccess(itemService.purchaseItem(user.getUsername(), itemId));
+	}
+
 }

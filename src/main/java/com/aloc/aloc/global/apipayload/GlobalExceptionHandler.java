@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.aloc.aloc.global.apipayload.exception.AlreadyPurchasedException;
 import com.aloc.aloc.global.apipayload.exception.ScrapException;
 import com.aloc.aloc.global.apipayload.status.ErrorStatus;
 
@@ -69,5 +70,15 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(FileUploadException.class)
 	public ResponseEntity<String> handleFileUploadException(FileUploadException ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	}
+
+	@ExceptionHandler(AlreadyPurchasedException.class)
+	@ResponseStatus(HttpStatus.CONFLICT)
+	public CustomApiResponse<String> handleAlreadyPurchasedException(AlreadyPurchasedException ex) {
+		return CustomApiResponse.onFailure(
+			ErrorStatus._CONFLICT.getCode(),
+			ex.getMessage(),
+			ErrorStatus._CONFLICT.getMessage()
+		);
 	}
 }
