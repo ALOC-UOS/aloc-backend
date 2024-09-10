@@ -54,7 +54,7 @@ public class ImageController {
 			metadata);
 		UploadedImageResponseDto responseDto = new UploadedImageResponseDto(
 			"Profile File uploaded successfully",
-			uploadedImage.getFileName()
+			uploadedImage.getImageName()
 		);
 		return ResponseEntity.ok(responseDto);
 	}
