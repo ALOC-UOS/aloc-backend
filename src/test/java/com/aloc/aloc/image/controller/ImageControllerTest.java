@@ -24,7 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.aloc.aloc.image.dto.UploadedFileInfo;
+import com.aloc.aloc.image.dto.UploadedImageInfo;
 import com.aloc.aloc.image.enums.ImageType;
 import com.aloc.aloc.image.service.ImageUploadService;
 
@@ -40,11 +40,11 @@ public class ImageControllerTest {
 
 	@MockBean
 	private ImageUploadService imageUploadService;
-	private UploadedFileInfo uploadedFileInfo;
+	private UploadedImageInfo uploadedFileInfo;
 
 	@BeforeEach
 	public void setup() {
-		uploadedFileInfo = new UploadedFileInfo(
+		uploadedFileInfo = new UploadedImageInfo(
 			ImageType.ITEM,
 			"uploadedFileName.jpg",
 			Path.of("/uploads/uploadedFileName.jpg")

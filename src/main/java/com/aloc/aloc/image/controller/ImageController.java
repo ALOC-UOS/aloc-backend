@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.aloc.aloc.image.dto.UploadImageResponseDto;
-import com.aloc.aloc.image.dto.UploadedFileInfo;
+import com.aloc.aloc.image.dto.UploadedImageInfo;
+import com.aloc.aloc.image.dto.UploadedImageResponseDto;
 import com.aloc.aloc.image.enums.ImageType;
 import com.aloc.aloc.image.service.ImageUploadService;
 
@@ -32,27 +32,27 @@ public class ImageController {
 	private final ImageUploadService imageUploadService;
 
 	@PostMapping(value = "/upload/items", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<UploadImageResponseDto> uploadItemImage(
+	public ResponseEntity<UploadedImageResponseDto> uploadItemImage(
 		@RequestParam("file") MultipartFile file) throws FileUploadException {
-		UploadedFileInfo uploadedImage = imageUploadService.uploadImage(file, ImageType.ITEM, null);
-		UploadImageResponseDto responseDto = new UploadImageResponseDto(
+		UploadedImageInfo uploadedImage = imageUploadService.uploadImage(file, ImageType.ITEM, null);
+		UploadedImageResponseDto responseDto = new UploadedImageResponseDto(
 			"Item File uploaded successfully",
-			uploadedImage.getFileName()
+			uploadedImage.getImageName()
 		);
 		return ResponseEntity.ok(responseDto);
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
 	@PostMapping(value = "/upload/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<UploadImageResponseDto> uploadProfileImage(
+	public ResponseEntity<UploadedImageResponseDto> uploadProfileImage(
 		@RequestParam("file") MultipartFile file,
 		@Parameter(hidden = true) @AuthenticationPrincipal User user) throws FileUploadException {
 		Map<String, Object> metadata = new HashMap<>();
 		metadata.put("username", user.getUsername());
 
-		UploadedFileInfo uploadedImage = imageUploadService.uploadImage(file, ImageType.PROFILE,
+		UploadedImageInfo uploadedImage = imageUploadService.uploadImage(file, ImageType.PROFILE,
 			metadata);
-		UploadImageResponseDto responseDto = new UploadImageResponseDto(
+		UploadedImageResponseDto responseDto = new UploadedImageResponseDto(
 			"Profile File uploaded successfully",
 			uploadedImage.getFileName()
 		);
