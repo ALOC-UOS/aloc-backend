@@ -71,8 +71,8 @@ public class ProblemScrapingService {
 //		Algorithm lastWeeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 지난 주차의 weekly Hidden False로 변경
 //		updateWeeklyAlgorithmHidden(lastWeeklyAlgorithm);
 //		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 5개 새로운 주차의 weekly Algorithm
-		Algorithm dailyAlgorithm = algorithmService.findDailyAlgorithm(); // 1주에 7개
-
+		Algorithm dailyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 7개
+		updateDailyAlgorithmHidden(dailyAlgorithm);
 		Map<CourseRoutineTier, List<Problem>> crawledProblems = new LinkedHashMap<>();
 
 		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
@@ -98,6 +98,11 @@ public class ProblemScrapingService {
 		});
 		future.get();
 		return getCrawlingResultMessage(crawledProblems, dailyAlgorithm);
+	}
+
+	private void updateDailyAlgorithmHidden(Algorithm dailyAlgorithm) {
+		dailyAlgorithm.setHiddenFalse();
+		algorithmService.saveAlgorithm(dailyAlgorithm);
 	}
 
 	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Problem>> crawledProblems,
