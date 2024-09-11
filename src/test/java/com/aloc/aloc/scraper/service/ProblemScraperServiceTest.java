@@ -126,9 +126,10 @@ class ProblemScraperServiceTest {
 	@DisplayName("이번주 문제 추가 성공")
 	void addProblemForThisWeekSuccess() throws ExecutionException, InterruptedException, IOException {
 		Algorithm dailyAlgorithm = algorithms.get(0);
+		Algorithm weeklyAlgorithm = algorithms.get(1);
 		ProblemType problemType = new ProblemType();
 
-		when(algorithmService.findDailyAlgorithm()).thenReturn(dailyAlgorithm);
+		when(algorithmService.findWeeklyAlgorithm()).thenReturn(dailyAlgorithm);
 		when(problemTypeRepository.findByCourseAndRoutine(any(), any())).thenReturn(Optional.of(problemType));
 		when(problemService.isNewProblem(anyInt(), any(), anyInt())).thenReturn(true);
 
