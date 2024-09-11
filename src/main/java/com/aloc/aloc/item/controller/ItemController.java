@@ -85,4 +85,14 @@ public class ItemController {
 			@Parameter(hidden = true) @AuthenticationPrincipal User user) {
 		return CustomApiResponse.onSuccess(itemService.getUserItems(user.getUsername()));
 	}
+
+	@SecurityRequirement(name = "JWT Auth")
+	@PatchMapping("/user-item/{userItemId}")
+	@Operation(summary = "userItem을 착용", description = "userItemId로 해당 userItem을 착용합니다.")
+	public CustomApiResponse<String> updateUserItemActive(
+			@Parameter(hidden = true) @AuthenticationPrincipal User user,
+			@Parameter(description = "유저 아이템 id", required = true) @PathVariable() Long userItemId
+	) {
+		return CustomApiResponse.onSuccess(itemService.updateUserItemActive(user.getUsername(), userItemId));
+	}
 }

@@ -157,4 +157,9 @@ public class ItemService {
 		User user = userService.findUser(githubId);
 		return userItemService.getUserItems(user);
 	}
+
+	public String updateUserItemActive(String githubId, Long userItemId) {
+		User user = userService.findUser(githubId);
+		return userItemService.updateUserItemActive(user, userItemId);
+	}
 }
