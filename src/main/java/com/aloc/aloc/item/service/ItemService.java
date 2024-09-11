@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.aloc.aloc.coinhistory.enums.CoinType;
 import com.aloc.aloc.coinhistory.service.CoinHistoryService;
 import com.aloc.aloc.global.apipayload.exception.AlreadyPurchasedException;
-import com.aloc.aloc.image.dto.UploadedFileInfo;
+import com.aloc.aloc.image.dto.UploadedImageInfo;
 import com.aloc.aloc.image.enums.ImageType;
 import com.aloc.aloc.image.service.ImageUploadService;
 import com.aloc.aloc.item.dto.request.ItemRequestDto;
@@ -78,11 +78,11 @@ public class ItemService {
 
 	private ItemImage uploadAndCreateItemImage(Item item, MultipartFile imageFile) {
 		try {
-			UploadedFileInfo uploadedFileInfo = imageUploadService.uploadImage(imageFile, ImageType.ITEM, null);
+			UploadedImageInfo uploadedImageInfo = imageUploadService.uploadImage(imageFile, ImageType.ITEM, null);
 			return ItemImage.builder()
 					.item(item)
-					.fileName(uploadedFileInfo.getFileName())
-					.fullPath(uploadedFileInfo.getFullPath().toString())
+					.fileName(uploadedImageInfo.getImageName())
+					.fullPath(uploadedImageInfo.getFullPath().toString())
 					.build();
 		} catch (FileUploadException e) {
 			throw new RuntimeException(e);
