@@ -71,22 +71,27 @@ public class ItemService {
 
 	private void saveItemImages(Item item, List<MultipartFile> images) {
 		List<ItemImage> itemImages = images.stream()
-						.map(imageFile ->
-							uploadAndCreateItemImage(item, imageFile)).toList();
+						.map(imageFile -> {
+							UploadedImageInfo uploadedImageInfo = uploadImage(imageFile);
+							return createItemImage(item, uploadedImageInfo);
+						}).toList();
 		itemImageRepository.saveAll(itemImages);
 	}
 
-	private ItemImage uploadAndCreateItemImage(Item item, MultipartFile imageFile) {
+	private UploadedImageInfo uploadImage(MultipartFile imageFile) {
 		try {
-			UploadedImageInfo uploadedImageInfo = imageUploadService.uploadImage(imageFile, ImageType.ITEM, null);
-			return ItemImage.builder()
+			return imageUploadService.uploadImage(imageFile, ImageType.ITEM, null);
+		} catch (FileUploadException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private ItemImage createItemImage(Item item, UploadedImageInfo uploadedImageInfo) {
+		return ItemImage.builder()
 					.item(item)
 					.fileName(uploadedImageInfo.getImageName())
 					.fullPath(uploadedImageInfo.getFullPath().toString())
 					.build();
-		} catch (FileUploadException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	@Transactional
