@@ -30,18 +30,18 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api2/item")
+@RequestMapping("/api2/items")
 public class ItemController {
 	private final ItemService itemService;
 
-	@GetMapping("/")
+	@GetMapping()
 	@Operation(summary = "아이템 목록 조회", description = "공개된 아이템 목록을 조회합니다.")
 	public CustomApiResponse<List<ItemResponseDto>> getItems() {
 		return CustomApiResponse.onSuccess(itemService.getItems());
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	@PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	@Operation(summary = "아이템 추가", description = "새로운 아이템을 추가합니다.")
 	public CustomApiResponse<String> insertItem(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user,
@@ -50,7 +50,7 @@ public class ItemController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@PatchMapping("/")
+	@PatchMapping()
 	@Operation(summary = "아이템 수정", description = "기존 아이템 정보를 업데이트 합니다.")
 	public CustomApiResponse<String> updateItem(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user,
@@ -79,7 +79,7 @@ public class ItemController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@GetMapping("/user-item")
+	@GetMapping("/user")
 	@Operation(summary = "유저가 구매한 아이템 조회", description = "유저가 구매한 모든 아이템을 조회합니다.")
 	public CustomApiResponse<List<UserItemResponseDto>> getUserItems(
 			@Parameter(hidden = true) @AuthenticationPrincipal User user) {
@@ -87,7 +87,7 @@ public class ItemController {
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
-	@PatchMapping("/user-item/{userItemId}")
+	@PatchMapping("/user/{userItemId}")
 	@Operation(summary = "userItem을 착용", description = "userItemId로 해당 userItem을 착용합니다.")
 	public CustomApiResponse<String> updateUserItemActive(
 			@Parameter(hidden = true) @AuthenticationPrincipal User user,
