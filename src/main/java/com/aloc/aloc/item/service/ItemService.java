@@ -52,7 +52,7 @@ public class ItemService {
 	}
 
 	@Transactional
-	public String insertItem(String githubId, ItemRequestDto itemRequestDto) {
+	public String createItem(String githubId, ItemRequestDto itemRequestDto) {
 		userService.checkAdmin(githubId);
 
 		Item item = Item.builder()

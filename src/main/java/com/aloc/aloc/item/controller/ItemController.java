@@ -46,7 +46,7 @@ public class ItemController {
 	public CustomApiResponse<String> insertItem(
 		@Parameter(hidden = true) @AuthenticationPrincipal User user,
 		@ModelAttribute ItemRequestDto itemRequestDto) {
-		return CustomApiResponse.onSuccess(itemService.insertItem(user.getUsername(), itemRequestDto));
+		return CustomApiResponse.onSuccess(itemService.createItem(user.getUsername(), itemRequestDto));
 	}
 
 	@SecurityRequirement(name = "JWT Auth")
