@@ -59,7 +59,7 @@ public class ItemService {
 			.name(itemRequestDto.getName())
 			.description(itemRequestDto.getDescription())
 			.coin(itemRequestDto.getCoin())
-			.itemType(itemRequestDto.getItemType())
+			.itemLocation(itemRequestDto.getItemLocation())
 			.isHidden(itemRequestDto.getIsHidden())
 			.build();
 		itemRepository.save(item);
@@ -118,7 +118,7 @@ public class ItemService {
 		item.setName(requestDto.getName());
 		item.setDescription(requestDto.getDescription());
 		item.setCoin(requestDto.getCoin());
-		item.setItemType(requestDto.getItemType());
+		item.setItemLocation(requestDto.getItemLocation());
 		item.setIsHidden(requestDto.getIsHidden());
 	}
 

@@ -56,7 +56,7 @@ public class UserItemService {
 
 	private void deactivateActiveUserItemIfExists(User user, UserItem userItem) {
 		userItemRepository
-				.findActiveItemByUserAndItemType(user, userItem.getItem().getItemType())
+				.findActiveItemByUserAndItemType(user, userItem.getItem().getItemLocation())
 				.ifPresent(activeItem -> {
 					activeItem.setIsActive(false);
 					userItemRepository.save(activeItem);

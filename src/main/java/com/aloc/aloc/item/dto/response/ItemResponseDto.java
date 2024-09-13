@@ -3,7 +3,7 @@ package com.aloc.aloc.item.dto.response;
 import java.util.List;
 
 import com.aloc.aloc.item.entity.Item;
-import com.aloc.aloc.item.enums.ItemType;
+import com.aloc.aloc.item.enums.ItemLocation;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -21,7 +21,7 @@ public class ItemResponseDto {
 	@Schema(description = "아이템 가격", example = "1000")
 	private Integer coin;
 	@Schema(description = "아이템 타입(부위)", example = "TOP")
-	private ItemType itemType;
+	private ItemLocation itemLocation;
 	@Schema(description = "아이템 이미지 파일 이름 리스트", example = "turtle1.png")
 	private List<String> imageFileNames;
 
@@ -31,7 +31,7 @@ public class ItemResponseDto {
 				.name(item.getName())
 				.description(item.getDescription())
 				.coin(item.getCoin())
-				.itemType(item.getItemType())
+				.itemLocation(item.getItemLocation())
 				.imageFileNames(imageFileNames)
 			.build();
 	}

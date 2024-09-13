@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.aloc.aloc.item.entity.Item;
 import com.aloc.aloc.item.entity.UserItem;
-import com.aloc.aloc.item.enums.ItemType;
+import com.aloc.aloc.item.enums.ItemLocation;
 import com.aloc.aloc.user.entity.User;
 
 public interface UserItemRepository extends JpaRepository<UserItem, Long> {
@@ -20,8 +20,9 @@ public interface UserItemRepository extends JpaRepository<UserItem, Long> {
 	@Query("SELECT ui FROM UserItem ui "
 			+ "JOIN ui.item i "
 			+ "WHERE ui.user = :user "
-			+ "AND i.itemType = :itemType "
+			+ "AND i.itemLocation = :itemLocation "
 			+ "AND ui.isActive = true")
-	Optional<UserItem> findActiveItemByUserAndItemType(@Param("user") User user, @Param("itemType") ItemType itemType);
+	Optional<UserItem> findActiveItemByUserAndItemType(@Param("user") User user,
+		@Param("itemLocation") ItemLocation itemLocation);
 
 }

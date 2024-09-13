@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.aloc.aloc.item.enums.ItemType;
+import com.aloc.aloc.item.enums.ItemLocation;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -18,7 +18,7 @@ public class ItemRequestDto {
 	@Schema(description = "아이템 가격", example = "1000")
 	private Integer coin;
 	@Schema(description = "아이템 타입(부위)", example = "TOP")
-	private ItemType itemType;
+	private ItemLocation itemLocation;
 	@Schema(description = "비공개 여부", example = "true")
 	private Boolean isHidden;
 	@Schema(description = "이미지 파일 리스트")

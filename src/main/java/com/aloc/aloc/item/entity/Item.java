@@ -1,7 +1,7 @@
 package com.aloc.aloc.item.entity;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
-import com.aloc.aloc.item.enums.ItemType;
+import com.aloc.aloc.item.enums.ItemLocation;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,7 +33,7 @@ public class Item extends AuditingTimeEntity {
 	private Integer coin;
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private ItemType itemType;
+	private ItemLocation itemLocation;
 	@Column(nullable = false)
 	private Boolean isHidden;
 }
