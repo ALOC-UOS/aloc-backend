@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.aloc.aloc.color.dto.response.ColorResponseDto;
@@ -30,6 +31,7 @@ import com.aloc.aloc.user.enums.Authority;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class ColorControllerTest {
 	@MockBean
 	private ColorService colorService;
