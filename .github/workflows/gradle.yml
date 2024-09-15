@@ -47,7 +47,7 @@ jobs:
 
     - name: Network Diagnostics
       run: |
-        ping -c 4 db.@.kr
+        ping -c 4 db.aloc.kr
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build --parallel --daemon
