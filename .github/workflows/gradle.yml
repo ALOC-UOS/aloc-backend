@@ -45,5 +45,9 @@ jobs:
         echo "${{ secrets.JWT_APPLICATION }}" base64 -d > application-jwt.yml
         echo "${{ secrets.TEST_APPLICATION }}" base64 -d > application-test.yml
 
+    - name: Network Diagnostics
+      run: |
+        ping -c 4 db.@.kr
+
     - name: Build with Gradle Wrapper
       run: ./gradlew build --parallel --daemon
