@@ -57,13 +57,11 @@ jobs:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: |
         # DNS 조회 테스트
-        nslookup $DB_HOST
+        RESOLVED_IP=$(dig +short ${DB_HOST} @ns1.gabia.co.kr)
+        echo "Resolved IP for ${DB_HOST}: ${RESOLVED_IP}"
         
         # 연결 테스트
-        PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT 1" || exit 1
-        
-        # 간단한 쿼리 테스트
-        PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT current_timestamp"
+        PGPASSWORD=$DB_PASSWORD psql -h ${RESOLVED_IP} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -c "SELECT 1"
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build --parallel --daemon
