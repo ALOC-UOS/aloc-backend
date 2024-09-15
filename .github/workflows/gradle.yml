@@ -45,5 +45,25 @@ jobs:
         echo "${{ secrets.JWT_APPLICATION }}" base64 -d > application-jwt.yml
         echo "${{ secrets.TEST_APPLICATION }}" base64 -d > application-test.yml
 
+    - name: Install PostgreSQL client
+      run: sudo apt-get install -y postgresql-client
+
+    - name: Test Database Connection
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: |
+        # DNS 조회 테스트
+        nslookup $DB_HOST
+        
+        # 연결 테스트
+        PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT 1" || exit 1
+        
+        # 간단한 쿼리 테스트
+        PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT current_timestamp"
+
     - name: Build with Gradle Wrapper
       run: ./gradlew build --parallel --daemon
