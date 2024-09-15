@@ -45,9 +45,5 @@ jobs:
         echo "${{ secrets.JWT_APPLICATION }}" base64 -d > application-jwt.yml
         echo "${{ secrets.TEST_APPLICATION }}" base64 -d > application-test.yml
 
-    - name: Force DNS lookup
-      run: |
-        dig +trace db.aloc.kr
-
     - name: Build with Gradle Wrapper
       run: ./gradlew build --parallel --daemon
