@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS user_item (
 );
 
 -- Optional: Indexes for performance
-CREATE INDEX idx_item_item_type ON item(item_type);
-CREATE INDEX idx_item_image_item_id ON item_image(item_id);
-CREATE INDEX idx_user_item_user_id ON user_item(user_id);
-CREATE INDEX idx_user_item_item_id ON user_item(item_id);
+CREATE INDEX IF NOT EXISTS idx_item_item_type ON item(item_type);
+CREATE INDEX IF NOT EXISTS idx_item_image_item_id ON item_image(item_id);
+CREATE INDEX IF NOT EXISTS idx_user_item_user_id ON user_item(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_item_item_id ON user_item(item_id);
