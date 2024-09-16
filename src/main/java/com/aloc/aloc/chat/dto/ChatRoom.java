@@ -14,19 +14,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public class ChatRoom {
-	private final String roomId;
+	private String roomId;
 	private final String name;
 	private final Set<WebSocketSession> sessions = new HashSet<>();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final ConcurrentHashMap<WebSocketSession, String> userMap = new ConcurrentHashMap<>();
 	private final ConcurrentHashMap<String, SenderInfo> userInfoMap = new ConcurrentHashMap<>();
 	@Builder
-	public ChatRoom(String roomId, String name) {
-		this.roomId = roomId;
+	public ChatRoom(String name) {
 		this.name = name;
+		this.roomId = UUID.randomUUID().toString();
 	}
 
 	public void sendMessage(TextMessage message) {
@@ -45,16 +47,15 @@ public class ChatRoom {
 	}
 
 	public void join(WebSocketSession session, String sender, SenderInfo senderInfo) {
-		sessions.add(session);
 		try {
+			sessions.add(session);
+			System.out.println(session);
+			System.out.println(sessions);
 			userMap.put(session, sender);
 			userInfoMap.put(sender, senderInfo);
 			sendUserListToAll();
 		} catch (Exception e) {
-			System.out.println(session);
-			System.out.println(sender);
-			System.out.println(senderInfo);
-			throw new RuntimeException("Failed to join user", e);
+			log.error("Failed to join user", e);
 		}
 	}
 
@@ -62,10 +63,6 @@ public class ChatRoom {
 		sessions.remove(session);
 		userMap.remove(session);
 		sendUserListToAll();
-	}
-
-	public Set<String> getUserList() {
-		return new HashSet<>(userMap.values());
 	}
 
 	private void sendUserListToAll() {
@@ -81,14 +78,11 @@ public class ChatRoom {
 		}
 	}
 
-	public static ChatRoom of(String name) {
-		return ChatRoom.builder()
-			.name(name)
-			.roomId(UUID.randomUUID().toString())
-			.build();
-	}
-
 	public boolean hasSession(WebSocketSession session) {
 		return sessions.contains(session);
+	}
+
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
 	}
 }
