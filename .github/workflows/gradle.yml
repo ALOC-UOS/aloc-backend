@@ -48,20 +48,5 @@ jobs:
     - name: Install PostgreSQL client
       run: sudo apt-get install -y postgresql-client
 
-    - name: Test Database Connection
-      env:
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-        DB_NAME: ${{ secrets.DB_NAME }}
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      run: |
-        # DNS 조회 테스트
-        RESOLVED_IP=$(dig +short ${DB_HOST} @ns1.gabia.co.kr)
-        echo "Resolved IP for ${DB_HOST}: ${RESOLVED_IP}"
-        
-        # 연결 테스트
-        PGPASSWORD=$DB_PASSWORD psql -h ${RESOLVED_IP} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -c "SELECT 1"
-
     - name: Build with Gradle Wrapper
       run: ./gradlew build --parallel --daemon
