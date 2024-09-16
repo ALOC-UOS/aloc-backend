@@ -31,6 +31,9 @@ public class ChatService {
 	}
 
 	public ChatRoom findRoomById(String roomId) {
+		if (roomId == null || roomId.isEmpty()) {
+			throw new IllegalArgumentException("Room ID must not be null");
+		}
 		return chatRepository.findById(roomId);
 	}
 
