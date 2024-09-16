@@ -1,8 +1,7 @@
 package com.aloc.aloc.chat.repository;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Repository
 public class ChatRepository {
-	private final Map<String, ChatRoom> chatRooms;
+	private final Map<String, ChatRoom> chatRooms = new ConcurrentHashMap<>();
 
 	public void save(String roomId, ChatRoom chatRoom) {
 		chatRooms.put(roomId, chatRoom);
@@ -22,9 +21,5 @@ public class ChatRepository {
 
 	public ChatRoom findById(String roomId) {
 		return chatRooms.get(roomId);
-	}
-
-	public List<ChatRoom> findAll() {
-		return new ArrayList<>(chatRooms.values());
 	}
 }
