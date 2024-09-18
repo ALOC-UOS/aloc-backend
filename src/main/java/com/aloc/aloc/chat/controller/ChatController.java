@@ -23,9 +23,4 @@ public class ChatController {
 	public ChatRoom createRoom(@RequestParam String name) {
 		return chatService.createRoom(name);
 	}
-
-	@GetMapping
-	public List<ChatRoom> getAll() {
-		return chatService.findAll();
-	}
 }

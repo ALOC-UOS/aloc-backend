@@ -26,12 +26,12 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 		log.info("Received message from session {}: {}", session.getId(), message.getPayload());
 		String payload = message.getPayload();
 		ChatMessage chatMessage = ChatMessage.of(payload);
-		chatService.handleAction(chatMessage.getRoomId(), session, chatMessage);
+		chatService.handleAction(session, chatMessage);
 	}
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		log.info("Connection closed: {} with status {}", session.getId(), status);
-		chatService.leaveAllRooms(session);
+		chatService.leaveRoom(session);
 	}
 }

@@ -21,9 +21,6 @@ public class ChatMessage {
 	@NotNull(message = "Message type is required")
 	private MessageType type;
 
-	@NotBlank(message = "Room ID is required")
-	private String roomId;
-
 	@NotBlank(message = "Sender is required")
 	private String sender;
 	private SenderInfo senderInfo;
@@ -37,7 +34,6 @@ public class ChatMessage {
 		try {
 			return objectMapper.readValue(payload, ChatMessage.class);
 		} catch (IOException e) {
-			System.out.println(payload);
 			throw new RuntimeException("Failed to parse ChatMessage", e);
 		}
 	}
