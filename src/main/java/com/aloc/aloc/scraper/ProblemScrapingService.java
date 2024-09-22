@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
@@ -28,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.enums.CourseRoutineTier;
-import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.global.apipayload.exception.ScrapException;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.service.ProblemService;
@@ -60,56 +56,24 @@ public class ProblemScrapingService {
 	private int currentSeason;
 
 	private final TagRepository tagRepository;
-	private final AlgorithmService algorithmService;
 	private final ProblemService problemService;
 	private final ProblemTypeRepository problemTypeRepository;
 	private final ProblemTagRepository problemTagRepository;
 
 	@Transactional
-	public String addProblemsForThisWeek()
-		throws ExecutionException, InterruptedException {
-//		Algorithm lastWeeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 지난 주차의 weekly Hidden False로 변경
-//		updateWeeklyAlgorithmHidden(lastWeeklyAlgorithm);
-//		Algorithm weeklyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 5개 새로운 주차의 weekly Algorithm
-		Algorithm dailyAlgorithm = algorithmService.findWeeklyAlgorithm(); // 1주에 7개
-		updateDailyAlgorithmHidden(dailyAlgorithm);
+	public String addProblemsForStrategy(ProblemAdditionStrategy strategy) throws IOException {
+		Algorithm algorithm = strategy.getAlgorithm();
 		Map<CourseRoutineTier, List<Problem>> crawledProblems = new LinkedHashMap<>();
-
-		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-			try {
-//				crawledProblems.put(CourseRoutineTier.HALF_WEEKLY,
-//					addProblemsByType(weeklyAlgorithm, CourseRoutineTier.HALF_WEEKLY));
-//				TimeUnit.SECONDS.sleep(5); // 5초 대기
-
-//				crawledProblems.put(CourseRoutineTier.FULL_WEEKLY,
-//					addProblemsByType(weeklyAlgorithm, CourseRoutineTier.FULL_WEEKLY));
-//				TimeUnit.SECONDS.sleep(5); // 5초 대기
-
-				crawledProblems.put(CourseRoutineTier.HALF_DAILY,
-					addProblemsByType(dailyAlgorithm, CourseRoutineTier.HALF_DAILY));
-				TimeUnit.SECONDS.sleep(5); // 5초 대기
-
-				crawledProblems.put(CourseRoutineTier.FULL_DAILY,
-					addProblemsByType(dailyAlgorithm, CourseRoutineTier.FULL_DAILY));
-
-			} catch (Exception e) {
-				throw new RuntimeException("Error in addProblemsForThisWeek", e);
-			}
-		});
-		future.get();
-		return getCrawlingResultMessage(crawledProblems, dailyAlgorithm);
-	}
-
-	private void updateDailyAlgorithmHidden(Algorithm dailyAlgorithm) {
-		dailyAlgorithm.setHiddenFalse();
-		algorithmService.saveAlgorithm(dailyAlgorithm);
+		for (CourseRoutineTier tier : strategy.getRelevantTiers()) {
+			crawledProblems.put(tier, addProblemsByType(algorithm, tier));
+		}
+		strategy.updateAlgorithmHidden(algorithm);
+		return getCrawlingResultMessage(crawledProblems, algorithm);
 	}
 
 	private String getCrawlingResultMessage(Map<CourseRoutineTier, List<Problem>> crawledProblems,
 		Algorithm dailyAlgorithm) {
 		StringBuilder message = new StringBuilder();
-//		message.append("[ ").append(((Algorithm) null).getWeek()).append("주차 크롤링 결과 ]\n\n")
-//			.append("weekly 알고리즘 : ").append(((Algorithm) null).getName()).append("\n")
 		message.append("daily 알고리즘 : ").append(dailyAlgorithm.getName()).append("\n\n");
 		for (Map.Entry<CourseRoutineTier, List<Problem>> entry : crawledProblems.entrySet()) {
 			CourseRoutineTier tier = entry.getKey();
@@ -131,11 +95,6 @@ public class ProblemScrapingService {
 			}
 		}
 		return message.toString();
-	}
-
-	private void updateWeeklyAlgorithmHidden(Algorithm weeklyAlgorithm) {
-		weeklyAlgorithm.setHiddenFalse();
-		algorithmService.saveAlgorithm(weeklyAlgorithm);
 	}
 
 	@Transactional
