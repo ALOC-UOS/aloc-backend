@@ -26,7 +26,7 @@ public class AlgorithmService {
 	private int currentSeason;
 
 	public List<AlgorithmResponseDto> getAlgorithms() {
-		List<Algorithm> algorithms = algorithmRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
+		List<Algorithm> algorithms = algorithmRepository.findAllByHiddenIsFalseOrderByWeekDesc();
 		// 시즌별로 그룹화
 		Map<Integer, List<AlgorithmDto>> groupedBySeason = algorithms.stream()
 				.collect(Collectors.groupingBy(
@@ -48,7 +48,7 @@ public class AlgorithmService {
 	}
 
 	public AlgorithmResponseDto getAlgorithmsBySeason(int season) {
-		List<Algorithm> algorithms = algorithmRepository.findAllBySeasonAndHiddenFalseOrderByCreatedAtDesc(season);
+		List<Algorithm> algorithms = algorithmRepository.findAllBySeasonAndHiddenFalseOrderByWeekDesc(season);
 		return AlgorithmResponseDto.builder()
 						.season(season)
 						.algorithms(AlgorithmDto.listOf(algorithms))
@@ -56,7 +56,7 @@ public class AlgorithmService {
 	}
 
 	public Optional<Algorithm> getWeeklyAlgorithmBySeason(int season) {
-		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(season);
+		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByWeekAsc(season);
 	}
 
 	public void saveAlgorithm(Algorithm algorithm) {
@@ -64,12 +64,12 @@ public class AlgorithmService {
 	}
 
 	public Algorithm findWeeklyAlgorithm() {
-		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(currentSeason)
+		return algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByWeekAsc(currentSeason)
 			.orElseThrow(() -> new NoSuchElementException("해당 시즌의 공개되지 않은 알고리즘이 존재하지 않습니다."));
 	}
 
 	public Algorithm findDailyAlgorithm() {
-		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(currentSeason)
+		return algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByWeekDesc(currentSeason)
 			.orElseThrow(() -> new NoSuchElementException("공개된 알고리즘이 존재하지 않습니다."));
 	}
 

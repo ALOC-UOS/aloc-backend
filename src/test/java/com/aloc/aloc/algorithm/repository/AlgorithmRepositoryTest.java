@@ -75,7 +75,7 @@ public class AlgorithmRepositoryTest {
 	@Test
 	@DisplayName("특정 season 중에서 hidden이 true인 것 중 첫 번째 항목 가져오기")
 	void findFirstBySeasonAndHiddenTrueOrderByIdAsc() {
-		Optional<Algorithm> result = algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByCreatedAtAsc(2);
+		Optional<Algorithm> result = algorithmRepository.findFirstBySeasonAndHiddenTrueOrderByWeekAsc(2);
 
 		assertNotNull(result);
 		assertEquals("그리디 알고리즘", result.get().getName());
@@ -84,7 +84,7 @@ public class AlgorithmRepositoryTest {
 	@Test
 	@DisplayName("특정 season 중에서 hidden이 false인 것 중 가장 마지막 항목 가져오기")
 	void findFirstBySeasonAndHiddenFalseOrderByIdDesc() {
-		Optional<Algorithm> result = algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByCreatedAtDesc(1);
+		Optional<Algorithm> result = algorithmRepository.findFirstBySeasonAndHiddenFalseOrderByWeekDesc(1);
 
 		assertNotNull(result);
 		assertEquals("수학", result.get().getName());
@@ -93,7 +93,7 @@ public class AlgorithmRepositoryTest {
 	@Test
 	@DisplayName("최신 순으로 특정 시즌의 공개된 알고리즘 목록 불러오기")
 	void findAllBySeasonOrderByCreatedAtDesc() {
-		List<Algorithm> result = algorithmRepository.findAllBySeasonAndHiddenFalseOrderByCreatedAtDesc(1);
+		List<Algorithm> result = algorithmRepository.findAllBySeasonAndHiddenFalseOrderByWeekDesc(1);
 
 		assertNotNull(result);
 		assertEquals(3, result.get(0).getWeek());
@@ -102,7 +102,7 @@ public class AlgorithmRepositoryTest {
 	@Test
 	@DisplayName("최신 순으로 모든 공개된 알고리즘 목록 불러오기")
 	void findAllByOrderByCreatedAtDesc() {
-		List<Algorithm> result = algorithmRepository.findAllByHiddenIsFalseOrderByCreatedAtDesc();
+		List<Algorithm> result = algorithmRepository.findAllByHiddenIsFalseOrderByWeekDesc();
 
 		assertNotNull(result);
 		assertEquals(3, result.size());
