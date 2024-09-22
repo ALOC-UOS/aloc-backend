@@ -29,6 +29,6 @@ public class WeeklyProblemAdditionStrategy implements ProblemAdditionStrategy {
 	}
 
 	@Override
-	public void updateAlgorithmHidden(Algorithm algorithm) {}
-
+	public void updateAlgorithmHidden(Algorithm algorithm) {
+	}
 }
