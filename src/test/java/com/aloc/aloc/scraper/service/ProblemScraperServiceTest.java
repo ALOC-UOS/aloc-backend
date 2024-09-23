@@ -29,6 +29,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aloc.aloc.algorithm.entity.Algorithm;
+import com.aloc.aloc.algorithm.enums.CourseRoutineTier;
 import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.service.ProblemService;
@@ -37,6 +38,7 @@ import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
 import com.aloc.aloc.problemtype.repository.ProblemTypeRepository;
+import com.aloc.aloc.scraper.ProblemAdditionStrategy;
 import com.aloc.aloc.scraper.ProblemScrapingService;
 import com.aloc.aloc.tag.repository.TagRepository;
 import com.aloc.aloc.user.service.UserService;
@@ -58,6 +60,9 @@ class ProblemScraperServiceTest {
 	private ProblemTagRepository problemTagRepository;
 	@Mock
 	private UserService userService;
+
+	@Mock
+	private ProblemAdditionStrategy mockStrategy;
 
 	@InjectMocks
 	private ProblemScrapingService problemScrapingService;
@@ -126,10 +131,8 @@ class ProblemScraperServiceTest {
 	@DisplayName("이번주 문제 추가 성공")
 	void addProblemForThisWeekSuccess() throws ExecutionException, InterruptedException, IOException {
 		Algorithm dailyAlgorithm = algorithms.get(0);
-		Algorithm weeklyAlgorithm = algorithms.get(1);
 		ProblemType problemType = new ProblemType();
 
-		when(algorithmService.findWeeklyAlgorithm()).thenReturn(dailyAlgorithm);
 		when(problemTypeRepository.findByCourseAndRoutine(any(), any())).thenReturn(Optional.of(problemType));
 		when(problemService.isNewProblem(anyInt(), any(), anyInt())).thenReturn(true);
 
@@ -151,7 +154,11 @@ class ProblemScraperServiceTest {
 
 		when(problemService.saveProblem(any(Problem.class))).thenReturn(mockProblems.get(0));
 
-		String result = spyService.addProblemsForThisWeek();
+		CourseRoutineTier[] tiers = {CourseRoutineTier.HALF_DAILY, CourseRoutineTier.FULL_DAILY};
+		when(mockStrategy.getAlgorithm()).thenReturn(dailyAlgorithm);
+		when(mockStrategy.getRelevantTiers()).thenReturn(tiers);
+
+		String result = spyService.addProblemsForStrategy(mockStrategy);
 		assertFalse(result.isEmpty(), "Result should not be empty");
 
 		ArgumentCaptor<Problem> problemCaptor = ArgumentCaptor.forClass(Problem.class);
