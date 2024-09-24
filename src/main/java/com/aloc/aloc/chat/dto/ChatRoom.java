@@ -49,8 +49,6 @@ public class ChatRoom {
 	public void join(WebSocketSession session, String sender, SenderInfo senderInfo) {
 		try {
 			sessions.add(session);
-			System.out.println(session);
-			System.out.println(sessions);
 			userMap.put(session, sender);
 			userInfoMap.put(sender, senderInfo);
 			sendUserListToAll();

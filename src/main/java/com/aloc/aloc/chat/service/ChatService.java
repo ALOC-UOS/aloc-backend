@@ -68,11 +68,6 @@ public class ChatService {
 		boolean isNewUser = isNewUser(room, session);
 		if (isNewUser) {
 			room.join(session, chatMessage.getSender(), chatMessage.getSenderInfo());
-			ChatMessage joinMessage = new ChatMessage();
-			joinMessage.setMessage("사용자가 채팅방에 들어왔습니다. 🙋🏻‍");
-			joinMessage.setSender("알림");
-			joinMessage.setType(MessageType.NOTICE);
-			room.sendMessage(new TextMessage(objectMapper.writeValueAsString(joinMessage)));
 		}
 
 		TextMessage textMessage = new TextMessage(objectMapper.writeValueAsString(chatMessage));
@@ -91,15 +86,6 @@ public class ChatService {
 		ChatRoom room = getDefaultRoom();
 		if (room.hasSession(session)) {
 			room.leave(session);
-			ChatMessage leaveMessage = new ChatMessage();
-			leaveMessage.setType(MessageType.LEAVE);
-			leaveMessage.setSender("System");
-			leaveMessage.setMessage("사용자가 채팅방을 나갔습니다.");
-			try {
-				handleAction(session, leaveMessage);
-			} catch (Exception e) {
-				log.error("Error sending leave message", e);
-			}
 		}
 	}
 }
