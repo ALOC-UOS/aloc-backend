@@ -21,8 +21,9 @@ public class DailyProblemAdditionStrategy implements ProblemAdditionStrategy {
 	}
 
 	@Override
+	// TODO: 방학되면 다시 findDaily로 수정
 	public Algorithm getAlgorithm() {
-		return algorithmService.findDailyAlgorithm();
+		return algorithmService.findWeeklyAlgorithm();
 	}
 
 	@Override
