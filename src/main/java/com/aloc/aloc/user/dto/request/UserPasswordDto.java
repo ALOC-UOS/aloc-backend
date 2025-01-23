@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class UserPasswordDto {
-	@NotNull
-	@Schema(description = "유저의 현재 비밀 번호", example = "password")
-	private String password;
+  @NotNull
+  @Schema(description = "유저의 현재 비밀 번호", example = "password")
+  private String password;
 }

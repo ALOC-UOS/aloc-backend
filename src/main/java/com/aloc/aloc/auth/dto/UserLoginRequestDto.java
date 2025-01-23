@@ -7,16 +7,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserLoginRequestDto {
-	@NotBlank
-	@Schema(description = "Github ID", example = "github")
-	private String githubId;
-	@NotBlank
-	@Schema(description = "Password", example = "password")
-	private String password;
+  @NotBlank
+  @Schema(description = "Github ID", example = "github")
+  private String githubId;
+
+  @NotBlank
+  @Schema(description = "Password", example = "password")
+  private String password;
 }

@@ -1,11 +1,8 @@
 package com.aloc.aloc.user.entity;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.enums.Authority;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,8 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Getter
@@ -34,90 +30,88 @@ import lombok.Setter;
 @Table(name = "study_user")
 public class User extends AuditingTimeEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@Column(nullable = false)
-	private String username;
+  @Column(nullable = false)
+  private String username;
 
-	@Column(nullable = false)
-	private String baekjoonId;
+  @Column(nullable = false)
+  private String baekjoonId;
 
-	@Column(nullable = false)
-	private String githubId;
+  @Column(nullable = false)
+  private String githubId;
 
-	private Integer rank;
+  private Integer rank;
 
-	@Enumerated(EnumType.STRING)
-	private Course course;
+  @Enumerated(EnumType.STRING)
+  private Course course;
 
-	@Column(nullable = false)
-	private String password = "password";
+  @Column(nullable = false)
+  private String password = "password";
 
-	@Enumerated(EnumType.STRING)
-	private Authority authority;
+  @Enumerated(EnumType.STRING)
+  private Authority authority;
 
-	@Column(length = 1000)
-	private String refreshToken;
+  @Column(length = 1000)
+  private String refreshToken;
 
-	@Column
-	private Integer solvedCount = 0;
+  @Column private Integer solvedCount = 0;
 
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private UserProfile userProfile;
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private UserProfile userProfile;
 
-	public void updateRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
-	}
+  public void updateRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
+  }
 
-	public void destroyRefreshToken() {
-		this.refreshToken = null;
-	}
+  public void destroyRefreshToken() {
+    this.refreshToken = null;
+  }
 
-	public void encodePassword(PasswordEncoder passwordEncoder) {
-		this.password = passwordEncoder.encode(password);
-	}
+  public void encodePassword(PasswordEncoder passwordEncoder) {
+    this.password = passwordEncoder.encode(password);
+  }
 
-	public Boolean matchPassword(PasswordEncoder passwordEncoder, String password) {
-		return passwordEncoder.matches(password, this.password);
-	}
+  public Boolean matchPassword(PasswordEncoder passwordEncoder, String password) {
+    return passwordEncoder.matches(password, this.password);
+  }
 
-	public void addSolvedCount() {
-		this.solvedCount++;
-	}
+  public void addSolvedCount() {
+    this.solvedCount++;
+  }
 
-	public void setProfileImageFileName(String fileName) {
-		this.userProfile.setProfileImageFileName(fileName);
-	}
+  public void setProfileImageFileName(String fileName) {
+    this.userProfile.setProfileImageFileName(fileName);
+  }
 
-	@Builder
-	public User(
-		String username,
-		String baekjoonId,
-		String githubId,
-		String studentId,
-		String password,
-		String discordId,
-		Integer rank,
-		String notionEmail,
-		Course course
-	) {
-		this.username = username;
-		this.baekjoonId = baekjoonId;
-		this.githubId = githubId;
-		this.password = password;
-		this.course = course;
-		this.authority = Authority.ROLE_GUEST;
-		this.rank = rank;
-		this.userProfile = UserProfile.builder()
-			.user(this)
-			.coin(0)
-			.profileColor("Blue")
-			.studentId(studentId)
-			.discordId(discordId)
-			.notionEmail(notionEmail)
-			.build();
-	}
+  @Builder
+  public User(
+      String username,
+      String baekjoonId,
+      String githubId,
+      String studentId,
+      String password,
+      String discordId,
+      Integer rank,
+      String notionEmail,
+      Course course) {
+    this.username = username;
+    this.baekjoonId = baekjoonId;
+    this.githubId = githubId;
+    this.password = password;
+    this.course = course;
+    this.authority = Authority.ROLE_GUEST;
+    this.rank = rank;
+    this.userProfile =
+        UserProfile.builder()
+            .user(this)
+            .coin(0)
+            .profileColor("Blue")
+            .studentId(studentId)
+            .discordId(discordId)
+            .notionEmail(notionEmail)
+            .build();
+  }
 }
-

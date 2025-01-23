@@ -1,13 +1,12 @@
 package com.aloc.aloc.coinhistory.dto.response;
 
 import java.util.List;
-
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 public class CoinHistoryResponseDto {
-	private int userCoin;
-	private List<CoinHistoryContentDto> histories;
+  private int userCoin;
+  private List<CoinHistoryContentDto> histories;
 }

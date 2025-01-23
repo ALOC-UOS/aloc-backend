@@ -3,7 +3,6 @@ package com.aloc.aloc.problemtag;
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.tag.Tag;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,15 +23,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProblemTag extends AuditingTimeEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "problem_id", nullable = false)
-	private Problem problem;
+  @ManyToOne
+  @JoinColumn(name = "problem_id", nullable = false)
+  private Problem problem;
 
-	@ManyToOne
-	@JoinColumn(name = "tag_id", nullable = false)
-	private Tag tag;
+  @ManyToOne
+  @JoinColumn(name = "tag_id", nullable = false)
+  private Tag tag;
 }

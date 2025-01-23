@@ -5,7 +5,6 @@ import com.aloc.aloc.global.apipayload.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,32 +13,32 @@ import lombok.Getter;
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public class CustomApiResponse<T> {
 
-	@JsonProperty("isSuccess")
-	private final Boolean isSuccess;
-	private final String code;
-	private final String message;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private T result;
+  @JsonProperty("isSuccess")
+  private final Boolean isSuccess;
 
+  private final String code;
+  private final String message;
 
-	// 성공한 경우 응답 생성
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private T result;
 
-	public static <T> CustomApiResponse<T> onSuccess(T result) {
-		return new CustomApiResponse<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
-	}
+  // 성공한 경우 응답 생성
 
-	public static <T> CustomApiResponse<T> of(BaseCode code, T result) {
-		return new CustomApiResponse<>(
-			true,
-			code.getReasonHttpStatus().getCode(),
-			code.getReasonHttpStatus().getMessage(),
-			result
-		);
-	}
+  public static <T> CustomApiResponse<T> onSuccess(T result) {
+    return new CustomApiResponse<>(
+        true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
+  }
 
+  public static <T> CustomApiResponse<T> of(BaseCode code, T result) {
+    return new CustomApiResponse<>(
+        true,
+        code.getReasonHttpStatus().getCode(),
+        code.getReasonHttpStatus().getMessage(),
+        result);
+  }
 
-	// 실패한 경우 응답 생성
-	public static <T> CustomApiResponse<T> onFailure(String code, String message, T data) {
-		return new CustomApiResponse<>(false, code, message, data);
-	}
+  // 실패한 경우 응답 생성
+  public static <T> CustomApiResponse<T> onFailure(String code, String message, T data) {
+    return new CustomApiResponse<>(false, code, message, data);
+  }
 }

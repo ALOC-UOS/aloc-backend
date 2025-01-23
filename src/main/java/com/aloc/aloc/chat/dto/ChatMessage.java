@@ -1,11 +1,9 @@
 package com.aloc.aloc.chat.dto;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,28 +16,31 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class ChatMessage {
-	@NotNull(message = "Message type is required")
-	private MessageType type;
+  @NotNull(message = "Message type is required")
+  private MessageType type;
 
-	@NotBlank(message = "Sender is required")
-	private String sender;
-	private SenderInfo senderInfo;
+  @NotBlank(message = "Sender is required")
+  private String sender;
 
-	@NotBlank(message = "Message content is required")
-	private String message;
+  private SenderInfo senderInfo;
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+  @NotBlank(message = "Message content is required")
+  private String message;
 
-	public static ChatMessage of(String payload) {
-		try {
-			return objectMapper.readValue(payload, ChatMessage.class);
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to parse ChatMessage", e);
-		}
-	}
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-	public enum MessageType {
-		ENTER, TALK, NOTICE, LEAVE
-	}
+  public static ChatMessage of(String payload) {
+    try {
+      return OBJECT_MAPPER.readValue(payload, ChatMessage.class);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to parse ChatMessage", e);
+    }
+  }
 
+  public enum MessageType {
+    ENTER,
+    TALK,
+    NOTICE,
+    LEAVE
+  }
 }

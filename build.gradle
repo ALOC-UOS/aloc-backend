@@ -5,7 +5,19 @@ plugins {
     id 'org.ec4j.editorconfig' version '0.0.3'
     id 'checkstyle'
     id 'org.flywaydb.flyway' version '9.21.1'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
+
+spotless {
+    java {
+        googleJavaFormat() // Google Java Format 사용
+
+        // 특정 파일이나 디렉터리를 포맷팅 대상에서 제외
+        targetExclude 'build/**'
+
+    }
+}
+
 
 group = 'com.aloc'
 version = '0.0.1-SNAPSHOT'
@@ -23,10 +35,11 @@ configurations {
 }
 
 checkstyle {
+    toolVersion = '10.12.5'  // Checkstyle 버전
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
     maxWarnings = 0
-    configFile = file("${rootDir}/config/naver-checkstyle-rules.xml")
-    configProperties = ["suppressionFile": "${rootDir}/config/naver-checkstyle-suppressions.xml"]
-    toolVersion = "8.42"
+    maxErrors = 0
+    ignoreFailures = false
 }
 
 repositories {
@@ -70,6 +83,11 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.named('build') {
+    dependsOn 'spotlessApply' // build 전에 포맷팅 실행
+}
+
 
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'

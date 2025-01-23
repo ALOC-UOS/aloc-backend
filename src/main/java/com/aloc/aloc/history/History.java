@@ -2,7 +2,6 @@ package com.aloc.aloc.history;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.user.entity.User;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,27 +23,27 @@ import lombok.ToString;
 @NoArgsConstructor
 public class History extends AuditingTimeEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
 
-	@Column(nullable = false)
-	private String username;
+  @Column(nullable = false)
+  private String username;
 
-	@Column(nullable = false)
-	private String icon;
+  @Column(nullable = false)
+  private String icon;
 
-	private Integer rank;
+  private Integer rank;
 
-	@Builder
-	public History(User user, String username, String icon, Integer rank) {
-		this.user = user;
-		this.username = username;
-		this.icon = icon;
-		this.rank = rank;
-	}
+  @Builder
+  public History(User user, String username, String icon, Integer rank) {
+    this.user = user;
+    this.username = username;
+    this.icon = icon;
+    this.rank = rank;
+  }
 }

@@ -1,15 +1,15 @@
 package com.aloc.aloc.scraper;
 
-import java.io.IOException;
-
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.enums.CourseRoutineTier;
+import java.io.IOException;
+
 public interface ProblemAdditionStrategy {
-	String addProblems() throws IOException;
+  String addProblems() throws IOException;
 
-	Algorithm getAlgorithm();
+  Algorithm getAlgorithm();
 
-	CourseRoutineTier[] getRelevantTiers();
+  CourseRoutineTier[] getRelevantTiers();
 
-	void updateAlgorithmHidden(Algorithm algorithm);
+  void updateAlgorithmHidden(Algorithm algorithm);
 }

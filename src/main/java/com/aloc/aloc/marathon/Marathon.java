@@ -2,7 +2,6 @@ package com.aloc.aloc.marathon;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.user.entity.User;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,21 +21,19 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Marathon extends AuditingTimeEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@OneToOne
-	private User user;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	private Integer weeklyDistance;
-	private Integer totalDistance;
+  @OneToOne private User user;
 
-	@Builder
-	public Marathon(
-		User user
-	) {
-		this.user = user;
-		this.weeklyDistance = 0;
-		this.totalDistance = 0;
-	}
+  private Integer weeklyDistance;
+  private Integer totalDistance;
+
+  @Builder
+  public Marathon(User user) {
+    this.user = user;
+    this.weeklyDistance = 0;
+    this.totalDistance = 0;
+  }
 }

@@ -1,13 +1,9 @@
 package com.aloc.aloc.problem.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.problemtype.ProblemType;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +15,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,51 +29,50 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Problem extends AuditingTimeEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@Column(nullable = false)
-	private String title;
+  @Column(nullable = false)
+  private String title;
 
-	@Column(nullable = false)
-	private Integer difficulty;
+  @Column(nullable = false)
+  private Integer difficulty;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumns({
-		@JoinColumn(name = "algorithm_id", referencedColumnName = "algorithmId"),
-		@JoinColumn(name = "algorithm_season", referencedColumnName = "season")
-	})
-	private Algorithm algorithm;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumns({
+    @JoinColumn(name = "algorithm_id", referencedColumnName = "algorithmId"),
+    @JoinColumn(name = "algorithm_season", referencedColumnName = "season")
+  })
+  private Algorithm algorithm;
 
-	private Boolean hidden = true;
+  private Boolean hidden = true;
 
-	private Integer problemId;
+  private Integer problemId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "problem_type_id")
-	private ProblemType problemType;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "problem_type_id")
+  private ProblemType problemType;
 
-	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ProblemTag> problemTagList = new ArrayList<>();
+  @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ProblemTag> problemTagList = new ArrayList<>();
 
-	@Builder
-	public Problem(
-		String title,
-		Integer difficulty,
-		Algorithm algorithm,
-		Integer problemId,
-		ProblemType problemType
-	) {
-		this.title = title;
-		this.difficulty = difficulty;
-		this.algorithm = algorithm;
-		this.problemId = problemId;
-		this.problemType = problemType;
-		this.problemTagList = new ArrayList<>();
-	}
+  @Builder
+  public Problem(
+      String title,
+      Integer difficulty,
+      Algorithm algorithm,
+      Integer problemId,
+      ProblemType problemType) {
+    this.title = title;
+    this.difficulty = difficulty;
+    this.algorithm = algorithm;
+    this.problemId = problemId;
+    this.problemType = problemType;
+    this.problemTagList = new ArrayList<>();
+  }
 
-	public void addProblemTag(ProblemTag problemTag) {
-		problemTagList.add(problemTag);
-	}
+  public void addProblemTag(ProblemTag problemTag) {
+    problemTagList.add(problemTag);
+  }
 }

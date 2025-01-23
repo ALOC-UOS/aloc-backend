@@ -8,8 +8,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.aloc.aloc.image.dto.UploadedImageInfo;
+import com.aloc.aloc.image.enums.ImageType;
+import com.aloc.aloc.image.service.ImageUploadService;
 import java.nio.file.Path;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -24,60 +26,60 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.aloc.aloc.image.dto.UploadedImageInfo;
-import com.aloc.aloc.image.enums.ImageType;
-import com.aloc.aloc.image.service.ImageUploadService;
-
 @WebMvcTest(ImageController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 public class ImageControllerTest {
-	@Autowired
-	private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-	@MockBean
-	private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+  @MockBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
-	@MockBean
-	private ImageUploadService imageUploadService;
-	private UploadedImageInfo uploadedFileInfo;
+  @MockBean private ImageUploadService imageUploadService;
+  private UploadedImageInfo uploadedFileInfo;
 
-	@BeforeEach
-	public void setup() {
-		uploadedFileInfo = new UploadedImageInfo(
-			ImageType.ITEM,
-			"uploadedFileName.jpg",
-			Path.of("/uploads/uploadedFileName.jpg")
-		);
-	}
+  @BeforeEach
+  public void setup() {
+    uploadedFileInfo =
+        new UploadedImageInfo(
+            ImageType.ITEM, "uploadedFileName.jpg", Path.of("/uploads/uploadedFileName.jpg"));
+  }
 
-	@Test
-	public void testUploadItemImage() throws Exception {
-		Mockito.when(imageUploadService.uploadImage(any(MultipartFile.class), eq(ImageType.ITEM), isNull()))
-			.thenReturn(uploadedFileInfo);
+  @Test
+  public void testUploadItemImage() throws Exception {
+    Mockito.when(
+            imageUploadService.uploadImage(any(MultipartFile.class), eq(ImageType.ITEM), isNull()))
+        .thenReturn(uploadedFileInfo);
 
-		mockMvc.perform(multipart("/api2/images/upload/items")
-				.file("file", "dummy content".getBytes())
-				.contentType(MediaType.MULTIPART_FORM_DATA))
-			.andExpect(status().isOk())
-			.andExpect(content().json(
-				"{\"message\":\"Item File uploaded successfully\","
-					+ "\"fileName\":\"uploadedFileName.jpg\"}")
-			);
-	}
+    mockMvc
+        .perform(
+            multipart("/api2/images/upload/items")
+                .file("file", "dummy content".getBytes())
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+        .andExpect(status().isOk())
+        .andExpect(
+            content()
+                .json(
+                    "{\"message\":\"Item File uploaded successfully\","
+                        + "\"fileName\":\"uploadedFileName.jpg\"}"));
+  }
 
-	@Test
-	@WithMockUser(username = "testuser")
-	public void testUploadProfileImage() throws Exception {
-		Mockito.when(imageUploadService.uploadImage(any(MultipartFile.class), eq(ImageType.PROFILE),
-				anyMap()))
-			.thenReturn(uploadedFileInfo);
+  @Test
+  @WithMockUser(username = "testuser")
+  public void testUploadProfileImage() throws Exception {
+    Mockito.when(
+            imageUploadService.uploadImage(
+                any(MultipartFile.class), eq(ImageType.PROFILE), anyMap()))
+        .thenReturn(uploadedFileInfo);
 
-		mockMvc.perform(multipart("/api2/images/upload/profile")
-				.file("file", "dummy content".getBytes())
-				.contentType(MediaType.MULTIPART_FORM_DATA))
-			.andExpect(status().isOk())
-			.andExpect(content().json(
-				"{\"message\":\"Profile File uploaded successfully\",\"fileName\":\"uploadedFileName.jpg\"}"));
-	}
+    mockMvc
+        .perform(
+            multipart("/api2/images/upload/profile")
+                .file("file", "dummy content".getBytes())
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+        .andExpect(status().isOk())
+        .andExpect(
+            content()
+                .json(
+                    "{\"message\":\"Profile File uploaded successfully\",\"fileName\":\"uploadedFileName.jpg\"}"));
+  }
 }

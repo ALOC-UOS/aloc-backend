@@ -3,7 +3,6 @@ package com.aloc.aloc.coinhistory;
 import com.aloc.aloc.coinhistory.enums.CoinType;
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.user.entity.User;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,18 +24,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class CoinHistory extends AuditingTimeEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
-	@Column(nullable = false)
-	private Integer coin;
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private CoinType coinType;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	private String description;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
+
+  @Column(nullable = false)
+  private Integer coin;
+
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private CoinType coinType;
+
+  private String description;
 }
-

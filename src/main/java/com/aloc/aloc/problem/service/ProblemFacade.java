@@ -1,12 +1,5 @@
 package com.aloc.aloc.problem.service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.request.ProblemRequestDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
@@ -19,138 +12,147 @@ import com.aloc.aloc.scraper.ProblemScrapingService;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.service.UserService;
-
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class ProblemFacade implements UserProblemRecordLoader {
-	private final ProblemService problemService;
-	private final UserService userService;
-	private final ProblemMapper problemMapper;
-	private final ProblemSolvingService problemSolvingService;
-	private final ProblemScrapingService problemScrapingService;
-	public String checkSolved(String username) {
-		// 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
-		User user = userService.getActiveUser(username);
-		loadUserProblemRecord(user);
-		return "success";
-	}
+  private final ProblemService problemService;
+  private final UserService userService;
+  private final ProblemMapper problemMapper;
+  private final ProblemSolvingService problemSolvingService;
+  private final ProblemScrapingService problemScrapingService;
 
-	public TodayProblemSolvedResponseDto checkTodaySolved(String username) {
-		// 오늘의 문제의 풀이 여부를 확인합니다.
-		User user = userService.getActiveUser(username);
-		return loadUserTodayProblemRecord(user);
-	}
+  public String checkSolved(String username) {
+    // 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
+    User user = userService.getActiveUser(username);
+    loadUserProblemRecord(user);
+    return "success";
+  }
 
-	public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
-		problemService.checkProblemExist(problemId);
-		return problemSolvingService.getSolvedUserListByProblemId(problemId)
-			.stream()
-			.map(solvedProblem -> problemMapper.mapToSolvedUserResponseDto(solvedProblem.getUser(), solvedProblem))
-			.collect(Collectors.toList());
-	}
+  public TodayProblemSolvedResponseDto checkTodaySolved(String username) {
+    // 오늘의 문제의 풀이 여부를 확인합니다.
+    User user = userService.getActiveUser(username);
+    return loadUserTodayProblemRecord(user);
+  }
 
-	public List<ProblemSolvedResponseDto> getWeeklyProblems(String username) {
-		User user = userService.findUser(username);
-		List<ProblemSolvedResponseDto> problems = problemSolvingService.getWeeklyProblems(user);
-		return problems.stream()
-			.sorted(Comparator
-				.comparing(ProblemSolvedResponseDto::getIsSolved).reversed()
-				.thenComparing(ProblemSolvedResponseDto::getProblemDifficulty))
-			.collect(Collectors.toList());
-	}
+  public List<SolvedUserResponseDto> getSolvedUserListByProblemId(Long problemId) {
+    problemService.checkProblemExist(problemId);
+    return problemSolvingService.getSolvedUserListByProblemId(problemId).stream()
+        .map(
+            solvedProblem ->
+                problemMapper.mapToSolvedUserResponseDto(solvedProblem.getUser(), solvedProblem))
+        .collect(Collectors.toList());
+  }
 
-	public List<ProblemSolvedResponseDto> getDailyProblems(String username) {
-		User user = userService.findUser(username);
-		return problemSolvingService.getDailyProblems(user);
-	}
+  public List<ProblemSolvedResponseDto> getWeeklyProblems(String username) {
+    User user = userService.findUser(username);
+    List<ProblemSolvedResponseDto> problems = problemSolvingService.getWeeklyProblems(user);
+    return problems.stream()
+        .sorted(
+            Comparator.comparing(ProblemSolvedResponseDto::getIsSolved)
+                .reversed()
+                .thenComparing(ProblemSolvedResponseDto::getProblemDifficulty))
+        .collect(Collectors.toList());
+  }
 
-	public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(String githubId, Integer season) {
-		User user = userService.findUser(githubId);
-		return problemSolvingService.getUnsolvedProblemListByUser(user, season);
-	}
+  public List<ProblemSolvedResponseDto> getDailyProblems(String username) {
+    User user = userService.findUser(username);
+    return problemSolvingService.getDailyProblems(user);
+  }
 
-	public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(String githubId, Integer season) {
-		User user = userService.findUser(githubId);
-		return problemSolvingService.getSolvedProblemListByUser(user, season);
-	}
+  public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(
+      String githubId, Integer season) {
+    User user = userService.findUser(githubId);
+    return problemSolvingService.getUnsolvedProblemListByUser(user, season);
+  }
 
-	public Boolean getTodayProblemSolved(Long userId, Course course) {
-		return problemSolvingService.getTodayProblemSolved(userId, course);
-	}
+  public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(
+      String githubId, Integer season) {
+    User user = userService.findUser(githubId);
+    return problemSolvingService.getSolvedProblemListByUser(user, season);
+  }
 
-	public Integer getTotalProblemCountByCourse(Course course) {
-		// 해당 코스의 공개 된 모든 문제 수를 가져옵니다.
-		return problemService.getTotalProblemCount(course);
-	}
+  public Boolean getTodayProblemSolved(Long userId, Course course) {
+    return problemSolvingService.getTodayProblemSolved(userId, course);
+  }
 
-	@Override
-	public void loadUserProblemRecord(User user) {
-		List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
-		try {
-			for (Problem problem : problems) {
-				boolean isSolved =
-					problemSolvingService.updateUserAndSaveSolvedProblem(user, problem);
-				if (isSolved) {
-					System.out.println("문제를 풀었어요" + problem.getId() + " " + user.getGithubId());
-					user.addSolvedCount();
-					userService.checkUserRank(user);
-					userService.saveUser(user);
-				}
-			}
-		} catch (Exception e) {
-			log.error("문제 풀이 정보를 업데이트하는 중 오류가 발생했습니다.", e);
-			throw new RuntimeException("문제 풀이 정보를 업데이트하는 중 오류가 발생했습니다.");
-		}
-	}
+  public Integer getTotalProblemCountByCourse(Course course) {
+    // 해당 코스의 공개 된 모든 문제 수를 가져옵니다.
+    return problemService.getTotalProblemCount(course);
+  }
 
-	public TodayProblemSolvedResponseDto loadUserTodayProblemRecord(User user) {
-		Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
-		TodayProblemSolvedResponseDto response = problemSolvingService.updateTodaySolvedProblem(user, todayProblem);
-		if (response.getSolvedStatus().equals(ProblemStatus.SOLVED)) {
-			System.out.println("오늘의 문제를 풀었어요" + user.getGithubId());
-			user.addSolvedCount();
-			userService.checkUserRank(user);
-			userService.saveUser(user);
-		}
-		return response;
-	}
+  @Override
+  public void loadUserProblemRecord(User user) {
+    List<Problem> problems = problemService.getVisibleProblemsBySeasonAndCourse(user.getCourse());
+    try {
+      for (Problem problem : problems) {
+        boolean isSolved = problemSolvingService.updateUserAndSaveSolvedProblem(user, problem);
+        if (isSolved) {
+          System.out.println("문제를 풀었어요" + problem.getId() + " " + user.getGithubId());
+          user.addSolvedCount();
+          userService.checkUserRank(user);
+          userService.saveUser(user);
+        }
+      }
+    } catch (Exception e) {
+      log.error("문제 풀이 정보를 업데이트하는 중 오류가 발생했습니다.", e);
+      throw new RuntimeException("문제 풀이 정보를 업데이트하는 중 오류가 발생했습니다.");
+    }
+  }
 
-	public void updateAllUserProblem() {
-		List<User> activeUsers = userService.getActiveUsers();
-		for (User user : activeUsers) {
-			problemSolvingService.addUserProblemRecord(user);
-		}
-	}
+  public TodayProblemSolvedResponseDto loadUserTodayProblemRecord(User user) {
+    Problem todayProblem = problemService.findTodayProblemByCourse(user.getCourse());
+    TodayProblemSolvedResponseDto response =
+        problemSolvingService.updateTodaySolvedProblem(user, todayProblem);
+    if (response.getSolvedStatus().equals(ProblemStatus.SOLVED)) {
+      System.out.println("오늘의 문제를 풀었어요" + user.getGithubId());
+      user.addSolvedCount();
+      userService.checkUserRank(user);
+      userService.saveUser(user);
+    }
+    return response;
+  }
 
-	public String addUserProblemForce(String username, String githubId, Long problemId) {
-		userService.checkAdmin(username);
-		User user = userService.findUser(githubId);
-		Problem problem = problemService.findProblemById(problemId);
-		problemSolvingService.addUserProblem(user, problem);
-		return "success";
-	}
+  public void updateAllUserProblem() {
+    List<User> activeUsers = userService.getActiveUsers();
+    for (User user : activeUsers) {
+      problemSolvingService.addUserProblemRecord(user);
+    }
+  }
 
-	public String addProblemAndUserProblemForce(String username, ProblemRequestDto problemRequestDto) {
-		userService.checkAdmin(username);
-		Algorithm algorithm = problemService.getAlgorithmByAlgorithmName(problemRequestDto.getAlgorithm());
-		ProblemType problemType = problemService.getProblemTypeById(problemRequestDto.getProblemType());
-		if (problemService.checkProblemExistByProblemId(problemRequestDto.getProblemId())) {
-			return "already exist";
-		}
-		Problem problem = problemScrapingService.getProblemByProblemId(
-			problemRequestDto.getProblemId(),
-			algorithm,
-			problemType
-		);
-		List<User> activeUsers = userService.getActiveUsersByCourse(problemType.getCourse());
-		for (User user : activeUsers) {
-			problemSolvingService.addUserProblem(user, problem);
-		}
-		return "success";
-	}
+  public String addUserProblemForce(String username, String githubId, Long problemId) {
+    userService.checkAdmin(username);
+    User user = userService.findUser(githubId);
+    Problem problem = problemService.findProblemById(problemId);
+    problemSolvingService.addUserProblem(user, problem);
+    return "success";
+  }
+
+  public String addProblemAndUserProblemForce(
+      String username, ProblemRequestDto problemRequestDto) {
+    userService.checkAdmin(username);
+    Algorithm algorithm =
+        problemService.getAlgorithmByAlgorithmName(problemRequestDto.getAlgorithm());
+    ProblemType problemType = problemService.getProblemTypeById(problemRequestDto.getProblemType());
+    if (problemService.checkProblemExistByProblemId(problemRequestDto.getProblemId())) {
+      return "already exist";
+    }
+    Problem problem =
+        problemScrapingService.getProblemByProblemId(
+            problemRequestDto.getProblemId(), algorithm, problemType);
+    List<User> activeUsers = userService.getActiveUsersByCourse(problemType.getCourse());
+    for (User user : activeUsers) {
+      problemSolvingService.addUserProblem(user, problem);
+    }
+    return "success";
+  }
 }

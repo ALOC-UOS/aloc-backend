@@ -4,8 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.aloc.aloc.color.Color;
+import com.aloc.aloc.color.repository.ColorRepository;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,58 +16,53 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.color.Color;
-import com.aloc.aloc.color.repository.ColorRepository;
-
 @ExtendWith(MockitoExtension.class)
 @Transactional
 public class ColorServiceTest {
 
-	@Mock
-	ColorRepository colorRepository;
+  @Mock ColorRepository colorRepository;
 
-	@InjectMocks
-	ColorService colorService;
+  @InjectMocks ColorService colorService;
 
-	private Color color;
+  private Color color;
 
-	@BeforeEach
-	void setUp() {
-		color = Color.builder().id("Green").color1("#2ADC0D").category("common").build();
-	}
+  @BeforeEach
+  void setUp() {
+    color = Color.builder().id("Green").color1("#2ADC0D").category("common").build();
+  }
 
-	@Test
-	@DisplayName("색상 조회 테스트")
-	void getColorByIdTest() {
-		// given
-		String colorId = "Green";
-		when(colorRepository.findById(colorId)).thenReturn(Optional.of(color));
+  @Test
+  @DisplayName("색상 조회 테스트")
+  void getColorByIdTest() {
+    // given
+    String colorId = "Green";
+    when(colorRepository.findById(colorId)).thenReturn(Optional.of(color));
 
-		// when
-		Color result = colorService.getColorById(colorId);
+    // when
+    Color result = colorService.getColorById(colorId);
 
-		// then
-		assertNotNull(result);
-		assertEquals(colorId, result.getId());
-		assertEquals("#2ADC0D", result.getColor1());
-		assertEquals("common", result.getCategory());
+    // then
+    assertNotNull(result);
+    assertEquals(colorId, result.getId());
+    assertEquals("#2ADC0D", result.getColor1());
+    assertEquals("common", result.getCategory());
 
-		verify(colorRepository).findById(colorId);
-	}
+    verify(colorRepository).findById(colorId);
+  }
 
-	@Test
-	@DisplayName("색상 조회 실패 테스트")
-	void getColorByIdFailTest() {
-		// given
-		String colorId = "Red";
-		when(colorRepository.findById(colorId)).thenReturn(Optional.empty());
+  @Test
+  @DisplayName("색상 조회 실패 테스트")
+  void getColorByIdFailTest() {
+    // given
+    String colorId = "Red";
+    when(colorRepository.findById(colorId)).thenReturn(Optional.empty());
 
-		// when
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-			() -> colorService.getColorById(colorId));
+    // when
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> colorService.getColorById(colorId));
 
-		// then
-		assertEquals("해당 컬러가 없습니다. " + colorId, exception.getMessage());
-		verify(colorRepository).findById(colorId);
-	}
+    // then
+    assertEquals("해당 컬러가 없습니다. " + colorId, exception.getMessage());
+    verify(colorRepository).findById(colorId);
+  }
 }

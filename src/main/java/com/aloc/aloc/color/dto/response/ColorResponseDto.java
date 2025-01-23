@@ -8,7 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class ColorResponseDto {
-	private int coin;
-	private String colorName;
-	private String colorCode;
+  private int coin;
+  private String colorName;
+  private String colorCode;
 }

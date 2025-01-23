@@ -2,7 +2,6 @@ package com.aloc.aloc.item.entity;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.item.enums.ItemLocation;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,17 +22,22 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Item extends AuditingTimeEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@Column(nullable = false)
-	private String name;
-	private String description;
-	@Column(nullable = false)
-	private Integer coin;
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private ItemLocation itemLocation;
-	@Column(nullable = false)
-	private Boolean isHidden;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(nullable = false)
+  private String name;
+
+  private String description;
+
+  @Column(nullable = false)
+  private Integer coin;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private ItemLocation itemLocation;
+
+  @Column(nullable = false)
+  private Boolean isHidden;
 }

@@ -22,29 +22,29 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserProfile {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
 
-	private Integer coin;
+  private Integer coin;
 
-	@Column(nullable = false)
-	private String profileColor;
+  @Column(nullable = false)
+  private String profileColor;
 
-	@Column(nullable = false)
-	private String studentId;
+  @Column(nullable = false)
+  private String studentId;
 
-	private String discordId;
+  private String discordId;
 
-	private String notionEmail;
+  private String notionEmail;
 
-	private String profileImageFileName;
+  private String profileImageFileName;
 
-	public void addCoin(int coinToAdd) {
-		this.coin += coinToAdd;
-	}
+  public void addCoin(int coinToAdd) {
+    this.coin += coinToAdd;
+  }
 }

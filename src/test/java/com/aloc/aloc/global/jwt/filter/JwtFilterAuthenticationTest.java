@@ -5,9 +5,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.aloc.aloc.auth.dto.RefreshTokenDto;
+import com.aloc.aloc.global.jwt.service.JwtService;
+import com.aloc.aloc.user.entity.User;
+import com.aloc.aloc.user.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,204 +26,208 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aloc.aloc.auth.dto.RefreshTokenDto;
-import com.aloc.aloc.global.jwt.service.JwtService;
-import com.aloc.aloc.user.entity.User;
-import com.aloc.aloc.user.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.persistence.EntityManager;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
 public class JwtFilterAuthenticationTest {
 
-	@Autowired
-	MockMvc mockMvc;
+  @Autowired MockMvc mockMvc;
 
-	@Autowired
-	UserRepository userRepository;
+  @Autowired UserRepository userRepository;
 
-	@Autowired
-	EntityManager em;
+  @Autowired EntityManager em;
 
-	@Autowired
-	JwtService jwtService;
+  @Autowired JwtService jwtService;
 
-	BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+  BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-	@Value("${jwt.secret}")
-	private String secret;
-	@Value("${jwt.access.header}")
-	private String accessHeader;
-	@Value("${jwt.refresh.header}")
-	private String refreshHeader;
+  @Value("${jwt.secret}")
+  private String secret;
 
-	private final String githubId = "github";
-	private final String password = "password";
+  @Value("${jwt.access.header}")
+  private String accessHeader;
 
-	private static final String LOGIN_URL = "/api2/login";
-	private static final String REFRESH_URL = "/api2/refresh";
-	private static final String TEST_URL = "/api2/weekly-problems";
+  @Value("${jwt.refresh.header}")
+  private String refreshHeader;
 
-	private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
-	private static final String BEARER = "Bearer ";
+  private final String githubId = "github";
+  private final String password = "password";
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
+  private static final String LOGIN_URL = "/api2/login";
+  private static final String REFRESH_URL = "/api2/refresh";
+  private static final String TEST_URL = "/api2/weekly-problems";
 
-	private void clear() {
-		em.flush();
-		em.clear();
-	}
+  private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
+  private static final String BEARER = "Bearer ";
 
-	@BeforeEach
-	public void init() {
-		userRepository.save(
-			User.builder()
-				.username("홍길동")
-				.password(bCryptPasswordEncoder.encode(password))
-				.githubId(githubId)
-				.baekjoonId("baekjoon")
-				.studentId("20")
-				.notionEmail("notion@uos.ac.kr")
-				.discordId("discord")
-				.build());
-		clear();
-	}
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
-	private Map getGithubIdPasswordMap() {
-		Map<String, String> map = new HashMap<>();
-		map.put("githubId", githubId);
-		map.put("password", password);
-		return map;
-	}
+  private void clear() {
+    em.flush();
+    em.clear();
+  }
 
-	private Map getAccessAndRefreshToken() throws Exception {
+  @BeforeEach
+  public void init() {
+    userRepository.save(
+        User.builder()
+            .username("홍길동")
+            .password(bCryptPasswordEncoder.encode(password))
+            .githubId(githubId)
+            .baekjoonId("baekjoon")
+            .studentId("20")
+            .notionEmail("notion@uos.ac.kr")
+            .discordId("discord")
+            .build());
+    clear();
+  }
 
-		Map map = getGithubIdPasswordMap();
-		MvcResult result = mockMvc.perform(
-				post(LOGIN_URL)
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(map)))
-			.andReturn();
-		String accessToken = result.getResponse().getHeader(accessHeader);
-		String refreshToken = result.getResponse().getHeader(refreshHeader);
-		Map<String, String> tokenMap = new HashMap<>();
-		tokenMap.put(accessHeader, accessToken);
-		tokenMap.put(refreshHeader, refreshToken);
+  private Map getGithubIdPasswordMap() {
+    Map<String, String> map = new HashMap<>();
+    map.put("githubId", githubId);
+    map.put("password", password);
+    return map;
+  }
 
-		return tokenMap;
-	}
+  private Map getAccessAndRefreshToken() throws Exception {
 
-	@Test
-	public void access_refresh_doesnt_exist() throws Exception {
-		//when, then
-		mockMvc.perform(get(LOGIN_URL + "123")) // login 이 아닌 다른 임의의 주소
-			.andExpect(status().isNotFound());
-	}
+    Map map = getGithubIdPasswordMap();
+    MvcResult result =
+        mockMvc
+            .perform(
+                post(LOGIN_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(map)))
+            .andReturn();
+    String accessToken = result.getResponse().getHeader(accessHeader);
+    String refreshToken = result.getResponse().getHeader(refreshHeader);
+    Map<String, String> tokenMap = new HashMap<>();
+    tokenMap.put(accessHeader, accessToken);
+    tokenMap.put(refreshHeader, refreshToken);
 
-	@Test
-	public void accessToken_only_exist() throws Exception {
-		//given
-		Map<String, String> accessAndRefreshToken = getAccessAndRefreshToken();
-		String accessToken = (String) accessAndRefreshToken.get(accessHeader);
+    return tokenMap;
+  }
 
-		//when, then
-		mockMvc.perform(
-				get(LOGIN_URL + "123").header(accessHeader, BEARER + accessToken))//login이 아닌 다른 임의의 주소
-			.andExpectAll(status().isNotFound()); //없는 주소로 보냈으므로 NotFound
+  @Test
+  public void accessRefreshDoesntExist() throws Exception {
+    // when, then
+    mockMvc
+        .perform(get(LOGIN_URL + "123")) // login 이 아닌 다른 임의의 주소
+        .andExpect(status().isNotFound());
+  }
 
-	}
+  @Test
+  public void accessTokenOnlyExist() throws Exception {
+    // given
+    Map<String, String> accessAndRefreshToken = getAccessAndRefreshToken();
+    String accessToken = (String) accessAndRefreshToken.get(accessHeader);
 
-	@Test
-	public void invalid_accessToken_auth_failed_with_403() throws Exception {
-		//given
-		Map<String, String> accessAndRefreshToken = getAccessAndRefreshToken();
-		String accessToken = (String) accessAndRefreshToken.get(accessHeader);
+    // when, then
+    mockMvc
+        .perform(
+            get(LOGIN_URL + "123")
+                .header(accessHeader, BEARER + accessToken)) // login이 아닌 다른 임의의 주소
+        .andExpectAll(status().isNotFound()); // 없는 주소로 보냈으므로 NotFound
+  }
 
-		//when, then
-		mockMvc.perform(
-				get(LOGIN_URL + "123").header(accessHeader, accessToken + "1")) //login이 아닌 다른 임의의 주소
-			.andExpectAll(status().isNotFound()); //없는 주소로 보냈으므로 NotFound
-	}
+  @Test
+  public void invalidAccessTokenAuthFailedWith403() throws Exception {
+    // given
+    Map<String, String> accessAndRefreshToken = getAccessAndRefreshToken();
+    String accessToken = (String) accessAndRefreshToken.get(accessHeader);
 
-	@Test
-	public void valid_refreshToken_with_accessToken_then_reissue_accessToken_with_200()
-		throws Exception {
-		//given
-		Map accessAndRefreshToken = getAccessAndRefreshToken();
-		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
+    // when, then
+    mockMvc
+        .perform(
+            get(LOGIN_URL + "123").header(accessHeader, accessToken + "1")) // login이 아닌 다른 임의의 주소
+        .andExpectAll(status().isNotFound()); // 없는 주소로 보냈으므로 NotFound
+  }
 
-		//when, then
-		MvcResult result = mockMvc.perform(get(REFRESH_URL)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(new RefreshTokenDto(refreshToken)))
-				.header(accessHeader, BEARER))
-			.andExpect(status().isOk())
-			.andReturn();
+  @Test
+  public void validRefreshTokenWithAccessTokenThenReissueAccessTokenWith200() throws Exception {
+    // given
+    Map accessAndRefreshToken = getAccessAndRefreshToken();
+    String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
-		// accessToken은 재발급
-		assertThat(result.getResponse().getStatus()).isEqualTo(200);
-	}
+    // when, then
+    MvcResult result =
+        mockMvc
+            .perform(
+                get(REFRESH_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(new RefreshTokenDto(refreshToken)))
+                    .header(accessHeader, BEARER))
+            .andExpect(status().isOk())
+            .andReturn();
 
-	@Test
-	public void invalid_refreshToken_with_valid_accessToken_then_401()
-		throws Exception {
-		//given
-		Map accessAndRefreshToken = getAccessAndRefreshToken();
-		String accessToken = (String) accessAndRefreshToken.get(accessHeader);
-		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
+    // accessToken은 재발급
+    assertThat(result.getResponse().getStatus()).isEqualTo(200);
+  }
 
-		//when, then
-		MvcResult result = mockMvc.perform(get(TEST_URL)
-				.header(refreshHeader, BEARER + refreshToken + 1)
-				.header(accessHeader, BEARER + accessToken + 1))
-			.andExpect(status().isUnauthorized()) // 모든 토큰이 유효하지 않음
-			.andReturn();
+  @Test
+  public void invalidRefreshTokenWithValidAccessTokenThen401() throws Exception {
+    // given
+    Map accessAndRefreshToken = getAccessAndRefreshToken();
+    String accessToken = (String) accessAndRefreshToken.get(accessHeader);
+    String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
-		String responseAccessToken = result.getResponse().getHeader(accessHeader);
-		String responseRefreshToken = result.getResponse().getHeader(refreshHeader);
+    // when, then
+    MvcResult result =
+        mockMvc
+            .perform(
+                get(TEST_URL)
+                    .header(refreshHeader, BEARER + refreshToken + 1)
+                    .header(accessHeader, BEARER + accessToken + 1))
+            .andExpect(status().isUnauthorized()) // 모든 토큰이 유효하지 않음
+            .andReturn();
 
-		assertThat(responseAccessToken).isNull(); //accessToken은 재발급되지 않음
-		assertThat(responseRefreshToken).isNull(); //refreshToken은 재발급되지 않음
-	}
+    String responseAccessToken = result.getResponse().getHeader(accessHeader);
+    String responseRefreshToken = result.getResponse().getHeader(refreshHeader);
 
-	@Test
-	public void invalid_refreshToken_with_invalid_accessToken_then_return_404() throws Exception {
-		//given
-		Map<String, String> accessAndRefreshToken = getAccessAndRefreshToken();
-		String accessToken = (String) accessAndRefreshToken.get(accessHeader);
-		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
+    assertThat(responseAccessToken).isNull(); // accessToken은 재발급되지 않음
+    assertThat(responseRefreshToken).isNull(); // refreshToken은 재발급되지 않음
+  }
 
-		//when, then
-		MvcResult result = mockMvc.perform(get(LOGIN_URL + "123")
-				.header(refreshHeader, BEARER + refreshToken + 1)
-				.header(accessHeader, BEARER + accessToken + 1))
-			.andExpect(status().isNotFound()) //없는 주소로 보냈으므로 NotFound
-			.andReturn();
+  @Test
+  public void invalidRefreshTokenWithInvalidAccessTokenThenReturn404() throws Exception {
+    // given
+    Map<String, String> accessAndRefreshToken = getAccessAndRefreshToken();
+    String accessToken = (String) accessAndRefreshToken.get(accessHeader);
+    String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
 
-		String responseAccessToken = result.getResponse().getHeader(accessHeader);
-		String responseRefreshToken = result.getResponse().getHeader(refreshHeader);
+    // when, then
+    MvcResult result =
+        mockMvc
+            .perform(
+                get(LOGIN_URL + "123")
+                    .header(refreshHeader, BEARER + refreshToken + 1)
+                    .header(accessHeader, BEARER + accessToken + 1))
+            .andExpect(status().isNotFound()) // 없는 주소로 보냈으므로 NotFound
+            .andReturn();
 
-		assertThat(responseAccessToken).isNull(); //accessToken은 재발급되지 않음
-		assertThat(responseRefreshToken).isNull(); //refreshToken은 재발급되지 않음
-	}
+    String responseAccessToken = result.getResponse().getHeader(accessHeader);
+    String responseRefreshToken = result.getResponse().getHeader(refreshHeader);
 
-	@Test
-	public void request_with_loginUrl_then_filter_off() throws Exception {
-		//given
-		Map<String, String> accessAndRefreshToken = getAccessAndRefreshToken();
-		String accessToken = (String) accessAndRefreshToken.get(accessHeader);
-		String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
+    assertThat(responseAccessToken).isNull(); // accessToken은 재발급되지 않음
+    assertThat(responseRefreshToken).isNull(); // refreshToken은 재발급되지 않음
+  }
 
-		//when, then
-		MvcResult result = mockMvc.perform(
-				post(LOGIN_URL)  //get인 경우 config에서 permitAll을 했기에 notFound
-					.header(refreshHeader, BEARER + refreshToken)
-					.header(accessHeader, BEARER + accessToken))
-			.andExpect(status().isBadRequest())
-			.andReturn();
-	}
+  @Test
+  public void requestWithLoginUrlThenFilterOff() throws Exception {
+    // given
+    Map<String, String> accessAndRefreshToken = getAccessAndRefreshToken();
+    String accessToken = (String) accessAndRefreshToken.get(accessHeader);
+    String refreshToken = (String) accessAndRefreshToken.get(refreshHeader);
+
+    // when, then
+    MvcResult result =
+        mockMvc
+            .perform(
+                post(LOGIN_URL) // get인 경우 config에서 permitAll을 했기에 notFound
+                    .header(refreshHeader, BEARER + refreshToken)
+                    .header(accessHeader, BEARER + accessToken))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+  }
 }

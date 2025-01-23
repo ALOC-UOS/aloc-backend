@@ -1,7 +1,6 @@
 package com.aloc.aloc.tag;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,13 +20,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Tag extends AuditingTimeEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@Column(nullable = false)
-	private String koreanName;
+  @Column(nullable = false)
+  private String koreanName;
 
-	@Column(nullable = false)
-	private String englishName;
+  @Column(nullable = false)
+  private String englishName;
 }

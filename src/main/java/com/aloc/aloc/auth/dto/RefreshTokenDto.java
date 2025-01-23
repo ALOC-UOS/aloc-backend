@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RefreshTokenDto {
-	@NotBlank
-	@Schema(description = "refreshToken", example = "refreshToken")
-	private String refreshToken;
+  @NotBlank
+  @Schema(description = "refreshToken", example = "refreshToken")
+  private String refreshToken;
 }

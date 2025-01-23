@@ -9,9 +9,10 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 public class SolvedUserResponseDto extends UserResponseDto {
-	@Schema(description = "해결 시간", example = "2021-08-01T00:00:00")
-	private String solvedAt;
-	protected SolvedUserResponseDto() {
-		super();
-	}
+  @Schema(description = "해결 시간", example = "2021-08-01T00:00:00")
+  private String solvedAt;
+
+  protected SolvedUserResponseDto() {
+    super();
+  }
 }

@@ -2,7 +2,6 @@ package com.aloc.aloc.alocrequest;
 
 import com.aloc.aloc.global.domain.AuditingTimeEntity;
 import com.aloc.aloc.user.entity.User;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,26 +20,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlocRequest extends AuditingTimeEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
-	@Column(nullable = false)
-	private String requestType;
-	@Column(nullable = false)
-	private Boolean isResolved = false;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
 
-	@Builder
-	public AlocRequest(User user, String requestType) {
-		this.user = user;
-		this.requestType = requestType;
-		this.isResolved = false;
-	}
+  @Column(nullable = false)
+  private String requestType;
 
-	public void setIsResolvedTrue() {
-		this.isResolved = true;
-	}
+  @Column(nullable = false)
+  private Boolean isResolved = false;
+
+  @Builder
+  public AlocRequest(User user, String requestType) {
+    this.user = user;
+    this.requestType = requestType;
+    this.isResolved = false;
+  }
+
+  public void setIsResolvedTrue() {
+    this.isResolved = true;
+  }
 }
