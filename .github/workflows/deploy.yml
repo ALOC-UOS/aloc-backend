@@ -110,7 +110,7 @@ jobs:
             fi
 
             echo "📦 Pulling the latest image..."
-            docker pull ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest | exit 1
 
             echo "🚀 Running new container..."
             docker run -d --name aloc-spring \
