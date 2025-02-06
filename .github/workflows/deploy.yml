@@ -82,6 +82,13 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest
 
+      # 🔥 SSH 키 설정 & SSH 연결 테스트 추가
+      - name: Setup SSH Key & Test Connection
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > key.pem
+          chmod 600 key.pem
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo '✅ SSH 연결 성공!'"
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -133,3 +140,4 @@ jobs:
             잘못한 사람 🙋🏻 ${{ github.actor }}
             URL: https://github.com/ALOC-UOS/aloc-backend/actions/runs/${{ github.run_id }}
             ${{ github.event.head_commit.message }}
+  
