@@ -52,7 +52,7 @@ jobs:
 
   deploy:
     name: CD - Deploy to EC2
-    needs: build  # CI가 끝난 후 실행
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -82,19 +82,23 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest
 
-      # 🔥 SSH 키 설정 & SSH 연결 테스트 추가
-      - name: Setup SSH Key & Test Connection
+      # 🔥 SSH 키 설정 (base64 디코딩 없이 원본 그대로 저장)
+      - name: Setup SSH Key
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > key.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" > key.pem  # 🔴 디코딩 없이 저장
           chmod 600 key.pem
-          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo '✅ SSH 연결 성공!'"
 
+      # ✅ SSH 연결 테스트
+      - name: Test SSH Connection
+        run: ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo '✅ SSH 연결 성공!'"
+
+      # ✅ SSH 실행 시 key_path 사용
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: key.pem
+          key_path: key.pem  # 🔥 key_path로 직접 지정
           script: |
             echo "🔄 Starting Deployment on EC2..."
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
@@ -140,4 +144,3 @@ jobs:
             잘못한 사람 🙋🏻 ${{ github.actor }}
             URL: https://github.com/ALOC-UOS/aloc-backend/actions/runs/${{ github.run_id }}
             ${{ github.event.head_commit.message }}
-  
