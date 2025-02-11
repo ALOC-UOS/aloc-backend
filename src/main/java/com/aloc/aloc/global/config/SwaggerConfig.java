@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
     info = @Info(title = "ALOC API", version = "v2"),
     security = {@SecurityRequirement(name = "JWT Auth")},
     servers = {
-      @Server(url = "https://www.iflab.run", description = "Production Server"),
+      @Server(url = "https://api.aloc.kr", description = "Production Server"),
       @Server(url = "http://localhost:8080", description = "Local Server")
     })
 @SecuritySchemes({
