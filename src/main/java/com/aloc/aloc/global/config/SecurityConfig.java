@@ -149,7 +149,8 @@ public class SecurityConfig {
             "https://iflab.run",
             "https://aloc.kr",
             "https://www.aloc.kr",
-            "https://aloc-client.vercel.app"));
+            "https://aloc-client.vercel.app",
+            "https://api.aloc.kr"));
     corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
     corsConfiguration.setAllowedHeaders(List.of("*"));
     corsConfiguration.setAllowCredentials(true);
