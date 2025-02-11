@@ -7,7 +7,6 @@ import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +17,7 @@ public class AlocRequestScheduler {
   private final UserRepository userRepository;
 
   @Transactional
-//  @Scheduled(cron = "0 50 23 * * TUE")
+  //  @Scheduled(cron = "0 50 23 * * TUE")
   public void resolveCourseChangeRequest() {
     List<AlocRequest> requests =
         alocRequestRepository.findAllByRequestTypeAndIsResolvedFalse("changeCourse");

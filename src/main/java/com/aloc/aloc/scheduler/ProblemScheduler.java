@@ -7,7 +7,6 @@ import com.aloc.aloc.webhook.DiscordWebhookService;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +19,7 @@ public class ProblemScheduler {
   @Value("${app.vacation}")
   private boolean isVacation;
 
-//  @Scheduled(cron = "0 0 0 * * *")
+  //  @Scheduled(cron = "0 0 0 * * *")
   public void dailyScheduledTasks() {
     if (isWednesday()) {
       executeWednesdayTasks();
