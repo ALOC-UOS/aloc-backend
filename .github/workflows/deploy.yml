@@ -34,9 +34,9 @@ jobs:
         run: |
           mkdir -p ./src/main/resources
           cd ./src/main/resources
-          echo "${{ secrets.APPLICATION }}" base64 -d > application.yml
-          echo "${{ secrets.JWT_APPLICATION }}" base64 -d > application-jwt.yml
-          echo "${{ secrets.TEST_APPLICATION }}" base64 -d > application-test.yml
+          echo "${{ secrets.APPLICATION }}" | base64 -d > application.yml
+          echo "${{ secrets.JWT_APPLICATION }}" | base64 -d > application-jwt.yml
+          echo "${{ secrets.TEST_APPLICATION }}" | base64 -d > application-test.yml
 
       - name: Install PostgreSQL client
         run: sudo apt-get install -y postgresql-client
@@ -85,20 +85,20 @@ jobs:
       # 🔥 SSH 키 설정 (base64 디코딩 없이 원본 그대로 저장)
       - name: Setup SSH Key
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > key.pem  # 🔴 디코딩 없이 저장
+          echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
           chmod 600 key.pem
 
       # ✅ SSH 연결 테스트
       - name: Test SSH Connection
         run: ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo '✅ SSH 연결 성공!'"
 
-      # ✅ SSH 실행 시 key_path 사용
+      # ✅ Docker Hub에서 최신 이미지가 반영될 때까지 대기 후 pull
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key_path: key.pem  # 🔥 key_path로 직접 지정
+          key_path: key.pem
           script: |
             echo "🔄 Starting Deployment on EC2..."
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
@@ -109,8 +109,20 @@ jobs:
               docker rm aloc-spring
             fi
 
+            echo "🔍 Waiting for Docker Hub to update..."
+            NEW_DIGEST=""
+            while [ -z "$NEW_DIGEST" ]; do
+              sleep 10
+              NEW_DIGEST=$(docker manifest inspect ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest | jq -r '.config.digest')
+              echo "⏳ Waiting for new image digest..."
+            done
+
+            echo "🚮 Removing old image..."
+            docker image prune -af
+            docker rmi ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest || true
+
             echo "📦 Pulling the latest image..."
-            docker pull ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest | exit 1
+            docker pull ${{ secrets.DOCKER_USERNAME }}/aloc-spring:latest || exit 1
 
             echo "🚀 Running new container..."
             docker run -d --name aloc-spring \
@@ -121,26 +133,26 @@ jobs:
 
             echo "✅ Deployment completed!"
 
+      # ✅ 성공 알림 (배포 성공)
       - name: Send deployment status to Discord
         if: success()
         uses: tsickert/discord-webhook@v5.3.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           content: |
-            [aloc-spring]
-            🚀 배포가 성공적으로 완료되었어요!
-            커밋한 사람 🙋🏻 ${{ github.actor }}
-            ${{ github.event.head_commit.message }}
+            🚀 **aloc-spring 배포 성공**
+            **커밋한 사람:** ${{ github.actor }}
+            **메시지:** ${{ github.event.head_commit.message }}
 
+      # ❌ 실패 알림 (배포 실패)
       - name: Send deployment failure to Discord
         if: failure()
         uses: tsickert/discord-webhook@v5.3.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           content: |
-            [aloc-spring]
-            ❌ 배포 중 문제가 발생했어요!
-            확인이 필요합니다. 👀
-            잘못한 사람 🙋🏻 ${{ github.actor }}
-            URL: https://github.com/ALOC-UOS/aloc-backend/actions/runs/${{ github.run_id }}
-            ${{ github.event.head_commit.message }}
+            ❌ **aloc-spring 배포 실패**
+            **확인 필요:** 👀
+            **잘못한 사람:** ${{ github.actor }}
+            **🔗 [배포 로그 확인하기](https://github.com/ALOC-UOS/aloc-backend/actions/runs/${{ github.run_id }})**
+            **메시지:** ${{ github.event.head_commit.message }}
