@@ -133,12 +133,12 @@ public class JwtServiceImpl implements JwtService {
 
   @Override
   public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
-    response.setHeader(accessHeader, accessToken);
+    response.setHeader(accessHeader, accessToken.trim());
   }
 
   @Override
   public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
-    response.setHeader(refreshHeader, refreshToken);
+    response.setHeader(refreshHeader, refreshToken.trim());
   }
 
   @Override
