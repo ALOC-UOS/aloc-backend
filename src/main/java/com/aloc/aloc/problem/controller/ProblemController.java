@@ -5,6 +5,7 @@ import com.aloc.aloc.problem.dto.request.ProblemRequestDto;
 import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.dto.response.TodayProblemSolvedResponseDto;
+import com.aloc.aloc.problem.dto.response.UserProblemStatusResponse;
 import com.aloc.aloc.problem.service.ProblemFacade;
 import com.aloc.aloc.problem.service.ProblemService;
 import com.aloc.aloc.problemtype.enums.Course;
@@ -93,7 +94,7 @@ public class ProblemController {
       responseCode = "200",
       description = "지나간 문제 풀이 상태 업데이트 성공",
       content = @Content(schema = @Schema(implementation = String.class)))
-  public CustomApiResponse<String> checkSolved(
+  public CustomApiResponse<UserProblemStatusResponse> checkSolved(
       @Parameter(hidden = true) @AuthenticationPrincipal User user) {
     return CustomApiResponse.onSuccess(problemFacade.checkSolved(user.getUsername()));
   }
