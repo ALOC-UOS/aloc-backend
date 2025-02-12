@@ -23,7 +23,7 @@ public class UserResponseDto {
   @Schema(description = "백준 ID", example = "baekjoonId")
   private String baekjoonId;
 
-  @Schema(description = "프로필 색상", example = "#FFFFFF")
+  @Schema(description = "프로필 색상", example = "blue")
   private String profileColor;
 
   @Schema(description = "학번", example = "20")
