@@ -1,35 +1,15 @@
-# 개발 전 세팅해야 할 것
-1. Intelij > settings > Editor > Code Style > Java -> **Scheme : Google configuration 설정**
-2. Intelij > settings > Plugins > **CheckStyle-IDEA 설치** -> Naver check rules 설정
-3. Intelij > settings > Plugins > **CodeMetrics 설치**
+## local 에서 빌드하기 OR 실행해서 스웨거 확인하기
 
-> 빌드 시에 자동으로 checkstyle을 확인하도록 설정해두었습니다. <br>
-> checkstyle을 모두 맞추어야 build가 성공적으로 진행됩니다.
-
-
-## Code Style google Style로 설정하는 법 
-1. [파일 다운]https://google.github.io/styleguide/javaguide.html
-2. intellij-java-google-style.xml 을 다운받아 해당 프로젝트 경로에 저장합니다.
-3. Editor > Code Style > Java > 더보기 > Import Scheme > IntelliJ Style IDEA Code Style xml
-
----
-# 개발 서버 돌리는 법
-1. 로컬 데이터베이스 설정
-
-```docker-compose up -d ```
-
-로컬 디비를 사용하기 위해 postgresql 컨테이너를 실행합니다.
-```
-POSTGRES_DB=aloc
-POSTGRES_PASSWORD=password
-POSTGRES_USER=postgres
-```
-위 설정을 따라 로컬 디비가 세팅됩니다.
-
-2. 우측 `gradle -> build -> build`
-3. 우측 `gradle -> application -> bootrun`
-
-[swagger 접속]http://localhost:8080/swagger-ui/index.html
-
-docker buildx build --platform linux/amd64,linux/arm64 -t bae4614/aloc-spring:v2.1 --push .
-docker run -d --name aloc-spring -p 8080:8080 --network shared-network bae4614/aloc-spring:v2.2
+1. main 브랜치 클론하기
+2. src/main/resoureces 폴더 생성 후 `application.yml` , `application-jwt.yml` , `application-test.yml` 파일 추가하기(하단에 코드 있음)
+3. 로컬 DB 셋팅
+    1. docker, docker compose 설치
+    2. `docker compose up -d` 로 db 실행 → dockerfile 
+4. 빌드/실행
+    
+    ![image.png](attachment:bc65c2d7-bddf-4ece-98bc-8329989c6808:image.png)
+    
+    1. `build` : 우측 gradle>build>build OR `./gradlew build` 
+    2. `실행` : 우측 gradle > application > bootRun OR `./gradlew bootrun` 
+        1. http://localhost:8080/swagger-ui/index.html → 로컬 스웨거 주소
+5. 그 후 개발 시 브랜치 파서 하기~~
