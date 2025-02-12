@@ -35,6 +35,7 @@ public class ProblemFacade implements UserProblemRecordLoader {
     // 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
     User user = userService.getActiveUser(username);
     loadUserProblemRecord(user);
+    // 로직 추가하고 dto 맵핑
     return "success";
   }
 
