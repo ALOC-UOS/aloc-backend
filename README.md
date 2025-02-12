@@ -6,9 +6,6 @@
     1. docker, docker compose 설치
     2. `docker compose up -d` 로 db 실행 → dockerfile 
 4. 빌드/실행
-    
-    ![image.png](attachment:bc65c2d7-bddf-4ece-98bc-8329989c6808:image.png)
-    
     1. `build` : 우측 gradle>build>build OR `./gradlew build` 
     2. `실행` : 우측 gradle > application > bootRun OR `./gradlew bootrun` 
         1. http://localhost:8080/swagger-ui/index.html → 로컬 스웨거 주소
