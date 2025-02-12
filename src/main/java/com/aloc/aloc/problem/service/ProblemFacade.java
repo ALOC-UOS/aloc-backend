@@ -4,6 +4,7 @@ import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.dto.request.ProblemRequestDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.dto.response.TodayProblemSolvedResponseDto;
+import com.aloc.aloc.problem.dto.response.UserProblemStatusResponse;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.enums.ProblemStatus;
 import com.aloc.aloc.problemtype.ProblemType;
@@ -31,11 +32,14 @@ public class ProblemFacade implements UserProblemRecordLoader {
   private final ProblemSolvingService problemSolvingService;
   private final ProblemScrapingService problemScrapingService;
 
-  public String checkSolved(String username) {
+  public UserProblemStatusResponse checkSolved(String username) {
     // 오늘의 문제와 다른 문제들의 풀이 여부를 한번에 확인합니다.
     User user = userService.getActiveUser(username);
     loadUserProblemRecord(user);
-    return "success";
+    return UserProblemStatusResponse.of(
+        user,
+        getTotalProblemCountByCourse(user.getCourse()) - user.getSolvedCount(),
+        problemSolvingService.getTodayProblemSolved(user.getId(), user.getCourse()));
   }
 
   public TodayProblemSolvedResponseDto checkTodaySolved(String username) {
