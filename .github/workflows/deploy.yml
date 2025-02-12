@@ -140,9 +140,11 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           content: |
-            🚀 **aloc-spring 배포 성공**
-            **커밋한 사람:** ${{ github.actor }}
-            **메시지:** ${{ github.event.head_commit.message }}
+            [aloc-spring]
+            ✅ 배포 성공
+            
+            커밋한 사람 👨‍💻${{ github.actor }}
+            ${{ github.event.head_commit.message }}
 
       # ❌ 실패 알림 (배포 실패)
       - name: Send deployment failure to Discord
@@ -151,8 +153,10 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           content: |
-            ❌ **aloc-spring 배포 실패**
-            **확인 필요:** 👀
-            **잘못한 사람:** ${{ github.actor }}
-            **🔗 [배포 로그 확인하기](https://github.com/ALOC-UOS/aloc-backend/actions/runs/${{ github.run_id }})**
-            **메시지:** ${{ github.event.head_commit.message }}
+            [aloc-spring]
+            ❌ 배포 실패
+            확인이 필요해요 👀
+            
+            커밋한 사람 👨‍💻${{ github.actor }}
+            ${{ github.event.head_commit.message }}
+            🔗 [배포 로그 확인하기](https://github.com/ALOC-UOS/aloc-backend/actions/runs/${{ github.run_id }})
