@@ -87,6 +87,9 @@ public class JwtServiceImpl implements JwtService {
     setAccessTokenHeader(response, accessToken);
     setRefreshTokenHeader(response, refreshToken);
 
+    log.info("✅ Setting Access Token Header: '{}'", accessToken.trim());
+    log.info("✅ Setting Refresh Token Header: '{}'", refreshToken.trim());
+
     Map<String, String> tokenMap = new HashMap<>();
     tokenMap.put(ACCESS_TOKEN_SUBJECT, accessToken);
     tokenMap.put(REFRESH_TOKEN_SUBJECT, refreshToken);
@@ -133,12 +136,12 @@ public class JwtServiceImpl implements JwtService {
 
   @Override
   public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
-    response.setHeader(accessHeader, accessToken.trim());
+    response.addHeader(accessHeader, accessToken.trim());
   }
 
   @Override
   public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
-    response.setHeader(refreshHeader, refreshToken.trim());
+    response.addHeader(refreshHeader, refreshToken.trim());
   }
 
   @Override
