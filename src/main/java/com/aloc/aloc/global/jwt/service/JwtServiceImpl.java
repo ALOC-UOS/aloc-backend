@@ -4,12 +4,10 @@ import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.repository.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -85,10 +83,10 @@ public class JwtServiceImpl implements JwtService {
     response.setStatus(HttpServletResponse.SC_OK);
 
     setAccessTokenHeader(response, accessToken);
-//    setRefreshTokenHeader(response, refreshToken);
+    setRefreshTokenCookie(response, refreshToken);
 
     log.info("✅ Setting Access Token Header: '{}'", accessToken.trim());
-//    log.info("✅ Setting Refresh Token Header: '{}'", refreshToken.trim());
+    log.info("✅ Setting Refresh Token Header: '{}'", refreshToken.trim());
 
     Map<String, String> tokenMap = new HashMap<>();
     tokenMap.put(ACCESS_TOKEN_SUBJECT, accessToken);
@@ -114,9 +112,15 @@ public class JwtServiceImpl implements JwtService {
 
   @Override
   public Optional<String> extractRefreshToken(HttpServletRequest request) {
-    return Optional.ofNullable(request.getHeader(refreshHeader))
-        .filter(refreshToken -> refreshToken.startsWith(BEARER))
-        .map(refreshToken -> refreshToken.replace(BEARER, ""));
+    if (request.getCookies() == null) {
+      return Optional.empty();
+    }
+
+    return Arrays.stream(request.getCookies())
+        .filter(
+            cookie -> "refreshToken".equals(cookie.getName())) // ✅ 쿠키 이름이 refreshHeader와 같은 경우 필터링
+        .map(Cookie::getValue) // ✅ 쿠키 값 (Refresh Token) 추출
+        .findFirst();
   }
 
   @Override
@@ -140,8 +144,13 @@ public class JwtServiceImpl implements JwtService {
   }
 
   @Override
-  public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
-    response.addHeader(refreshHeader, refreshToken.trim());
+  public void setRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+    Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+    refreshTokenCookie.setHttpOnly(true);
+    refreshTokenCookie.setSecure(true);
+    refreshTokenCookie.setPath("/");
+    refreshTokenCookie.setMaxAge((int) refreshTokenValidityInSeconds);
+    response.addCookie(refreshTokenCookie);
   }
 
   @Override

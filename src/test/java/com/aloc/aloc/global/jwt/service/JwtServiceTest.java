@@ -9,7 +9,9 @@ import com.aloc.aloc.user.repository.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,13 +162,14 @@ public class JwtServiceTest {
     String accessToken = jwtService.createAccessToken(githubId);
     String refreshToken = jwtService.createRefreshToken();
 
-    jwtService.setRefreshTokenHeader(mockHttpServletResponse, refreshToken);
+    jwtService.setRefreshTokenCookie(mockHttpServletResponse, refreshToken);
 
     // when
     jwtService.sendAccessAndRefreshToken(mockHttpServletResponse, accessToken, refreshToken);
 
     // then
-    String headerRefreshToken = mockHttpServletResponse.getHeader(refreshHeader);
+    String headerRefreshToken =
+        Objects.requireNonNull(mockHttpServletResponse.getCookie("refreshToken")).getValue();
 
     assertThat(headerRefreshToken).isEqualTo(refreshToken);
   }
@@ -184,7 +187,8 @@ public class JwtServiceTest {
 
     // then
     String headerAccessToken = mockHttpServletResponse.getHeader(accessHeader);
-    String headerRefreshToken = mockHttpServletResponse.getHeader(refreshHeader);
+    String headerRefreshToken =
+        Objects.requireNonNull(mockHttpServletResponse.getCookie("refreshToken")).getValue();
 
     assertThat(headerAccessToken).isEqualTo(accessToken);
     assertThat(headerRefreshToken).isEqualTo(refreshToken);
@@ -192,17 +196,24 @@ public class JwtServiceTest {
 
   // 토큰 전송 테스트를 위한 함수
   private HttpServletRequest setRequest(String accessToken, String refreshToken) {
-
     MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
     jwtService.sendAccessAndRefreshToken(mockHttpServletResponse, accessToken, refreshToken);
 
     String headerAccessToken = mockHttpServletResponse.getHeader(accessHeader);
-    String headerRefreshToken = mockHttpServletResponse.getHeader(refreshHeader);
+
+    // ✅ Refresh Token을 쿠키에서 가져오기
+    Cookie refreshTokenCookie = mockHttpServletResponse.getCookie("refreshToken");
+    String cookieRefreshToken = (refreshTokenCookie != null) ? refreshTokenCookie.getValue() : null;
 
     MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
 
     httpServletRequest.addHeader(accessHeader, BEARER + headerAccessToken);
-    httpServletRequest.addHeader(refreshHeader, BEARER + headerRefreshToken);
+
+    // ✅ 헤더 대신 쿠키에 Refresh Token 추가
+    if (cookieRefreshToken != null) {
+      Cookie cookie = new Cookie("refreshToken", cookieRefreshToken);
+      httpServletRequest.setCookies(cookie);
+    }
 
     return httpServletRequest;
   }

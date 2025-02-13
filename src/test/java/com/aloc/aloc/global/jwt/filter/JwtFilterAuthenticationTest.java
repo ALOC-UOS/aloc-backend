@@ -11,6 +11,7 @@ import com.aloc.aloc.user.entity.User;
 import com.aloc.aloc.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.Cookie;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -101,7 +102,14 @@ public class JwtFilterAuthenticationTest {
                     .content(objectMapper.writeValueAsString(map)))
             .andReturn();
     String accessToken = result.getResponse().getHeader(accessHeader);
-    String refreshToken = result.getResponse().getHeader(refreshHeader);
+    String refreshToken = null;
+    Cookie[] cookies = result.getResponse().getCookies();
+    for (Cookie cookie : cookies) {
+      if ("refreshToken".equals(cookie.getName())) {
+        refreshToken = cookie.getValue();
+        break;
+      }
+    }
     Map<String, String> tokenMap = new HashMap<>();
     tokenMap.put(accessHeader, accessToken);
     tokenMap.put(refreshHeader, refreshToken);
