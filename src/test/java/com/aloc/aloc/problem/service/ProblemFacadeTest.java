@@ -17,6 +17,7 @@ import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
+import com.aloc.aloc.problem.enums.UserProblemStatus;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.user.dto.response.SolvedUserResponseDto;
 import com.aloc.aloc.user.entity.User;
@@ -125,13 +126,33 @@ public class ProblemFacadeTest {
     // Set up SolvedProblem
     solvedProblems =
         Arrays.asList(
-            UserProblem.builder().user(user1).problem(problem1).season(2).isSolved(true).build(),
-            UserProblem.builder().user(user2).problem(problem1).season(2).isSolved(true).build());
+            UserProblem.builder()
+                .user(user1)
+                .problem(problem1)
+                .season(2)
+                .userProblemStatus(UserProblemStatus.SOLVED)
+                .build(),
+            UserProblem.builder()
+                .user(user2)
+                .problem(problem1)
+                .season(2)
+                .userProblemStatus(UserProblemStatus.SOLVED)
+                .build());
 
     user1SolvedProblems =
         Arrays.asList(
-            UserProblem.builder().user(user1).problem(problem1).season(2).isSolved(true).build(),
-            UserProblem.builder().user(user1).problem(problem2).season(2).isSolved(true).build());
+            UserProblem.builder()
+                .user(user1)
+                .problem(problem1)
+                .season(2)
+                .userProblemStatus(UserProblemStatus.SOLVED)
+                .build(),
+            UserProblem.builder()
+                .user(user1)
+                .problem(problem2)
+                .season(2)
+                .userProblemStatus(UserProblemStatus.SOLVED)
+                .build());
   }
 
   @Test
