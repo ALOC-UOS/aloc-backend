@@ -5,6 +5,7 @@ import com.aloc.aloc.problem.dto.response.TodayProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
 import com.aloc.aloc.problem.enums.ProblemStatus;
+import com.aloc.aloc.problem.enums.UserProblemStatus;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.scraper.SolvedCheckingService;
 import com.aloc.aloc.user.entity.User;
@@ -63,14 +64,14 @@ public class ProblemSolvingService {
 
   public List<ProblemSolvedResponseDto> getUnsolvedProblemListByUser(User user, Integer season) {
     List<UserProblem> unsolvedProblems =
-        userProblemService.getUserProblemList(user.getId(), season, false);
+        userProblemService.getUserProblemList(user.getId(), season, UserProblemStatus.UNSOLVED);
 
     return problemMapper.mapSolvedProblemToDtoList(unsolvedProblems);
   }
 
   public List<ProblemSolvedResponseDto> getSolvedProblemListByUser(User user, Integer season) {
     List<UserProblem> solvedProblems =
-        userProblemService.getUserProblemList(user.getId(), season, true);
+        userProblemService.getUserProblemList(user.getId(), season, UserProblemStatus.SOLVED);
     return problemMapper.mapSolvedProblemToDtoList(solvedProblems);
   }
 
@@ -85,13 +86,19 @@ public class ProblemSolvingService {
     if (isAlreadySolved) {
       return false; // 이미 푼 문제라면 false 반환
     }
+
     boolean isSolved = solvedCheckingService.isProblemSolved(user.getBaekjoonId(), problem);
-    UserProblem userProblem = userProblemService.getOrCreateUserProblem(user, problem, isSolved);
+
+    UserProblemStatus userProblemStatus =
+        isSolved ? UserProblemStatus.SOLVED : UserProblemStatus.UNSOLVED;
+
+    UserProblem userProblem =
+        userProblemService.getOrCreateUserProblem(user, problem, userProblemStatus);
     userProblemService.saveUserProblem(userProblem);
 
     if (isSolved) {
       // 코인을 지급하고 사용자 정보를 저장합니다.
-      userProblem.setIsSolved(true);
+      userProblem.updateUserProblemStatus(UserProblemStatus.SOLVED);
       userProblemService.saveUserProblem(userProblem);
       coinService.addCoinIfEligible(user, problem);
     }
@@ -108,8 +115,10 @@ public class ProblemSolvingService {
     }
 
     boolean isSolved = solvedCheckingService.isProblemSolved(user.getBaekjoonId(), todayProblem);
+    UserProblemStatus userProblemStatus =
+        isSolved ? UserProblemStatus.SOLVED : UserProblemStatus.UNSOLVED;
     UserProblem userProblem =
-        userProblemService.getOrCreateUserProblem(user, todayProblem, isSolved);
+        userProblemService.getOrCreateUserProblem(user, todayProblem, userProblemStatus);
 
     if (isSolved) {
       processSolvedProblem(user, todayProblem, userProblem, response);
@@ -127,7 +136,7 @@ public class ProblemSolvingService {
     int place = userProblemService.getSolvedUserCount(todayProblem.getId()) + 1;
     int coin = coinService.addCoinEligibleForTodayProblem(user, todayProblem);
 
-    userProblem.setIsSolved(true);
+    userProblem.updateUserProblemStatus(UserProblemStatus.SOLVED);
     updateResponse(response, place, coin, user.getUserProfile().getCoin());
   }
 
@@ -147,7 +156,8 @@ public class ProblemSolvingService {
   }
 
   public void addUserProblem(User user, Problem problem) {
-    UserProblem userProblem = userProblemService.getOrCreateUserProblem(user, problem, false);
+    UserProblem userProblem =
+        userProblemService.getOrCreateUserProblem(user, problem, UserProblemStatus.UNSOLVED);
     userProblemService.saveUserProblem(userProblem);
   }
 }

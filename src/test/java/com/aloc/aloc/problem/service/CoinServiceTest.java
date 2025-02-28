@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.problem.entity.Problem;
+import com.aloc.aloc.problem.enums.UserProblemStatus;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtype.ProblemType;
@@ -77,7 +78,8 @@ class CoinServiceTest {
   @Test
   @DisplayName("daily 문제 1등으로 풀었을 때 테스트")
   void calculateCoinToAddForDailyFirstPlace() {
-    when(userProblemRepository.countSolvingUsersByProblemId(problemId, CURRENT_SEASON))
+    when(userProblemRepository.countSolvingUsersByProblemId(
+            problemId, CURRENT_SEASON, UserProblemStatus.SOLVED))
         .thenReturn(0);
 
     int coins = coinService.calculateCoinToAddForDaily(problemId);
@@ -88,7 +90,8 @@ class CoinServiceTest {
   @Test
   @DisplayName("daily 문제 2등으로 풀었을 때 테스트")
   void calculateCoinToAddForDailySecondPlace() {
-    when(userProblemRepository.countSolvingUsersByProblemId(problemId, CURRENT_SEASON))
+    when(userProblemRepository.countSolvingUsersByProblemId(
+            problemId, CURRENT_SEASON, UserProblemStatus.SOLVED))
         .thenReturn(1);
 
     int coins = coinService.calculateCoinToAddForDaily(problemId);
@@ -99,7 +102,8 @@ class CoinServiceTest {
   @Test
   @DisplayName("daily 문제 3등으로 풀었을 때 테스트")
   void calculateCoinToAddForDailyThirdPlace() {
-    when(userProblemRepository.countSolvingUsersByProblemId(problemId, CURRENT_SEASON))
+    when(userProblemRepository.countSolvingUsersByProblemId(
+            problemId, CURRENT_SEASON, UserProblemStatus.SOLVED))
         .thenReturn(2);
 
     int coins = coinService.calculateCoinToAddForDaily(problemId);
@@ -110,7 +114,8 @@ class CoinServiceTest {
   @Test
   @DisplayName("daily 문제 4등 이하로 풀었을 때 테스트")
   void calculateCoinToAddForDailyOthers() {
-    when(userProblemRepository.countSolvingUsersByProblemId(problemId, CURRENT_SEASON))
+    when(userProblemRepository.countSolvingUsersByProblemId(
+            problemId, CURRENT_SEASON, UserProblemStatus.SOLVED))
         .thenReturn(3);
 
     int coins = coinService.calculateCoinToAddForDaily(problemId);
@@ -125,7 +130,8 @@ class CoinServiceTest {
         .thenReturn(Optional.of(algorithmOfThisWeek));
     when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, fullWeekly))
         .thenReturn(List.of(new Problem()));
-    when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class), eq(user.getId())))
+    when(userProblemRepository.countByUnsolvedProblemsIn(
+            any(List.class), eq(user.getId()), eq(UserProblemStatus.UNSOLVED)))
         .thenReturn(0);
 
     int coins = coinService.calculateCoinToAddForWeekly(problemFullWeekly, user);
@@ -140,7 +146,8 @@ class CoinServiceTest {
         .thenReturn(Optional.of(algorithmOfThisWeek));
     when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, halfWeekly))
         .thenReturn(List.of(new Problem()));
-    when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class), eq(user.getId())))
+    when(userProblemRepository.countByUnsolvedProblemsIn(
+            any(List.class), eq(user.getId()), eq(UserProblemStatus.UNSOLVED)))
         .thenReturn(0);
 
     int coins = coinService.calculateCoinToAddForWeekly(problemHalfWeekly, user);
@@ -166,7 +173,8 @@ class CoinServiceTest {
         .thenReturn(Optional.of(algorithmOfThisWeek));
     when(problemRepository.findAllByAlgorithmAndProblemType(algorithmOfThisWeek, fullWeekly))
         .thenReturn(List.of(new Problem()));
-    when(userProblemRepository.countByUnsolvedProblemsIn(any(List.class), eq(user.getId())))
+    when(userProblemRepository.countByUnsolvedProblemsIn(
+            any(List.class), eq(user.getId()), eq(UserProblemStatus.UNSOLVED)))
         .thenReturn(1);
 
     int coins = coinService.calculateCoinToAddForWeekly(problemFullWeekly, user);

@@ -5,6 +5,7 @@ import com.aloc.aloc.algorithm.service.AlgorithmService;
 import com.aloc.aloc.coinhistory.enums.CoinType;
 import com.aloc.aloc.coinhistory.service.CoinHistoryService;
 import com.aloc.aloc.problem.entity.Problem;
+import com.aloc.aloc.problem.enums.UserProblemStatus;
 import com.aloc.aloc.problem.repository.ProblemRepository;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtype.enums.Course;
@@ -38,7 +39,8 @@ public class CoinService {
   public int calculateCoinToAddForDaily(Long problemId) {
     // daily문제 푼 순서 1등 50, 2등 40, 3등 30, 4등 이하 20 코인을 지급합니다.
     int solvedUserCount =
-        userProblemRepository.countSolvingUsersByProblemId(problemId, currentSeason);
+        userProblemRepository.countSolvingUsersByProblemId(
+            problemId, currentSeason, UserProblemStatus.SOLVED);
     return getCoinsForPlace(solvedUserCount);
   }
 
@@ -59,7 +61,8 @@ public class CoinService {
   }
 
   private int getUnsolvedProblemCount(List<Problem> thisWeekProblems, Long userId) {
-    return userProblemRepository.countByUnsolvedProblemsIn(thisWeekProblems, userId);
+    return userProblemRepository.countByUnsolvedProblemsIn(
+        thisWeekProblems, userId, UserProblemStatus.UNSOLVED);
   }
 
   private int getCoinsForPlace(int solvedUserCount) {

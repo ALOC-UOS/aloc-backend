@@ -2,7 +2,7 @@ package com.aloc.aloc.problem.repository;
 
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
-import com.aloc.aloc.problemtype.enums.Routine;
+import com.aloc.aloc.problem.enums.UserProblemStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -15,15 +15,20 @@ import org.springframework.stereotype.Repository;
 public interface UserProblemRepository extends JpaRepository<UserProblem, Long> {
 
   //	 문제를 푼 사용자 목록을 가져옵니다.
-  List<UserProblem> findAllByProblemIdAndIsSolvedIsTrue(Long problemId);
+  List<UserProblem> findAllByProblemIdAndUserProblemStatus(
+      Long problemId, UserProblemStatus userProblemStatus);
 
   @Query(
       "SELECT COUNT(DISTINCT up.user) "
           + "FROM UserProblem up WHERE up.problem.id = :problemId "
-          + "AND up.isSolved = true AND up.season = :season")
-  int countSolvingUsersByProblemId(@Param("problemId") Long problemId, @Param("season") int season);
+          + "AND up.userProblemStatus = :status AND up.season = :season")
+  int countSolvingUsersByProblemId(
+      @Param("problemId") Long problemId,
+      @Param("season") int season,
+      @Param("status") UserProblemStatus userProblemStatus);
 
-  boolean existsByUserIdAndProblemIdAndIsSolvedIsTrue(Long userId, Long problemId);
+  boolean existsByUserIdAndProblemIdAndUserProblemStatus(
+      Long userId, Long problemId, UserProblemStatus userProblemStatus);
 
   Optional<UserProblem> findByUserIdAndProblemId(Long userId, Long problemId);
 
@@ -34,13 +39,13 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
           + "JOIN up.problem p "
           + "WHERE up.user.id = :userId "
           + "AND (:season IS NULL OR up.season = :season) "
-          + "AND up.isSolved = :isSolved "
+          + "AND up.userProblemStatus = :status "
           + "AND (p.hidden = false)"
           + "ORDER BY p.createdAt DESC")
   List<UserProblem> findAllByUserIdAndSeasonAndIsSolvedOrderBySolvedAtDesc(
       @Param("userId") Long userId,
       @Param("season") Integer season,
-      @Param("isSolved") Boolean isSolved);
+      @Param("status") UserProblemStatus userProblemStatus);
 
   Optional<UserProblem> findTopByUserIdOrderBySolvedAtDesc(Long userId);
 
@@ -49,20 +54,12 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
           + "FROM UserProblem up "
           + "WHERE up.problem "
           + "IN :problems "
-          + "AND up.isSolved = false "
+          + "AND up.userProblemStatus = :status "
           + "AND up.user.id = :userId")
   int countByUnsolvedProblemsIn(
-      @Param("problems") List<Problem> problems, @Param("userId") Long userId);
-
-  @Query(
-      "SELECT COUNT(up) "
-          + "FROM UserProblem up "
-          + "WHERE up.user.id = :userId "
-          + "AND up.season = :season "
-          + "AND up.isSolved = :isSolved "
-          + "AND up.problem.problemType.routine = :routine")
-  int countByUserIdAndSeasonAndIsSolved(
-      Long userId, Integer season, boolean isSolved, Routine routine);
+      @Param("problems") List<Problem> problems,
+      @Param("userId") Long userId,
+      @Param("status") UserProblemStatus userProblemStatus);
 
   Boolean existsByUserIdAndProblemIdAndSolvedAtAfter(
       Long userId, Long id, LocalDateTime localDateTime);
