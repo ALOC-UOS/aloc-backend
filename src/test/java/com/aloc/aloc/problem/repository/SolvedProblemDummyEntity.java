@@ -3,6 +3,7 @@ package com.aloc.aloc.problem.repository;
 import com.aloc.aloc.algorithm.entity.Algorithm;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
+import com.aloc.aloc.problem.enums.UserProblemStatus;
 import com.aloc.aloc.problemtype.ProblemType;
 import com.aloc.aloc.problemtype.enums.Course;
 import com.aloc.aloc.problemtype.enums.Routine;
@@ -48,9 +49,19 @@ public class SolvedProblemDummyEntity {
     em.persist(problem1);
 
     userProblem1 =
-        UserProblem.builder().user(user1).problem(problem1).season(2).isSolved(true).build();
+        UserProblem.builder()
+            .user(user1)
+            .problem(problem1)
+            .season(2)
+            .userProblemStatus(UserProblemStatus.SOLVED)
+            .build();
     userProblem2 =
-        UserProblem.builder().user(user2).problem(problem1).season(2).isSolved(true).build();
+        UserProblem.builder()
+            .user(user2)
+            .problem(problem1)
+            .season(2)
+            .userProblemStatus(UserProblemStatus.SOLVED)
+            .build();
     em.persist(userProblem1);
     em.persist(userProblem2);
   }

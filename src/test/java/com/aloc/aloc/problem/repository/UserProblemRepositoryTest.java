@@ -3,6 +3,7 @@ package com.aloc.aloc.problem.repository;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import com.aloc.aloc.problem.entity.UserProblem;
+import com.aloc.aloc.problem.enums.UserProblemStatus;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.assertj.core.api.AssertionsForClassTypes;
@@ -35,7 +36,8 @@ public class UserProblemRepositoryTest {
   void findAllByProblemIdShouldReturnSolvedProblemList() {
     // when
     List<UserProblem> problems =
-        userProblemRepository.findAllByProblemIdAndIsSolvedIsTrue(dummyEntity.problem1.getId());
+        userProblemRepository.findAllByProblemIdAndUserProblemStatus(
+            dummyEntity.problem1.getId(), UserProblemStatus.SOLVED);
 
     // then
     assertThat(problems).hasSize(2);
@@ -53,7 +55,8 @@ public class UserProblemRepositoryTest {
   void countSolvingUsersByProblemIdShouldReturnSolvingUsersCount() {
     // when
     Integer count =
-        userProblemRepository.countSolvingUsersByProblemId(dummyEntity.problem1.getId(), 2);
+        userProblemRepository.countSolvingUsersByProblemId(
+            dummyEntity.problem1.getId(), 2, UserProblemStatus.SOLVED);
 
     // then
     assertThat(count).isEqualTo(2);
@@ -64,8 +67,8 @@ public class UserProblemRepositoryTest {
   @DisplayName("사용자 ID와 문제 ID를 통해 해결된 문제가 존재하는지 확인")
   void existsByUserIdAndProblemIdShouldReturnTrue() {
     Boolean exists =
-        userProblemRepository.existsByUserIdAndProblemIdAndIsSolvedIsTrue(
-            dummyEntity.user1.getId(), dummyEntity.problem1.getId());
+        userProblemRepository.existsByUserIdAndProblemIdAndUserProblemStatus(
+            dummyEntity.user1.getId(), dummyEntity.problem1.getId(), UserProblemStatus.SOLVED);
     assertThat(exists).isTrue();
   }
 
@@ -74,8 +77,8 @@ public class UserProblemRepositoryTest {
   @DisplayName("사용자 ID와 문제 ID를 통해 해결된 문제가 존재하지 않는지 확인")
   void existsByUserIdAndProblemIdShouldReturnFalse() {
     Boolean exists =
-        userProblemRepository.existsByUserIdAndProblemIdAndIsSolvedIsTrue(
-            dummyEntity.user1.getId(), 100L);
+        userProblemRepository.existsByUserIdAndProblemIdAndUserProblemStatus(
+            dummyEntity.user1.getId(), 100L, UserProblemStatus.SOLVED);
     assertThat(exists).isFalse();
   }
 }

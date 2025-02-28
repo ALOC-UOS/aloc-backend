@@ -1,13 +1,8 @@
 package com.aloc.aloc.problem.entity;
 
+import com.aloc.aloc.problem.enums.UserProblemStatus;
 import com.aloc.aloc.user.entity.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,16 +29,12 @@ public class UserProblem {
 
   private Integer season;
 
-  @Builder.Default private Boolean isSolved = false;
+  @Enumerated(EnumType.STRING)
+  private UserProblemStatus userProblemStatus;
 
   private LocalDateTime solvedAt;
 
-  public void setIsSolved(boolean isSolved) {
-    this.isSolved = isSolved;
-    if (isSolved) {
-      this.solvedAt = LocalDateTime.now();
-    } else {
-      this.solvedAt = null;
-    }
+  public void updateUserProblemStatus(UserProblemStatus userProblemStatus) {
+    this.userProblemStatus = userProblemStatus;
   }
 }

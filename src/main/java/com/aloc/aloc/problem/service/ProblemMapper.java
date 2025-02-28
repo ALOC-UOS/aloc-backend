@@ -4,6 +4,7 @@ import com.aloc.aloc.problem.dto.response.ProblemResponseDto;
 import com.aloc.aloc.problem.dto.response.ProblemSolvedResponseDto;
 import com.aloc.aloc.problem.entity.Problem;
 import com.aloc.aloc.problem.entity.UserProblem;
+import com.aloc.aloc.problem.enums.UserProblemStatus;
 import com.aloc.aloc.problem.repository.UserProblemRepository;
 import com.aloc.aloc.problemtag.ProblemTag;
 import com.aloc.aloc.tag.Tag;
@@ -32,7 +33,9 @@ public class ProblemMapper {
         .title(problem.getTitle())
         .tags(mapToTagSimpleDtoList(problem.getProblemTagList()))
         .difficulty(problem.getDifficulty())
-        .solvingCount(userProblemRepository.countSolvingUsersByProblemId(problem.getId(), season))
+        .solvingCount(
+            userProblemRepository.countSolvingUsersByProblemId(
+                problem.getId(), season, UserProblemStatus.SOLVED))
         .build();
   }
 
